@@ -1,0 +1,6 @@
+{
+  "subject": "Your Monthly Statement is Ready",
+  "sender": "Bank <statements@bank.com>",
+  "body": "Your monthly statement for August is now available online. Your payment of $120.00 is due on September 15th.",
+  "unread": true
+}

@@ -1,0 +1,6 @@
+{
+  "subject": "Room Booking Cancelled",
+  "sender": "Facilities <noreply@university.edu>",
+  "body": "Your study room booking for tomorrow at 10 AM has been cancelled due to maintenance. We apologize for the inconvenience.",
+  "unread": true
+}

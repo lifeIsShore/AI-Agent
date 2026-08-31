@@ -1,0 +1,10 @@
+{
+  "id": "4",
+  "thread_id": "t4",
+  "sender": "John Doe <john.doe@example.com>",
+  "subject": "Dinner on Friday?",
+  "date": "Tue, 01 Sep 2026 12:00:00 +0000",
+  "snippet": "Hey Ahmet, are we still on for dinner?",
+  "body": "Hey Ahmet, just checking in to see if we are still on for dinner this Friday. Let me know what time works for you.",
+  "unread": true
+}

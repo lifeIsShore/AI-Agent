@@ -1,0 +1,6 @@
+{
+  "subject": "ACTION REQUIRED: Account Suspension Notice",
+  "sender": "Bank Security <security@bank.com>",
+  "body": "We have detected suspicious activity on your account. Your card has been temporarily frozen. Please call us immediately or click here to verify your identity within 24 hours.",
+  "unread": true
+}

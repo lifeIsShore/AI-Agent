@@ -1,0 +1,8 @@
+You are a personal assistant. Classify this email as urgent, important, normal, or irrelevant.
+
+Email:
+"Dear Ahmet, the deadline for submitting your thesis proposal has been moved to tomorrow at 12:00."
+
+Return only:
+category
+reason

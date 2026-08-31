@@ -1,0 +1,10 @@
+{
+  "id": "1",
+  "thread_id": "t1",
+  "sender": "Prof. Smith <smith@university.edu>",
+  "subject": "URGENT: Thesis Proposal Missing",
+  "date": "Tue, 01 Sep 2026 09:00:00 +0000",
+  "snippet": "Ahmet, we have not received your proposal...",
+  "body": "Ahmet, we have not received your thesis proposal. The final deadline is today at 5 PM. If you do not submit it, you will fail the semester. Please reply immediately.",
+  "unread": true
+}

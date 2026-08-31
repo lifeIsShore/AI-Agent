@@ -1,0 +1,6 @@
+{
+  "subject": "ACTION REQUIRED: Monthly Payment Declined",
+  "sender": "Bank Security <security@bank.com>",
+  "body": "Your recent payment of $450.00 for your loan was declined. Please update your payment method immediately within 24 hours to avoid penalties.",
+  "unread": true
+}

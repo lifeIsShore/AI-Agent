@@ -1,0 +1,6 @@
+{
+  "subject": "Code Review Needed",
+  "sender": "Alice <alice@company.com>",
+  "body": "Hey Ahmet, I just opened a PR for the new caching module. Could you take a look when you have a chance? I'd like to merge it by Friday.",
+  "unread": true
+}

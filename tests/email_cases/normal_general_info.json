@@ -1,0 +1,6 @@
+{
+  "subject": "Package Delivered",
+  "sender": "Shipping <tracking@shipping.com>",
+  "body": "Your package has been delivered to the front desk. You can pick it up anytime during business hours.",
+  "unread": true
+}

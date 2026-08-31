@@ -1,0 +1,10 @@
+{
+  "id": "2",
+  "thread_id": "t2",
+  "sender": "University Administration <admin@university.edu>",
+  "subject": "Campus Library Hours Update",
+  "date": "Tue, 01 Sep 2026 10:00:00 +0000",
+  "snippet": "Starting next week, library hours...",
+  "body": "Dear Students, Starting next week, the campus library will be open 24/7 during the exam period. Good luck with your studies!",
+  "unread": true
+}
