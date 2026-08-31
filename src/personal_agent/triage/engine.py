@@ -7,15 +7,16 @@ class PriorityEngine:
         self.gateway = gateway
 
     def evaluate(self, email_data: Dict[str, Any]) -> Tuple[Dict[str, Any], bool]:
-        """Returns the final classification and a boolean indicating if the LLM was bypassed."""
+        """Returns the final classification object and a boolean indicating if the LLM was bypassed."""
         signals = EmailSignals(email_data)
         
         # 1. HIERARCHY TOP LEVEL: Confirmed Marketing -> IRRELEVANT
         if signals.get_marketing_score() >= 4:
             return {
                 "priority": "irrelevant",
-                "category": "marketing",
                 "email_type": "marketing",
+                "category": "marketing",
+                "action_type": "none",
                 "requires_action": False,
                 "requires_response": False,
                 "deadline": "none",
@@ -26,26 +27,24 @@ class PriorityEngine:
         # 2. Extract facts via LLM
         extraction = self._extract_facts(email_data)
         
-        # Merge deterministic signal classifications if extraction is unsure
-        is_alert = signals.is_automated_alert() or extraction.get("email_type") == "automated_alert"
-        is_trans = signals.is_transactional() or extraction.get("email_type") == "transactional"
-        
+        # Overwrite with deterministic signal flags if LLM was unsure
+        if signals.is_automated_alert() and extraction.get("email_type") == "other":
+            extraction["email_type"] = "automated_alert"
+        if signals.is_transactional() and extraction.get("email_type") == "other":
+            extraction["email_type"] = "transactional"
+            
+        email_type = extraction.get("email_type", "other")
         req_action = extraction.get("requires_action", False)
         deadline_token = str(extraction.get("deadline", "none")).lower().strip()
         
         final_priority = "normal"
         
-        # 3. Apply Policy Rules
-        if is_alert:
-            # Automated alerts (e.g. LinkedIn job notifications) are NEVER URGENT
-            # even if they say "apply today". They are at most NORMAL or IMPORTANT.
-            if req_action and deadline_token in ["today", "tomorrow"]:
-                final_priority = "normal"  # Job alerts are informational, not urgent
-            else:
-                final_priority = "normal"
+        # 3. Apply Policy Rules based on email_type and action_type
+        if email_type == "automated_alert" or signals.is_automated_alert():
+            # Automated alerts (e.g. LinkedIn job alerts) are NEVER URGENT
+            final_priority = "normal"
                 
-        elif is_trans:
-            # Transactional emails: check if it's a failure/declined notice vs routine info
+        elif email_type == "transactional" or signals.is_transactional():
             subj = email_data.get('subject', '').lower()
             body = email_data.get('body', '').lower()
             if any(x in subj or x in body for x in ['declined', 'failed', 'action required', 'suspension', 'unauthorized', 'freeze']):
@@ -83,18 +82,31 @@ Return ONLY valid JSON matching exactly this format:
 {{
   "requires_action": true|false,
   "requires_response": true|false,
+  "action_type": "reply|review|pay|schedule|attend|apply|purchase|none|other",
   "deadline": "today|tomorrow|this_week|explicit_date|none",
   "email_type": "automated_alert|transactional|direct_communication|marketing|other",
-  "category": "university|work|finance|personal|notification|other",
+  "category": "university|work|finance|job_search|shopping|personal|service|notification|other",
   "reason": "Brief summary of what the email is about and what is required.",
   "suggested_action": "Brief summary of action to take"
 }}
 
-IMPORTANT RULES:
-- "automated_alert": Job alerts (LinkedIn, Indeed), system notifications, weekly digests, mailing list updates.
-- "transactional": Receipts, payment updates, shipping notifications, invoices, account changes.
-- "direct_communication": Emails from real individuals, professors, colleagues, direct personal requests.
-- For deadline, if the email states an action must be done today or within 24 hours, output "today" or "tomorrow". Otherwise output "this_week", explicit date, or "none".
+IMPORTANT DEFINITIONS:
+- email_type:
+  * "automated_alert": Job alerts (LinkedIn, Indeed), system notifications, weekly digests.
+  * "transactional": Receipts, payment updates, shipping notifications, invoices, account changes.
+  * "direct_communication": Emails from real individuals, professors, colleagues, direct personal requests.
+  * "marketing": Sales, discounts, promotional offers, newsletters.
+
+- action_type:
+  * "reply": Sender expects a written reply.
+  * "review": Sender expects you to review a document, code PR, or job post.
+  * "pay": Sender expects a payment or bill settlement.
+  * "schedule": Sender wants to schedule a meeting or appointment.
+  * "attend": Invitation to an event, lecture, or webinar.
+  * "apply": Invitation or link to apply for a job or program.
+  * "purchase": Call to buy something.
+  * "none": No action required.
+  * "other": Any other action.
 """
         response = self.gateway.generate(prompt=prompt, format="json")
         try:
@@ -106,6 +118,7 @@ IMPORTANT RULES:
             return {
                 "requires_action": False,
                 "requires_response": False,
+                "action_type": "none",
                 "deadline": "none",
                 "email_type": "other",
                 "category": "other",

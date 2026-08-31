@@ -1,6 +1,7 @@
 import sys
 import os
 import time
+from collections import Counter
 
 sys.stdout.reconfigure(encoding='utf-8')
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -15,7 +16,7 @@ def print_header(title):
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 
 def main():
-    print_header("PERSONAL ASSISTANT (V0.3)")
+    print_header("PERSONAL ASSISTANT (V0.3.3)")
     print("Initializing components...")
     
     gateway = ModelGateway(provider="ollama")
@@ -28,18 +29,22 @@ def main():
         return
         
     print("Fetching recent emails...\n")
-    # Fetch 15 emails for a safe batch size
-    emails = gmail_tool.list_recent_emails(limit=15)
+    # Fetch 30 emails for a comprehensive evaluation
+    emails = gmail_tool.list_recent_emails(limit=30)
     
     if not emails:
         print("No emails found.")
         return
         
-    print(f"Analyzing {len(emails)} emails with Hybrid Triage Pipeline...\n")
+    print(f"Analyzing {len(emails)} emails with V0.3.3 Schema Pipeline...\n")
     
     results = []
     llm_calls = 0
     rule_bypasses = 0
+    
+    categories = Counter()
+    action_types = Counter()
+    email_types = Counter()
     
     for i, email in enumerate(emails, 1):
         print(f"Processing email {i}/{len(emails)}...")
@@ -54,6 +59,10 @@ def main():
         else:
             llm_calls += 1
             
+        categories[analysis.get('category', 'other')] += 1
+        action_types[analysis.get('action_type', 'none')] += 1
+        email_types[analysis.get('email_type', 'other')] += 1
+        
         results.append(analysis)
         
     urgent = [d for d in results if d.get("priority") == "urgent"]
@@ -62,7 +71,7 @@ def main():
     irrelevant = [d for d in results if d.get("priority") == "irrelevant"]
     
     print("\n")
-    print_header("📧 GMAIL REVIEW")
+    print_header("📧 GMAIL REVIEW & EVALUATION REPORT")
     
     print(f"🔴 URGENT — {len(urgent)} emails")
     print("──────────────────────────────")
@@ -70,7 +79,8 @@ def main():
         byp_str = "[Rules]" if item.get('bypassed') else "[LLM]"
         print(f"Sender:  {item.get('original_sender')}")
         print(f"Subject: {item.get('original_subject')}")
-        print(f"Action:  {item.get('suggested_action')} {byp_str}\n")
+        print(f"Type:    {item.get('email_type')} | Category: {item.get('category')} | Action: {item.get('action_type')}")
+        print(f"Detail:  {item.get('suggested_action')} {byp_str}\n")
             
     print(f"🟡 IMPORTANT — {len(important)} emails")
     print("──────────────────────────────")
@@ -78,26 +88,46 @@ def main():
         byp_str = "[Rules]" if item.get('bypassed') else "[LLM]"
         print(f"Sender:  {item.get('original_sender')}")
         print(f"Subject: {item.get('original_subject')}")
-        print(f"Action:  {item.get('suggested_action')} {byp_str}\n")
+        print(f"Type:    {item.get('email_type')} | Category: {item.get('category')} | Action: {item.get('action_type')}")
+        print(f"Detail:  {item.get('suggested_action')} {byp_str}\n")
             
     print(f"🟢 NORMAL — {len(normal)} emails")
     print("──────────────────────────────")
-    for item in normal:
+    for item in normal[:5]: # Show top 5 normal
         byp_str = "[Rules]" if item.get('bypassed') else "[LLM]"
-        # Minimal output for normal
-        print(f"- {item.get('original_subject')} {byp_str}")
+        print(f"- [{item.get('category')}/{item.get('action_type')}] {item.get('original_subject')} {byp_str}")
+    if len(normal) > 5:
+        print(f"  ... and {len(normal) - 5} more normal emails.")
     print("\n")
         
     print(f"⚪ IRRELEVANT — {len(irrelevant)} emails")
     print("──────────────────────────────")
-    for item in irrelevant:
+    for item in irrelevant[:5]:
         byp_str = "[Rules]" if item.get('bypassed') else "[LLM]"
-        # Minimal output for irrelevant
-        print(f"- {item.get('original_subject')} {byp_str}")
+        print(f"- [{item.get('category')}] {item.get('original_subject')} {byp_str}")
+    if len(irrelevant) > 5:
+        print(f"  ... and {len(irrelevant) - 5} more irrelevant emails.")
     print("\n")
     
-    print(f"⏱ LLM calls: {llm_calls}")
-    print(f"⚡ Rule bypasses: {rule_bypasses}")
+    print_header("📊 STATISTICAL METRICS")
+    total_emails = len(results)
+    print(f"Total Emails Analyzed: {total_emails}")
+    print(f"⏱ LLM Calls:          {llm_calls}")
+    print(f"⚡ Rule Bypasses:      {rule_bypasses} ({rule_bypasses/total_emails*100:.1f}%)")
+    print(f"❓ 'Other' Category:   {categories['other']} ({categories['other']/total_emails*100:.1f}%)")
+    
+    print("\nCategory Breakdown:")
+    for cat, count in categories.most_common():
+        print(f"  - {cat:<15}: {count}")
+        
+    print("\nAction Type Breakdown:")
+    for act, count in action_types.most_common():
+        print(f"  - {act:<15}: {count}")
+        
+    print("\nEmail Type Breakdown:")
+    for et, count in email_types.most_common():
+        print(f"  - {et:<15}: {count}")
+        
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
 if __name__ == "__main__":
