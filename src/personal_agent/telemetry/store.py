@@ -16,18 +16,23 @@ class TelemetryStore:
         except Exception as e:
             print(f"[TelemetryStore] Error logging trace: {e}")
 
-    def get_recent_traces(self, limit: int = 10) -> List[Dict[str, Any]]:
-        """Returns recent traces logged to disk."""
+    def load_all_traces(self) -> List[Dict[str, Any]]:
+        """Returns all traces logged to disk."""
         if not os.path.exists(self.traces_file):
             return []
 
         traces = []
         try:
             with open(self.traces_file, "r", encoding="utf-8") as f:
-                lines = [line.strip() for line in f if line.strip()]
-                for line in lines[-limit:]:
-                    traces.append(json.loads(line))
+                for line in f:
+                    if line.strip():
+                        traces.append(json.loads(line.strip()))
         except Exception as e:
-            print(f"[TelemetryStore] Error reading traces: {e}")
+            print(f"[TelemetryStore] Error reading all traces: {e}")
 
         return traces
+
+    def get_recent_traces(self, limit: int = 10) -> List[Dict[str, Any]]:
+        """Returns recent traces logged to disk."""
+        all_traces = self.load_all_traces()
+        return all_traces[-limit:]

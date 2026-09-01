@@ -1568,5 +1568,203 @@
     ],
     "target_checksum": null,
     "audit_metadata": {}
+  },
+  "prop_2a3f665f": {
+    "proposal_id": "prop_2a3f665f",
+    "action": "create_calendar_event",
+    "target": "primary",
+    "parameters": {
+      "summary": "Thesis draft",
+      "start_time": "14:00",
+      "end_time": "15:00"
+    },
+    "reason": "Allocated into free slot",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "MODIFY",
+    "status": "EXECUTED",
+    "created_at": "2026-09-01T11:40:37.112362+00:00",
+    "expires_at": "2026-09-01T12:40:37.112362+00:00",
+    "why_proposed": [
+      "Action 'create_calendar_event' recommended for target 'primary'.",
+      "Primary reason: Allocated into free slot.",
+      "Risk Level: MEDIUM | Permission Level: MODIFY."
+    ],
+    "target_checksum": null,
+    "audit_metadata": {
+      "edited_by_user": true
+    }
+  },
+  "prop_6e4c5e14": {
+    "proposal_id": "prop_6e4c5e14",
+    "action": "trash_email",
+    "target": "msg_555",
+    "parameters": {
+      "msg_id": "msg_555"
+    },
+    "reason": "Move email to trash",
+    "confidence": 1.0,
+    "risk_level": "HIGH",
+    "required_permission": "MODIFY",
+    "status": "REJECTED",
+    "created_at": "2026-09-01T11:40:37.178578+00:00",
+    "expires_at": "2026-09-01T12:40:37.178578+00:00",
+    "why_proposed": [
+      "Action 'trash_email' recommended for target 'msg_555'.",
+      "Primary reason: Move email to trash.",
+      "Risk Level: HIGH | Permission Level: MODIFY."
+    ],
+    "target_checksum": null,
+    "audit_metadata": {}
+  },
+  "prop_e183b908": {
+    "proposal_id": "prop_e183b908",
+    "action": "archive_email",
+    "target": "msg_newsletter",
+    "parameters": {
+      "msg_id": "msg_newsletter"
+    },
+    "reason": "Automated digest recommendation",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "MODIFY",
+    "status": "PROPOSED",
+    "created_at": "2026-09-01T11:40:37.403880+00:00",
+    "expires_at": "2026-09-01T12:40:37.403880+00:00",
+    "why_proposed": [
+      "1. Sender is an automated newsletter service.",
+      "2. Message contains promotional unsubscribe headers.",
+      "3. User previously approved archiving tech digests."
+    ],
+    "target_checksum": null,
+    "audit_metadata": {}
+  },
+  "prop_8e05a427": {
+    "proposal_id": "prop_8e05a427",
+    "action": "archive_email",
+    "target": "msg_expired",
+    "parameters": {
+      "msg_id": "msg_expired"
+    },
+    "reason": "",
+    "confidence": 1.0,
+    "risk_level": "LOW",
+    "required_permission": "READ_ONLY",
+    "status": "EXPIRED",
+    "created_at": "2026-09-01T11:40:37.487867+00:00",
+    "expires_at": "2026-09-01T11:30:37.487209+00:00",
+    "why_proposed": [],
+    "target_checksum": null,
+    "audit_metadata": {}
+  },
+  "prop_15c04513": {
+    "proposal_id": "prop_15c04513",
+    "action": "archive_email",
+    "target": "msg_999",
+    "parameters": {
+      "msg_id": "msg_999"
+    },
+    "reason": "",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "MODIFY",
+    "status": "FAILED",
+    "created_at": "2026-09-01T11:40:37.534978+00:00",
+    "expires_at": "2026-09-01T12:40:37.534978+00:00",
+    "why_proposed": [
+      "Action 'archive_email' recommended for target 'msg_999'.",
+      "Primary reason: Automated task policy recommendation.",
+      "Risk Level: MEDIUM | Permission Level: MODIFY."
+    ],
+    "target_checksum": "hash_original_v1",
+    "audit_metadata": {}
+  },
+  "prop_389208f4": {
+    "proposal_id": "prop_389208f4",
+    "action": "archive_email",
+    "target": "email_1",
+    "parameters": {
+      "msg_id": "email_1"
+    },
+    "reason": "Newsletter",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "MODIFY",
+    "status": "EXECUTED",
+    "created_at": "2026-09-01T11:40:37.582194+00:00",
+    "expires_at": "2026-09-01T12:40:37.582194+00:00",
+    "why_proposed": [
+      "Action 'archive_email' recommended for target 'email_1'.",
+      "Primary reason: Newsletter.",
+      "Risk Level: MEDIUM | Permission Level: MODIFY."
+    ],
+    "target_checksum": null,
+    "audit_metadata": {}
+  },
+  "prop_f4824a83": {
+    "proposal_id": "prop_f4824a83",
+    "action": "archive_email",
+    "target": "email_2",
+    "parameters": {
+      "msg_id": "email_2"
+    },
+    "reason": "Digest",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "MODIFY",
+    "status": "EXECUTED",
+    "created_at": "2026-09-01T11:40:37.582194+00:00",
+    "expires_at": "2026-09-01T12:40:37.582194+00:00",
+    "why_proposed": [
+      "Action 'archive_email' recommended for target 'email_2'.",
+      "Primary reason: Digest.",
+      "Risk Level: MEDIUM | Permission Level: MODIFY."
+    ],
+    "target_checksum": null,
+    "audit_metadata": {}
+  },
+  "prop_1e236f1b": {
+    "proposal_id": "prop_1e236f1b",
+    "action": "trash_email",
+    "target": "msg_10",
+    "parameters": {
+      "msg_id": "msg_10"
+    },
+    "reason": "",
+    "confidence": 1.0,
+    "risk_level": "HIGH",
+    "required_permission": "MODIFY",
+    "status": "REJECTED",
+    "created_at": "2026-09-01T11:40:37.704335+00:00",
+    "expires_at": "2026-09-01T12:40:37.704335+00:00",
+    "why_proposed": [
+      "Action 'trash_email' recommended for target 'msg_10'.",
+      "Primary reason: Automated task policy recommendation.",
+      "Risk Level: HIGH | Permission Level: MODIFY."
+    ],
+    "target_checksum": null,
+    "audit_metadata": {}
+  },
+  "prop_08c0e6e5": {
+    "proposal_id": "prop_08c0e6e5",
+    "action": "trash_email",
+    "target": "msg_11",
+    "parameters": {
+      "msg_id": "msg_11"
+    },
+    "reason": "",
+    "confidence": 1.0,
+    "risk_level": "HIGH",
+    "required_permission": "MODIFY",
+    "status": "REJECTED",
+    "created_at": "2026-09-01T11:40:37.704335+00:00",
+    "expires_at": "2026-09-01T12:40:37.704335+00:00",
+    "why_proposed": [
+      "Action 'trash_email' recommended for target 'msg_11'.",
+      "Primary reason: Automated task policy recommendation.",
+      "Risk Level: HIGH | Permission Level: MODIFY."
+    ],
+    "target_checksum": null,
+    "audit_metadata": {}
   }
 }

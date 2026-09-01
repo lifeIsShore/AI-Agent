@@ -26,6 +26,8 @@ from personal_agent.telemetry.tracer import (
 )
 from personal_agent.telemetry.trace import TraceContext
 from personal_agent.reliability.degradation import ServiceDegradationHandler
+from personal_agent.reliability.checkpoint import RecoveryCheckpointEngine
+from personal_agent.telemetry.metrics import TelemetryMetricsCalculator
 from personal_agent.memory.manager import MemoryManager
 from personal_agent.memory.learning import MemoryLearningLoop, SCOPE_DURABLE_PREFERENCE, SCOPE_EVENT_MEMORY
 from personal_agent.triage.engine import PriorityEngine
@@ -45,12 +47,20 @@ def print_header(title: str):
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 
 def main():
-    print_header("PERSONAL ASSISTANT (V1.3 — RELIABILITY ENGINEERING & FLIGHT RECORDER)")
-    print("Initializing V1.3 Assistant Core...")
+    print_header("PERSONAL ASSISTANT (V1.4 — AGENT EVALUATION & RELIABILITY VALIDATION)")
+    print("Initializing V1.4 Assistant Core...")
 
     telemetry_store = TelemetryStore(telemetry_dir="data/telemetry", log_filename="traces.jsonl")
     tracer = AgentTracer(store=telemetry_store)
     root_trace_ctx = TraceContext(request_id="req_daily_daemon_run")
+
+    checkpoint_engine = RecoveryCheckpointEngine(telemetry_store=telemetry_store)
+    incomplete_traces = checkpoint_engine.get_incomplete_traces()
+    if incomplete_traces:
+        print(f"[Checkpoint Recovery] Detected {len(incomplete_traces)} incomplete execution traces from disk.")
+        for inc in incomplete_traces:
+            rec = checkpoint_engine.evaluate_recovery_action(inc["trace_id"])
+            print(f"  - TraceID [{inc['trace_id']}] -> Action: {rec['reason']}")
 
     tracer.record_flight_step(root_trace_ctx, 1, STEP_REQUEST_RECEIVED, {"prompt": "Plan my day"})
 
@@ -89,7 +99,7 @@ def main():
     job_registry = JobRegistry()
     scheduler = AgentScheduler(registry=job_registry, state_manager=state_manager)
 
-    print("[Core] Reliability Layer (CircuitBreakers, Atomic Writes), Flight Recorder, & Job Scheduler loaded.")
+    print("[Core] Recovery Checkpoint Engine, Telemetry Analytics, & Job Scheduler loaded.")
 
     # 2. Fetch live data with graceful fallback degradation
     print("\nFetching Live Assistant Context (Gmail, Calendar, Tasks)...")
@@ -274,19 +284,20 @@ def main():
 
     tracer.record_flight_step(root_trace_ctx, 7, STEP_TRACE_COMPLETED, {"status": "SUCCESS"})
 
-    # 8. Telemetry & Flight Recorder Summary
+    # 8. Telemetry & Metric Analytics Summary
+    metrics_calc = TelemetryMetricsCalculator(store=telemetry_store)
+    m_res = metrics_calc.calculate_metrics()
+
     print("\n")
-    print_header("📊 FLIGHT RECORDER & TELEMETRY STORE (data/telemetry/traces.jsonl)")
-    recent_traces = telemetry_store.get_recent_traces(limit=6)
-    print(f"  - Total Recorded Telemetry Logs: {len(recent_traces)}")
-    for tr in recent_traces[-6:]:
-        t_type = tr.get("type", "SPAN")
-        t_id = tr.get("trace_id", "none")
-        step_str = tr.get("step", tr.get("intent", ""))
-        print(f"  - [{tr['timestamp'][:19]}] Type: {t_type:<22} | TraceID: {t_id} | Step/Details: {step_str}")
+    print_header("📊 PERFORMANCE LATENCY & TELEMETRY METRICS")
+    print(f"  - Total LLM Requests:      {m_res['total_llm_calls']}")
+    print(f"  - P50 Workflow Latency:   {m_res['p50_latency_sec']:.3f}s")
+    print(f"  - P95 Workflow Latency:   {m_res['p95_latency_sec']:.3f}s")
+    print(f"  - P99 Workflow Latency:   {m_res['p99_latency_sec']:.3f}s")
+    print(f"  - Avg Tokens / Call:      {m_res['avg_tokens_per_call']}")
 
     print("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print("V1.3 Execution completed successfully.")
+    print("V1.4 Execution completed successfully.")
 
 if __name__ == "__main__":
     main()
