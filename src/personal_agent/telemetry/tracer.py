@@ -4,9 +4,47 @@ from typing import Dict, Any, Optional
 from personal_agent.telemetry.trace import TraceContext
 from personal_agent.telemetry.store import TelemetryStore
 
+# Flight Recorder Standard Sequence Steps
+STEP_REQUEST_RECEIVED = "REQUEST_RECEIVED"
+STEP_INTENT_DETECTED = "INTENT_DETECTED"
+STEP_CONTEXT_BUILT = "CONTEXT_BUILT"
+STEP_MEMORY_RETRIEVED = "MEMORY_RETRIEVED"
+STEP_LLM_CALL = "LLM_CALL"
+STEP_DECISION_GENERATED = "DECISION_GENERATED"
+STEP_PROPOSAL_CREATED = "PROPOSAL_CREATED"
+STEP_POLICY_CHECK = "POLICY_CHECK"
+STEP_APPROVAL_REQUESTED = "APPROVAL_REQUESTED"
+STEP_APPROVAL_RECEIVED = "APPROVAL_RECEIVED"
+STEP_TOOL_EXECUTION_STARTED = "TOOL_EXECUTION_STARTED"
+STEP_TOOL_EXECUTION_SUCCESS = "TOOL_EXECUTION_SUCCESS"
+STEP_TOOL_EXECUTION_FAILED = "TOOL_EXECUTION_FAILED"
+STEP_MEMORY_UPDATED = "MEMORY_UPDATED"
+STEP_TRACE_COMPLETED = "TRACE_COMPLETED"
+
 class AgentTracer:
     def __init__(self, store: Optional[TelemetryStore] = None):
         self.store = store or TelemetryStore()
+
+    def record_flight_step(
+        self,
+        trace_ctx: TraceContext,
+        sequence_index: int,
+        step_type: str,
+        details: Optional[Dict[str, Any]] = None
+    ):
+        """Logs a Flight Recorder sequence step for step-by-step decision chain reconstruction."""
+        record = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "type": "FLIGHT_RECORDER_STEP",
+            "seq": sequence_index,
+            "step": step_type,
+            "trace_id": trace_ctx.trace_id,
+            "request_id": trace_ctx.request_id,
+            "proposal_id": trace_ctx.proposal_id,
+            "execution_id": trace_ctx.execution_id,
+            "details": details or {}
+        }
+        self.store.log_trace(record)
 
     def record_llm_call(
         self,

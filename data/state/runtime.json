@@ -1,37 +1,37 @@
 {
-  "last_tick": "2026-09-01T11:08:10.796808+00:00",
+  "last_tick": "2026-09-01T11:34:00.495888+00:00",
   "jobs": [
     {
       "job_id": "morning_briefing",
       "name": "Morning Briefing & Planning",
       "interval_minutes": 1440,
       "enabled": true,
-      "last_run": "2026-09-01T11:07:29.199471+00:00",
-      "next_run": "2026-09-02T11:07:29.199471+00:00"
+      "last_run": "2026-09-01T11:33:19.023922+00:00",
+      "next_run": "2026-09-02T11:33:19.023922+00:00"
     },
     {
       "job_id": "inbox_triage",
       "name": "Gmail Inbox Triage & Proposals",
       "interval_minutes": 30,
       "enabled": true,
-      "last_run": "2026-09-01T11:08:10.313344+00:00",
-      "next_run": "2026-09-01T11:38:10.313344+00:00"
+      "last_run": "2026-09-01T11:34:00.017520+00:00",
+      "next_run": "2026-09-01T12:04:00.017520+00:00"
     },
     {
       "job_id": "calendar_sync",
       "name": "Google Calendar Synchronization",
       "interval_minutes": 60,
       "enabled": true,
-      "last_run": "2026-09-01T11:08:10.794605+00:00",
-      "next_run": "2026-09-01T12:08:10.794605+00:00"
+      "last_run": "2026-09-01T11:34:00.493887+00:00",
+      "next_run": "2026-09-01T12:34:00.493887+00:00"
     },
     {
       "job_id": "memory_maintenance",
       "name": "Memory Maintenance & Time Decay",
       "interval_minutes": 720,
       "enabled": true,
-      "last_run": "2026-09-01T11:08:10.796808+00:00",
-      "next_run": "2026-09-01T23:08:10.796808+00:00"
+      "last_run": "2026-09-01T11:34:00.495888+00:00",
+      "next_run": "2026-09-01T23:34:00.495888+00:00"
     }
   ],
   "execution_history": [
@@ -43,8 +43,8 @@
         "status": "SUCCESS",
         "report_summary": "Good morning Ahmet.\n\nToday:\n\n09:00–18:00  Thesis proposal\n\nPriority:\n🔴 Thesis proposal\n🟡 Reply to un"
       },
-      "executed_at": "2026-09-01T11:07:25.073123+00:00",
-      "next_run": "2026-09-02T11:07:29.199471+00:00"
+      "executed_at": "2026-09-01T11:33:14.909921+00:00",
+      "next_run": "2026-09-02T11:33:19.023922+00:00"
     },
     {
       "job_id": "inbox_triage",
@@ -55,8 +55,8 @@
         "triaged_count": 10,
         "proposals_added": 4
       },
-      "executed_at": "2026-09-01T11:07:29.199471+00:00",
-      "next_run": "2026-09-01T11:38:10.313344+00:00"
+      "executed_at": "2026-09-01T11:33:19.023922+00:00",
+      "next_run": "2026-09-01T12:04:00.017520+00:00"
     },
     {
       "job_id": "calendar_sync",
@@ -67,8 +67,8 @@
         "events_count": 0,
         "free_slots_count": 1
       },
-      "executed_at": "2026-09-01T11:08:10.313344+00:00",
-      "next_run": "2026-09-01T12:08:10.794605+00:00"
+      "executed_at": "2026-09-01T11:34:00.017520+00:00",
+      "next_run": "2026-09-01T12:34:00.493887+00:00"
     },
     {
       "job_id": "memory_maintenance",
@@ -76,10 +76,10 @@
       "status": "SUCCESS",
       "output": {
         "status": "SUCCESS",
-        "decayed_memories_processed": 73
+        "decayed_memories_processed": 89
       },
-      "executed_at": "2026-09-01T11:08:10.794605+00:00",
-      "next_run": "2026-09-01T23:08:10.796808+00:00"
+      "executed_at": "2026-09-01T11:34:00.493887+00:00",
+      "next_run": "2026-09-01T23:34:00.495888+00:00"
     }
   ]
 }

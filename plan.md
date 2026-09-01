@@ -3098,3 +3098,8 @@ At V1.1, you have built the **nervous system** of the agent.
 V1.2–V1.5 should give that nervous system **telemetry, reflexes, and measurable behavior**.
 
 Then V1.6–V2.0 can safely make it more autonomous.
+
+
+todo: later we can create a dashboard what is up and what is down and also we cna show the KPIs what are the measurements and how performative my system is and also if we use paid servuces we can even trace them too
+
+todo: later we can add voice too so taht like we are hwving a real asistant we can just tell them and it can also ask us via slack or some other tool and we can send them a voice message and it can transcript it and gives us for review and we can cnofrima dn it can start to do. like we can say: i have not tackeld that tasks in my calender can you reschudle them. or can you reshedule the meeting with ahmet this afternoon at 14.00 to ... or the next availabirly. it can even email ahmet about the sitioans and tell or ask when he is availabe etc

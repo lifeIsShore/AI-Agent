@@ -20,8 +20,12 @@ from personal_agent.events.store import EventStore
 from personal_agent.events.bus import EventBus
 from personal_agent.events.event import AgentEvent, EVENT_EMAIL_RECEIVED, EVENT_ACTION_EXECUTED
 from personal_agent.telemetry.store import TelemetryStore
-from personal_agent.telemetry.tracer import AgentTracer
+from personal_agent.telemetry.tracer import (
+    AgentTracer, STEP_REQUEST_RECEIVED, STEP_INTENT_DETECTED, STEP_CONTEXT_BUILT,
+    STEP_PROPOSAL_CREATED, STEP_POLICY_CHECK, STEP_TOOL_EXECUTION_SUCCESS, STEP_TRACE_COMPLETED
+)
 from personal_agent.telemetry.trace import TraceContext
+from personal_agent.reliability.degradation import ServiceDegradationHandler
 from personal_agent.memory.manager import MemoryManager
 from personal_agent.memory.learning import MemoryLearningLoop, SCOPE_DURABLE_PREFERENCE, SCOPE_EVENT_MEMORY
 from personal_agent.triage.engine import PriorityEngine
@@ -41,13 +45,16 @@ def print_header(title: str):
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 
 def main():
-    print_header("PERSONAL ASSISTANT (V1.2 — AGENT OBSERVABILITY & EXECUTION TRACING)")
-    print("Initializing V1.2 Assistant Core...")
+    print_header("PERSONAL ASSISTANT (V1.3 — RELIABILITY ENGINEERING & FLIGHT RECORDER)")
+    print("Initializing V1.3 Assistant Core...")
 
     telemetry_store = TelemetryStore(telemetry_dir="data/telemetry", log_filename="traces.jsonl")
     tracer = AgentTracer(store=telemetry_store)
     root_trace_ctx = TraceContext(request_id="req_daily_daemon_run")
 
+    tracer.record_flight_step(root_trace_ctx, 1, STEP_REQUEST_RECEIVED, {"prompt": "Plan my day"})
+
+    degradation_handler = ServiceDegradationHandler()
     gateway = ModelGateway(provider="ollama", tracer=tracer)
     registry = ToolRegistry()
     registry.register_default_tools()
@@ -82,47 +89,44 @@ def main():
     job_registry = JobRegistry()
     scheduler = AgentScheduler(registry=job_registry, state_manager=state_manager)
 
-    print("[Core] Persistent State Store (data/state/), Event Bus (data/events/), Telemetry Tracing (data/telemetry/), & Job Scheduler loaded.")
+    print("[Core] Reliability Layer (CircuitBreakers, Atomic Writes), Flight Recorder, & Job Scheduler loaded.")
 
-    # 2. Fetch live data with graceful fallbacks
+    # 2. Fetch live data with graceful fallback degradation
     print("\nFetching Live Assistant Context (Gmail, Calendar, Tasks)...")
     
-    # Gmail
+    # Gmail with CircuitBreaker degradation
     emails = []
-    try:
-        gmail_tool = GmailTool()
-        emails = gmail_tool.list_recent_emails(limit=10)
+    def fetch_gmail():
+        g_tool = GmailTool()
+        return g_tool.list_recent_emails(limit=10)
+
+    success_g, gmail_res, msg_g = degradation_handler.execute_with_protection("gmail", fetch_gmail, fallback_value=None)
+    if success_g and gmail_res:
+        emails = gmail_res
         print(f"  - Gmail: Loaded {len(emails)} emails.")
-    except Exception as e:
-        print(f"  - Gmail: Using sample data (Notice: {e})")
+    else:
+        print(f"  - Gmail: Protected Fallback ({msg_g})")
         emails = [
             {"id": "m1", "sender": "advisor@univ.edu", "subject": "Thesis proposal submission deadline", "body": "Please submit your thesis proposal by Friday.", "unread": True},
             {"id": "m2", "sender": "prof@univ.edu", "subject": "University lecture room change", "body": "Lecture moves to Room 301.", "unread": True},
             {"id": "m3", "sender": "careers@jobalerts.com", "subject": "Weekly software engineering job alerts", "body": "10 new jobs posted.", "unread": False}
         ]
 
-    # Calendar
+    # Calendar with CircuitBreaker degradation
     cal_events = []
     free_slots = []
-    try:
-        cal_tool = GoogleCalendarTool()
-        cal_events = cal_tool.get_today_events()
-        free_slots = cal_tool.get_free_slots()
-        print(f"  - Calendar: Loaded {len(cal_events)} events, calculated {len(free_slots)} free slots.")
-    except Exception as e:
-        print("  - Calendar: Using sample day schedule.")
+    def fetch_cal():
+        c_tool = GoogleCalendarTool()
+        return c_tool.get_today_events(), c_tool.get_free_slots()
 
-    if not cal_events:
-        cal_events = [
-            {"id": "ev1", "summary": "University lecture", "start": "2026-09-01T09:00:00Z", "end": "2026-09-01T10:00:00Z", "status": "confirmed"}
-        ]
-    if not free_slots:
-        free_slots = [
-            {"start": "10:00", "end": "12:00", "duration_minutes": 120},
-            {"start": "12:00", "end": "13:00", "duration_minutes": 60},
-            {"start": "14:00", "end": "15:00", "duration_minutes": 60},
-            {"start": "15:00", "end": "17:00", "duration_minutes": 120}
-        ]
+    success_c, cal_res, msg_c = degradation_handler.execute_with_protection("calendar", fetch_cal, fallback_value=(None, None))
+    if success_c and cal_res[0] is not None:
+        cal_events, free_slots = cal_res
+        print(f"  - Calendar: Loaded {len(cal_events)} events, calculated {len(free_slots)} free slots.")
+    else:
+        print(f"  - Calendar: Protected Fallback ({msg_c})")
+        cal_events = [{"id": "ev1", "summary": "University lecture", "start": "2026-09-01T09:00:00Z", "end": "2026-09-01T10:00:00Z", "status": "confirmed"}]
+        free_slots = [{"start": "10:00", "end": "12:00", "duration_minutes": 120}, {"start": "14:00", "end": "17:00", "duration_minutes": 180}]
 
     # Register Scheduler Daemon Jobs
     scheduler.register_job(Job(
@@ -141,7 +145,7 @@ def main():
         job_id="calendar_sync",
         name="Google Calendar Synchronization",
         interval_minutes=60,
-        handler=lambda: calendar_sync_job(GoogleCalendarTool() if 'GoogleCalendarTool' in globals() else cal_tool)
+        handler=lambda: calendar_sync_job(GoogleCalendarTool() if 'GoogleCalendarTool' in globals() else None)
     ))
     scheduler.register_job(Job(
         job_id="memory_maintenance",
@@ -157,6 +161,7 @@ def main():
         print(f"  - Job [{res['job_id']}] -> Status: {res['status']} | Output: {res['output']}")
 
     # 4. Triaging & Context Assembly
+    tracer.record_flight_step(root_trace_ctx, 2, STEP_INTENT_DETECTED, {"intent": "PLAN_DAY"})
     triaged_emails = []
     for email in emails:
         event_bus.publish(AgentEvent(
@@ -177,6 +182,8 @@ def main():
         calendar=cal_events,
         tasks=[]
     )
+
+    tracer.record_flight_step(root_trace_ctx, 3, STEP_CONTEXT_BUILT, {"items": len(triaged_emails)})
 
     tracer.record_context_efficiency(
         trace_ctx=root_trace_ctx,
@@ -232,14 +239,17 @@ def main():
     print(f"Evaluating {len(proposals_to_process)} ActionProposals with Policy Engine...\n")
 
     for prop in proposals_to_process:
+        tracer.record_flight_step(root_trace_ctx, 4, STEP_PROPOSAL_CREATED, {"proposal_id": prop.proposal_id, "action": prop.action})
         allowed, reason = policy.check_proposal(prop, user_approved=False)
+        tracer.record_flight_step(root_trace_ctx, 5, STEP_POLICY_CHECK, {"proposal_id": prop.proposal_id, "allowed": allowed, "reason": reason})
+
         if allowed:
             print(f"  - [{prop.proposal_id}] Action: {prop.action:<22} -> ✅ AUTO_APPROVED ({reason})")
         else:
             approval_queue.add_proposal(prop)
             print(f"  - [{prop.proposal_id}] Action: {prop.action:<22} -> ⏳ PENDING_APPROVAL (TTL Expires: {prop.expires_at[:19]})")
 
-    # 7. Interactive Batch Approval & Memory Classifier Demo
+    # 7. Interactive Batch Approval & Memory Classifier Loop
     pending_list = approval_queue.list_pending()
     print(f"\nApproval Queue active pending items (Persisted to disk): {len(pending_list)}")
     
@@ -253,6 +263,7 @@ def main():
             for pid, (success, msg, res) in zip(cal_pids, batch_res):
                 status_str = "SUCCESS" if success else "FAILED"
                 print(f"   - [{pid}] {status_str}: {msg}")
+                tracer.record_flight_step(root_trace_ctx, 6, STEP_TOOL_EXECUTION_SUCCESS, {"proposal_id": pid, "msg": msg})
 
         rem_pids = [p.proposal_id for p in pending_list if p.proposal_id not in cal_pids]
         if rem_pids:
@@ -261,18 +272,21 @@ def main():
             for pid, (success, msg) in zip(rem_pids, batch_rej):
                 print(f"   - [{pid}] REJECTED: {msg}")
 
-    # 8. Telemetry & Execution Tracing Summary
+    tracer.record_flight_step(root_trace_ctx, 7, STEP_TRACE_COMPLETED, {"status": "SUCCESS"})
+
+    # 8. Telemetry & Flight Recorder Summary
     print("\n")
-    print_header("📊 EXECUTION TELEMETRY & TRACING STORE (data/telemetry/traces.jsonl)")
-    recent_traces = telemetry_store.get_recent_traces(limit=5)
-    print(f"  - Total Trace Spans Recorded: {len(recent_traces)}")
-    for tr in recent_traces[-5:]:
+    print_header("📊 FLIGHT RECORDER & TELEMETRY STORE (data/telemetry/traces.jsonl)")
+    recent_traces = telemetry_store.get_recent_traces(limit=6)
+    print(f"  - Total Recorded Telemetry Logs: {len(recent_traces)}")
+    for tr in recent_traces[-6:]:
         t_type = tr.get("type", "SPAN")
         t_id = tr.get("trace_id", "none")
-        print(f"  - [{tr['timestamp'][:19]}] Type: {t_type:<20} | TraceID: {t_id} | Payload/Tokens: {tr.get('total_tokens', tr.get('item_counts', tr.get('step', '')))}")
+        step_str = tr.get("step", tr.get("intent", ""))
+        print(f"  - [{tr['timestamp'][:19]}] Type: {t_type:<22} | TraceID: {t_id} | Step/Details: {step_str}")
 
     print("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print("V1.2 Execution completed successfully.")
+    print("V1.3 Execution completed successfully.")
 
 if __name__ == "__main__":
     main()
