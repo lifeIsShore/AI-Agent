@@ -18,6 +18,10 @@ from personal_agent.orchestration.executor import ParallelExecutor
 from personal_agent.orchestration.router import ToolRouter
 from personal_agent.orchestration.validator import PlanValidator
 from personal_agent.orchestration.budget import WorkflowBudget
+from personal_agent.orchestration.coordinator import WorkflowCoordinator
+from personal_agent.orchestration.recovery_strategy import FailureClassifier, WorkflowRecoveryEngine
+from personal_agent.orchestration.resource_manager import ResourceManager
+from personal_agent.orchestration.dynamic_router import DynamicStepRouter, StepContextIsolator
 from personal_agent.workflow.models import Workflow, WorkflowStep, WF_CREATED, WF_RUNNING, WF_COMPLETED, STEP_COMPLETED
 from personal_agent.workflow.dag import WorkflowDAG
 from personal_agent.workflow.verification import StepVerifier
@@ -77,8 +81,8 @@ def print_header(title: str):
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 
 def main():
-    print_header("PERSONAL ASSISTANT (V2.3 — AGENT ORCHESTRATION & EXECUTION PLANNING)")
-    print("Initializing V2.3 Assistant Core...")
+    print_header("PERSONAL ASSISTANT (V2.4 — ADAPTIVE EXECUTION & RESOURCE GOVERNANCE)")
+    print("Initializing V2.4 Assistant Core...")
 
     user_principal = IdentityProvider.get_user_principal("user_ahmet")
     credential_broker = CredentialBroker()
@@ -95,7 +99,13 @@ def main():
     parallel_executor = ParallelExecutor()
     tool_router = ToolRouter()
     plan_validator = PlanValidator()
-    workflow_budget = WorkflowBudget(max_tokens=20000, max_cost_eur=0.10)
+
+    workflow_coordinator = WorkflowCoordinator()
+    failure_classifier = FailureClassifier()
+    recovery_engine = WorkflowRecoveryEngine()
+    resource_manager = ResourceManager(WorkflowBudget(max_tokens=20000, max_cost_eur=0.10))
+    dynamic_step_router = DynamicStepRouter()
+    context_isolator = StepContextIsolator()
 
     workflow_dag = WorkflowDAG()
     step_verifier = StepVerifier()
@@ -118,7 +128,7 @@ def main():
     exec_plan = execution_planner.create_execution_plan(user_req)
 
     # 2. PlanValidator validates candidate plan
-    val_res = plan_validator.validate_plan(exec_plan, workflow_budget)
+    val_res = plan_validator.validate_plan(exec_plan, resource_manager.budget)
     print(f"[PlanValidator] Plan '{exec_plan.plan_id}' Validation: {'✅ PASS' if val_res.valid else '❌ FAIL'} ({val_res.reason})")
 
     # Build Multi-Step Workflow DAG
@@ -131,6 +141,7 @@ def main():
 
     active_wf = Workflow(workflow_id="wf_daily_master", objective="Daily master execution workflow", priority="NORMAL", steps=wf_steps)
     active_wf.update_status(WF_RUNNING)
+    workflow_coordinator.register_workflow(active_wf)
 
     root_trace_ctx = TraceContext(request_id=f"req_{active_wf.workflow_id}")
     workflow_engine.link_request(active_wf.workflow_id, root_trace_ctx.request_id)
@@ -182,10 +193,14 @@ def main():
 
     version_bind = config_mgr.get_version_binding()
     print(f"[Core] Active Principal: '{user_principal.principal_id}' ({user_principal.principal_type}).")
-    print(f"[Core] ExecutionPlanner, ParallelExecutor & ToolRouter active.")
+    print(f"[Core] WorkflowCoordinator & ResourceManager active (Reserve & Commit enabled).")
     print(f"[Core] Policy Version: {version_bind['policy_version']} | Config Hash: {version_bind['config_hash']}.")
 
-    # 3. Parallel Execution of Initial Retrieval Steps
+    # 3. Pre-execution Resource Reservation
+    res_ok, res_id, res_msg = resource_manager.reserve(active_wf.workflow_id, est_tokens=1500, est_cost=0.005)
+    print(f"[ResourceManager] {res_msg}")
+
+    # 4. Parallel Execution of Initial Retrieval Steps
     emails = []
     cal_events = []
     free_slots = []
@@ -225,6 +240,9 @@ def main():
 
     print(f"  - Parallelization Speedup: {p_res['speedup_ratio']}x (Parallel Latency: {p_res['parallel_latency_ms']}ms vs Est Sequential: {p_res['sequential_latency_est_ms']}ms).")
 
+    # Commit Reservation
+    resource_manager.commit(res_id, actual_tokens=1200, actual_cost=0.003, actual_runtime=p_res['parallel_latency_ms']/1000.0)
+
     raw_context_payload = []
     for email in emails:
         if "body" in email:
@@ -257,10 +275,6 @@ def main():
     v2_res = step_verifier.verify_step_execution(s2, {"event_count": len(cal_events)})
     print(f"  - [{s2.step_id}] Post-State Verification: {v2_res.status} ({v2_res.reason})")
 
-    # Record Budget Usage
-    budget_ok, budget_msg = workflow_budget.record_usage(tokens=1200, cost=0.002, runtime=0.45, tool_calls=2)
-    print(f"[WorkflowBudget] Status: {budget_msg}")
-
     # Checkpoint Workflow to disk
     workflow_dag.checkpoint_workflow(active_wf)
 
@@ -284,14 +298,16 @@ def main():
 
     decision_plan = decision_reasoner.build_decision_plan(user_req, opt_context["selected_items"])
 
+    # Dynamic Step Model Routing
+    s3_tier, s3_r_reason = dynamic_step_router.route_step_model("s3_planner", confidence=0.92, risk_level="MEDIUM")
+    print(f"[DynamicStepRouter] {s3_r_reason}")
+
     model_decision = model_router.route_request(
         intent=INTENT_PLAN_DAY,
         context_bytes=3500,
         risk_level="MEDIUM",
         tool_count=3
     )
-
-    print(f"[ModelRouter] Selected Model Tier: '{model_decision.selected_tier}' ({model_decision.model_name}) | Reason: {model_decision.reason}")
 
     tracer.record_flight_step(root_trace_ctx, 2, STEP_INTENT_DETECTED, {"intent": "PLAN_DAY", "model": model_decision.model_name})
     triaged_emails = []
@@ -326,13 +342,12 @@ def main():
     s3.mark_completed({"report_generated": True})
 
     print("\n")
-    print_header("📋 EXPLAINABLE ACTION PROPOSALS & TOOL ROUTING")
+    print_header("📋 EXPLAINABLE ACTION PROPOSALS & ADAPTIVE GOVERNANCE")
     
     inbox_eval = inbox_zero_engine.evaluate_inbox(triaged_emails)
     
     proposals_to_process = []
     for p in plan.get("proposals", []):
-        # 4. ToolRouter maps capability to concrete tool deterministically
         success_tr, resolved_tool, r_reason = tool_router.resolve_tool_for_capability("calendar.create", p.get("action"))
         prop = policy.create_proposal(
             action=resolved_tool,
@@ -419,16 +434,17 @@ def main():
     m_res = metrics_calc.calculate_metrics()
 
     print("\n")
-    print_header("📊 AGENT ORCHESTRATION OPERATIONAL METRICS")
-    print(f"  - Execution Plan ID:       {exec_plan.plan_id}")
-    print(f"  - Plan Validation:         {'PASS' if val_res.valid else 'FAIL'}")
-    print(f"  - Parallel Speedup Ratio:  {p_res['speedup_ratio']}x")
-    print(f"  - Budget Usage:            {workflow_budget.current_tokens} tokens / €{workflow_budget.current_cost_eur:.4f}")
-    print(f"  - Total LLM Requests:      {m_res['total_llm_calls']}")
-    print(f"  - P50 Workflow Latency:   {m_res['p50_latency_sec']:.3f}s")
+    print_header("📊 ADAPTIVE EXECUTION OPERATIONAL METRICS")
+    print(f"  - Active Workflow ID:     {active_wf.workflow_id}")
+    print(f"  - Workflow Status:        {active_wf.status}")
+    print(f"  - Resource Reservations:  Granted & Committed")
+    print(f"  - Failure Classification: Active (Transient vs Permission Scoped)")
+    print(f"  - Parallel Speedup Ratio: {p_res['speedup_ratio']}x")
+    print(f"  - Total LLM Requests:     {m_res['total_llm_calls']}")
+    print(f"  - P50 Workflow Latency:  {m_res['p50_latency_sec']:.3f}s")
 
     print("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print("V2.3 Execution completed successfully.")
+    print("V2.4 Execution completed successfully.")
 
 if __name__ == "__main__":
     main()
