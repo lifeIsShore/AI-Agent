@@ -22,6 +22,12 @@ from personal_agent.orchestration.coordinator import WorkflowCoordinator
 from personal_agent.orchestration.recovery_strategy import FailureClassifier, WorkflowRecoveryEngine
 from personal_agent.orchestration.resource_manager import ResourceManager
 from personal_agent.orchestration.dynamic_router import DynamicStepRouter, StepContextIsolator
+from personal_agent.events.intelligence import EventIntelligenceEngine
+from personal_agent.events.deduplicator import EventDeduplicator
+from personal_agent.events.correlator import EventCorrelator
+from personal_agent.events.priority import EventPriorityEngine
+from personal_agent.events.notification import NotificationIntelligenceEngine
+from personal_agent.events.trigger import ProactiveTriggerEngine
 from personal_agent.workflow.models import Workflow, WorkflowStep, WF_CREATED, WF_RUNNING, WF_COMPLETED, STEP_COMPLETED
 from personal_agent.workflow.dag import WorkflowDAG
 from personal_agent.workflow.verification import StepVerifier
@@ -81,8 +87,8 @@ def print_header(title: str):
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 
 def main():
-    print_header("PERSONAL ASSISTANT (V2.4 — ADAPTIVE EXECUTION & RESOURCE GOVERNANCE)")
-    print("Initializing V2.4 Assistant Core...")
+    print_header("PERSONAL ASSISTANT (V2.5 — PROACTIVE AGENT & EVENT INTELLIGENCE)")
+    print("Initializing V2.5 Assistant Core...")
 
     user_principal = IdentityProvider.get_user_principal("user_ahmet")
     credential_broker = CredentialBroker()
@@ -94,6 +100,13 @@ def main():
     decision_reasoner = DecisionReasoner()
     context_optimizer = ContextOptimizer()
     memory_lifecycle = MemoryLifecycleManager()
+
+    event_intel = EventIntelligenceEngine()
+    event_dedup = EventDeduplicator()
+    event_correlator = EventCorrelator()
+    event_priority = EventPriorityEngine()
+    notification_intel = NotificationIntelligenceEngine()
+    proactive_trigger = ProactiveTriggerEngine()
 
     execution_planner = ExecutionPlanner()
     parallel_executor = ParallelExecutor()
@@ -122,12 +135,9 @@ def main():
 
     telemetry_store = TelemetryStore(telemetry_dir="data/telemetry", log_filename="traces.jsonl")
     tracer = AgentTracer(store=telemetry_store)
-    
-    # 1. ExecutionPlanner creates ExecutionPlan
+
     user_req = "Plan my day"
     exec_plan = execution_planner.create_execution_plan(user_req)
-
-    # 2. PlanValidator validates candidate plan
     val_res = plan_validator.validate_plan(exec_plan, resource_manager.budget)
     print(f"[PlanValidator] Plan '{exec_plan.plan_id}' Validation: {'✅ PASS' if val_res.valid else '❌ FAIL'} ({val_res.reason})")
 
@@ -193,14 +203,13 @@ def main():
 
     version_bind = config_mgr.get_version_binding()
     print(f"[Core] Active Principal: '{user_principal.principal_id}' ({user_principal.principal_type}).")
-    print(f"[Core] WorkflowCoordinator & ResourceManager active (Reserve & Commit enabled).")
+    print(f"[Core] EventIntelligenceEngine & EventCorrelator active (P0-P5 Priority Routing).")
     print(f"[Core] Policy Version: {version_bind['policy_version']} | Config Hash: {version_bind['config_hash']}.")
 
-    # 3. Pre-execution Resource Reservation
     res_ok, res_id, res_msg = resource_manager.reserve(active_wf.workflow_id, est_tokens=1500, est_cost=0.005)
     print(f"[ResourceManager] {res_msg}")
 
-    # 4. Parallel Execution of Initial Retrieval Steps
+    # Parallel Execution of Initial Retrieval Steps
     emails = []
     cal_events = []
     free_slots = []
@@ -239,6 +248,24 @@ def main():
     cal_events, free_slots = cal_res_output
 
     print(f"  - Parallelization Speedup: {p_res['speedup_ratio']}x (Parallel Latency: {p_res['parallel_latency_ms']}ms vs Est Sequential: {p_res['sequential_latency_est_ms']}ms).")
+
+    # Proactive Event Deduplication & Correlation
+    agent_events = []
+    for email in emails:
+        ev = AgentEvent(event_type=EVENT_EMAIL_RECEIVED, source="GmailTool", entity_id=str(email.get("id")), payload=email)
+        is_dup, d_msg = event_dedup.is_duplicate(ev)
+        if not is_dup:
+            agent_events.append(ev)
+            cl_res = event_intel.process_incoming_event(ev)
+            prio = event_priority.calculate_priority(cl_res["importance"], cl_res["urgency"], cl_res["actionability"])
+            route_mode, _ = notification_intel.determine_notification_routing(prio)
+            print(f"  - Event [{ev.entity_id}] Prio: {prio:<3} | Route: {route_mode:<20} | Action: {cl_res['recommended_action']}")
+
+    situations = event_correlator.detect_composite_situations(agent_events, cal_events, [])
+    if situations:
+        print(f"\n[EventCorrelator] Detected {len(situations)} Composite Situations:")
+        for sit in situations:
+            print(f"  - [{sit['situation_id']}] {sit['title']} (Risk: {sit['risk']})")
 
     # Commit Reservation
     resource_manager.commit(res_id, actual_tokens=1200, actual_cost=0.003, actual_runtime=p_res['parallel_latency_ms']/1000.0)
@@ -342,7 +369,7 @@ def main():
     s3.mark_completed({"report_generated": True})
 
     print("\n")
-    print_header("📋 EXPLAINABLE ACTION PROPOSALS & ADAPTIVE GOVERNANCE")
+    print_header("📋 EXPLAINABLE ACTION PROPOSALS & PROACTIVE TRIGGERS")
     
     inbox_eval = inbox_zero_engine.evaluate_inbox(triaged_emails)
     
@@ -434,17 +461,15 @@ def main():
     m_res = metrics_calc.calculate_metrics()
 
     print("\n")
-    print_header("📊 ADAPTIVE EXECUTION OPERATIONAL METRICS")
-    print(f"  - Active Workflow ID:     {active_wf.workflow_id}")
-    print(f"  - Workflow Status:        {active_wf.status}")
-    print(f"  - Resource Reservations:  Granted & Committed")
-    print(f"  - Failure Classification: Active (Transient vs Permission Scoped)")
-    print(f"  - Parallel Speedup Ratio: {p_res['speedup_ratio']}x")
-    print(f"  - Total LLM Requests:     {m_res['total_llm_calls']}")
-    print(f"  - P50 Workflow Latency:  {m_res['p50_latency_sec']:.3f}s")
+    print_header("📊 PROACTIVE EVENT INTELLIGENCE METRICS")
+    print(f"  - Unique Events Processed: {len(agent_events)} (Deduplicated)")
+    print(f"  - Composite Situations:   {len(situations)} Detected")
+    print(f"  - Priority Levels Assigned: P0 - P5")
+    print(f"  - Total LLM Requests:      {m_res['total_llm_calls']}")
+    print(f"  - P50 Workflow Latency:   {m_res['p50_latency_sec']:.3f}s")
 
     print("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print("V2.4 Execution completed successfully.")
+    print("V2.5 Execution completed successfully.")
 
 if __name__ == "__main__":
     main()
