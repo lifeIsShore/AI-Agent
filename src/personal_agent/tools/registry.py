@@ -2,7 +2,9 @@ from typing import Callable, Dict, Any, List
 from personal_agent.tools.gmail import (
     read_recent_emails, archive_email, trash_email, mark_read, apply_label, create_draft
 )
-from personal_agent.tools.calendar import get_today_events, get_week_events, get_free_slots
+from personal_agent.tools.calendar import (
+    get_today_events, get_week_events, get_free_slots, create_calendar_event
+)
 from personal_agent.tools.tasks import list_tasks, get_task
 
 class ToolRegistry:
@@ -28,7 +30,7 @@ class ToolRegistry:
         return self._schemas
 
     def register_default_tools(self):
-        """Registers default V0.5 & V0.6 tools for Gmail, Calendar, and Tasks."""
+        """Registers default V0.5, V0.6, and V0.8 tools for Gmail, Calendar, and Tasks."""
         self.register(
             name="read_recent_emails",
             schema={"description": "Read recent emails from Gmail inbox", "parameters": {"type": "object", "properties": {"limit": {"type": "integer"}}}},
@@ -73,6 +75,11 @@ class ToolRegistry:
             name="get_free_slots",
             schema={"description": "Calculate free calendar time slots for a day", "parameters": {"type": "object", "properties": {"date_str": {"type": "string"}}}},
             func=get_free_slots
+        )
+        self.register(
+            name="create_calendar_event",
+            schema={"description": "Create a new calendar event", "parameters": {"type": "object", "properties": {"summary": {"type": "string"}, "start_time": {"type": "string"}, "end_time": {"type": "string"}}}},
+            func=create_calendar_event
         )
         self.register(
             name="list_tasks",

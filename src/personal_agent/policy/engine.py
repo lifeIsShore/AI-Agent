@@ -1,6 +1,8 @@
 from enum import Enum
 from typing import Dict, Any, Tuple, Optional
-from personal_agent.policy.proposal import ActionProposal
+from personal_agent.policy.proposal import (
+    ActionProposal, STATUS_PROPOSED, STATUS_AUTO_APPROVED, STATUS_PENDING_APPROVAL, STATUS_DENIED, STATUS_APPROVED
+)
 
 class PermissionLevel(Enum):
     READ_ONLY = 0
@@ -91,28 +93,29 @@ class PolicyEngine:
             confidence=confidence,
             risk_level=risk_level,
             required_permission=perm_level.name,
-            status="PENDING"
+            status=STATUS_PROPOSED
         )
 
     def check_proposal(self, proposal: ActionProposal, user_approved: bool = False) -> Tuple[bool, str]:
-        """Evaluates an ActionProposal object against policy and human approval requirements."""
+        """Evaluates an ActionProposal object against policy and human authorization requirements."""
         perm_level = self.get_permission_level(proposal.action)
         proposal.required_permission = perm_level.name
         proposal.risk_level = self.get_risk_level(proposal.action)
 
         if perm_level in [PermissionLevel.READ_ONLY, PermissionLevel.ANALYZE, PermissionLevel.PROPOSE]:
-            proposal.status = "APPROVED"
+            proposal.status = STATUS_AUTO_APPROVED
             return True, f"Allowed by policy ({perm_level.name})"
 
         elif perm_level in [PermissionLevel.MODIFY, PermissionLevel.ADMIN]:
             if user_approved:
-                proposal.status = "APPROVED"
+                proposal.status = STATUS_APPROVED
                 return True, f"Allowed by explicit human approval ({proposal.risk_level} risk)"
             else:
-                proposal.status = "DENIED"
-                return False, f"Requires Human Approval ({proposal.risk_level} risk)"
+                proposal.status = STATUS_PENDING_APPROVAL
+                return False, f"Requires Human Authorization ({proposal.risk_level} risk)"
 
-        return False, "Unknown tool permission level"
+        proposal.status = STATUS_DENIED
+        return False, "Prohibited by policy"
 
     def check_permission(self, tool_name: str, args: Dict[str, Any], user_approved: bool = False) -> Tuple[bool, str]:
         """Legacy helper matching check_proposal behavior."""

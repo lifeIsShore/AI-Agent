@@ -240,3 +240,9 @@ def get_free_slots(date_str: Optional[str] = None) -> str:
     tool = GoogleCalendarTool()
     slots = tool.get_free_slots(date_str=date_str)
     return json.dumps(slots, indent=2)
+
+def create_calendar_event(summary: str, start_time: str, end_time: str, description: Optional[str] = None, location: Optional[str] = None) -> str:
+    """Create a new calendar event."""
+    tool = GoogleCalendarTool()
+    res = tool.create_calendar_event(summary=summary, start_time=start_time, end_time=end_time, description=description, location=location)
+    return json.dumps(res, indent=2)

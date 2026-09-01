@@ -184,7 +184,7 @@ class DailyPlannerEngine:
 
                 proposals.append({
                     "proposal_id": f"prop_{slot_idx + 1}",
-                    "action": "create_event",
+                    "action": "create_calendar_event",
                     "summary": target_item["title"],
                     "start_time": slot_start,
                     "end_time": slot_end,

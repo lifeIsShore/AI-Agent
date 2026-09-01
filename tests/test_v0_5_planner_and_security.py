@@ -58,7 +58,7 @@ class TestV05SecurityAndPlanner(unittest.TestCase):
         # MODIFY without approval should be blocked
         allowed, reason = self.policy.check_permission("create_calendar_event", {})
         self.assertFalse(allowed)
-        self.assertIn("Requires Human Approval", reason)
+        self.assertIn("Requires Human Authorization", reason)
 
         # MODIFY with user approval should pass
         allowed, reason = self.policy.check_permission("create_calendar_event", {}, user_approved=True)

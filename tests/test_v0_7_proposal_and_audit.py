@@ -54,14 +54,14 @@ class TestV07ProposalAndAudit(unittest.TestCase):
         self.assertEqual(prop_read.risk_level, "LOW")
         allowed, reason = self.policy.check_proposal(prop_read)
         self.assertTrue(allowed)
-        self.assertEqual(prop_read.status, "APPROVED")
+        self.assertEqual(prop_read.status, "AUTO_APPROVED")
 
-        # 2. MODIFY (archive_email) -> MEDIUM risk, blocked without approval
+        # 2. MODIFY (archive_email) -> MEDIUM risk, blocked without approval -> PENDING_APPROVAL
         prop_mod = self.policy.create_proposal(action="archive_email", target="msg_1", parameters={"msg_id": "msg_1"})
         self.assertEqual(prop_mod.risk_level, "MEDIUM")
         allowed, reason = self.policy.check_proposal(prop_mod, user_approved=False)
         self.assertFalse(allowed)
-        self.assertEqual(prop_mod.status, "DENIED")
+        self.assertEqual(prop_mod.status, "PENDING_APPROVAL")
 
         # 3. MODIFY with user approval -> APPROVED
         allowed, reason = self.policy.check_proposal(prop_mod, user_approved=True)

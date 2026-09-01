@@ -12,12 +12,14 @@ from personal_agent.tools.gmail import GmailTool
 from personal_agent.tools.calendar import GoogleCalendarTool
 from personal_agent.tools.tasks import GoogleTasksTool
 from personal_agent.policy.engine import PolicyEngine, PermissionLevel
-from personal_agent.policy.proposal import ActionProposal
+from personal_agent.policy.proposal import ActionProposal, STATUS_PENDING_APPROVAL, STATUS_AUTO_APPROVED
+from personal_agent.policy.approval import ApprovalQueue
 from personal_agent.security.audit import AuditLogger
+from personal_agent.memory.manager import MemoryManager
+from personal_agent.memory.learning import MemoryLearningLoop
 from personal_agent.triage.engine import PriorityEngine
 from personal_agent.triage.inbox_zero import InboxZeroEngine
 from personal_agent.context.manager import ContextManager
-from personal_agent.memory.manager import MemoryManager
 from personal_agent.planner.daily_planner import DailyPlannerEngine
 
 def print_header(title: str):
@@ -26,8 +28,8 @@ def print_header(title: str):
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 
 def main():
-    print_header("PERSONAL ASSISTANT (V0.7 — ACTION PROPOSALS & AUDIT ARCHITECTURE)")
-    print("Initializing V0.7 Assistant Core...")
+    print_header("PERSONAL ASSISTANT (V0.8 — APPROVAL QUEUE & MEMORY LEARNING LOOP)")
+    print("Initializing V0.8 Assistant Core...")
 
     gateway = ModelGateway(provider="ollama")
     registry = ToolRegistry()
@@ -35,13 +37,16 @@ def main():
     
     policy = PolicyEngine()
     audit_logger = AuditLogger()
+    memory_manager = MemoryManager(gateway=gateway)
+    memory_loop = MemoryLearningLoop(memory_manager=memory_manager)
+    approval_queue = ApprovalQueue(tool_registry=registry, audit_logger=audit_logger, memory_loop=memory_loop)
+    
     triage_engine = PriorityEngine(gateway)
     inbox_zero_engine = InboxZeroEngine()
-    memory_manager = MemoryManager(gateway=gateway)
     context_manager = ContextManager(gateway=gateway)
     daily_planner = DailyPlannerEngine(user_name="Ahmet")
 
-    print("[Core] ActionProposal models, Policy Security Boundary, & AuditLogger initialized.")
+    print("[Core] Policy Security Boundary, Approval Queue, & Memory Learning Loop initialized.")
 
     # 1. Fetch live data with graceful fallbacks
     print("\nFetching Live Assistant Context (Gmail, Calendar, Tasks)...")
@@ -120,9 +125,9 @@ def main():
     print_header("🗓 DAILY EXECUTION BRIEFING")
     print(plan["formatted_report"])
 
-    # 4. Process Proposals through ActionProposal -> PolicyEngine -> AuditLogger
+    # 4. Route Proposals through Policy Engine into ApprovalQueue
     print("\n")
-    print_header("📋 ACTION PROPOSAL & AUDIT LOGGING PIPELINE")
+    print_header("📋 ACTION PROPOSALS & INTERACTIVE APPROVAL QUEUE")
     
     inbox_eval = inbox_zero_engine.evaluate_inbox(triaged_emails)
     
@@ -148,37 +153,54 @@ def main():
         )
         proposals_to_process.append(prop)
 
-    print(f"Processing {len(proposals_to_process)} structured ActionProposals through Policy Engine...\n")
+    print(f"Evaluating {len(proposals_to_process)} ActionProposals with Policy Engine...\n")
 
     for prop in proposals_to_process:
         allowed, reason = policy.check_proposal(prop, user_approved=False)
-        status_str = "✅ AUTO-APPROVED" if allowed else "⛔ BLOCKED (NEEDS APPROVAL)"
+        if allowed:
+            print(f"  - [{prop.proposal_id}] Action: {prop.action:<22} -> ✅ AUTO_APPROVED ({reason})")
+        else:
+            approval_queue.add_proposal(prop)
+            print(f"  - [{prop.proposal_id}] Action: {prop.action:<22} -> ⏳ PENDING_APPROVAL ({reason})")
+
+    # 5. Interactive Approval & Memory Learning Demo
+    pending_list = approval_queue.list_pending()
+    print(f"\nApproval Queue active pending items: {len(pending_list)}")
+    
+    if pending_list:
+        print("\nProcessing Pending Queue Decisions & Memory Learning Loop...")
         
-        # Log to Audit Logger
-        audit_logger.log_proposal(
-            proposal=prop,
-            policy_decision=reason,
-            user_approved=False,
-            execution_status="APPROVED" if allowed else "BLOCKED",
-            execution_result="Simulated proposal evaluation",
-            latency_sec=0.01
-        )
+        # Approve first proposal with parameter editing demo
+        first_prop = pending_list[0]
+        print(f"\n1. User APPROVING proposal [{first_prop.proposal_id}] ({first_prop.action})...")
+        success, msg, res = approval_queue.approve_proposal(first_prop.proposal_id)
+        print(f"   Result: {msg}")
 
-        print(f"Proposal [{prop.proposal_id}]")
-        print(f"  - Action:     {prop.action}")
-        print(f"  - Target:     {prop.target}")
-        print(f"  - Risk Level: {prop.risk_level} | Permission: {prop.required_permission}")
-        print(f"  - Status:     {status_str}")
-        print(f"  - Reason:     {prop.reason}\n")
+        # Reject second proposal demo if available
+        if len(pending_list) > 1:
+            second_prop = pending_list[1]
+            print(f"\n2. User REJECTING proposal [{second_prop.proposal_id}] ({second_prop.action})...")
+            success, msg = approval_queue.reject_proposal(second_prop.proposal_id, reason="User prefers manual review")
+            print(f"   Result: {msg}")
 
-    # 5. Display Persistent Audit Summary
+    # 6. Audit Logger Summary & Learned Memories
+    print("\n")
     print_header("📜 AUDIT LOG RECENT RECORDS (data/logs/audit.jsonl)")
     recent_audit_logs = audit_logger.get_recent_logs(limit=5)
     for log in recent_audit_logs:
-        print(f"[{log['timestamp'][:19]}] ID: {log['proposal_id']} | Action: {log['action']} | Risk: {log['risk_level']} | Status: {log['execution_status']}")
+        print(f"[{log['timestamp'][:19]}] ID: {log['proposal_id']} | Action: {log['action']} | Decision: {log['policy_decision']} | Status: {log['execution_status']}")
+
+    print("\n")
+    print_header("🧠 LEARNED PREFERENCES STORE (V0.8 Memory Loop)")
+    learned_memories = memory_loop.get_learned_preferences()
+    if learned_memories:
+        for m in learned_memories[:3]:
+            print(f"  - [Learned Memory]: {m.get('content')}")
+    else:
+        print("  - Memory Store initialized and ready to accumulate learning feedback.")
 
     print("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print("V0.7 Execution completed successfully.")
+    print("V0.8 Execution completed successfully.")
 
 if __name__ == "__main__":
     main()

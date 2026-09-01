@@ -3,6 +3,16 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Dict, Any, Optional
 
+# Action Proposal Lifecycle Status Constants
+STATUS_PROPOSED = "PROPOSED"
+STATUS_AUTO_APPROVED = "AUTO_APPROVED"
+STATUS_PENDING_APPROVAL = "PENDING_APPROVAL"
+STATUS_DENIED = "DENIED"
+STATUS_APPROVED = "APPROVED"
+STATUS_REJECTED = "REJECTED"
+STATUS_EXECUTED = "EXECUTED"
+STATUS_FAILED = "FAILED"
+
 @dataclass
 class ActionProposal:
     action: str
@@ -12,7 +22,7 @@ class ActionProposal:
     confidence: float = 1.0
     risk_level: str = "LOW"             # LOW | MEDIUM | HIGH | CRITICAL
     required_permission: str = "READ_ONLY" # READ_ONLY | ANALYZE | PROPOSE | MODIFY
-    status: str = "PENDING"             # PENDING | APPROVED | DENIED | EXECUTED | FAILED
+    status: str = STATUS_PROPOSED       # PROPOSED | AUTO_APPROVED | PENDING_APPROVAL | DENIED | APPROVED | REJECTED | EXECUTED | FAILED
     proposal_id: str = field(default_factory=lambda: f"prop_{uuid.uuid4().hex[:8]}")
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     audit_metadata: Dict[str, Any] = field(default_factory=dict)
@@ -43,7 +53,7 @@ class ActionProposal:
             confidence=data.get("confidence", 1.0),
             risk_level=data.get("risk_level", "LOW"),
             required_permission=data.get("required_permission", "READ_ONLY"),
-            status=data.get("status", "PENDING"),
+            status=data.get("status", STATUS_PROPOSED),
             created_at=data.get("created_at", datetime.now(timezone.utc).isoformat()),
             audit_metadata=data.get("audit_metadata", {})
         )

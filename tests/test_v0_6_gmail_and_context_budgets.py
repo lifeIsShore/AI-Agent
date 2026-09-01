@@ -164,7 +164,7 @@ class TestV06GmailAndContextBudgets(unittest.TestCase):
             self.assertEqual(level, PermissionLevel.MODIFY)
             allowed, reason = self.policy.check_permission(tool, {})
             self.assertFalse(allowed)
-            self.assertIn("Requires Human Approval", reason)
+            self.assertIn("Requires Human Authorization", reason)
 
 if __name__ == "__main__":
     unittest.main()
