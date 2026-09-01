@@ -1,0 +1,4 @@
+policy_version: "2.0.0"
+dlp_enabled: true
+tamper_protection_enabled: true
+max_daily_actions_per_scope: 20

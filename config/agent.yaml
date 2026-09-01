@@ -1,0 +1,5 @@
+version: "2.0.0"
+agent_name: "Personal Assistant"
+user_name: "Ahmet"
+environment: "production"
+log_level: "INFO"

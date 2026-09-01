@@ -1,0 +1,8 @@
+default_tier: "local-medium"
+confidence_threshold: 0.70
+max_tokens: 4096
+enabled_tiers:
+  rules: true
+  local-small: true
+  local-medium: true
+  remote-large: true

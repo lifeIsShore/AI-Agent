@@ -1,0 +1,4 @@
+daemon_enabled: true
+inbox_triage_interval_minutes: 30
+calendar_sync_interval_minutes: 60
+memory_maintenance_interval_minutes: 720

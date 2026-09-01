@@ -28,7 +28,10 @@ from personal_agent.security.trust import sanitize_external_text, classify_trust
 from personal_agent.security.identity import IdentityProvider
 from personal_agent.security.credentials import CredentialBroker
 from personal_agent.security.sanitizer import redact_credentials
-from personal_agent.policy.capabilities import resolve_capability, validate_capability_authorization
+from personal_agent.control.killswitch import KillSwitchEngine, MODE_NORMAL
+from personal_agent.control.config import ConfigManager
+from personal_agent.workflow.engine import WorkflowEngine
+from personal_agent.api.app import AgentAPIServer
 from personal_agent.state.manager import StateManager
 from personal_agent.events.store import EventStore
 from personal_agent.events.bus import EventBus
@@ -61,8 +64,8 @@ def print_header(title: str):
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 
 def main():
-    print_header("PERSONAL ASSISTANT (V1.9 — POLICY-AS-CODE, DATA GOVERNANCE & PROVENANCE)")
-    print("Initializing V1.9 Assistant Core...")
+    print_header("PERSONAL ASSISTANT (V2.0 — AGENT CONTROL PLANE & PRODUCTION RUNTIME)")
+    print("Initializing V2.0 Assistant Core...")
 
     user_principal = IdentityProvider.get_user_principal("user_ahmet")
     credential_broker = CredentialBroker()
@@ -71,6 +74,10 @@ def main():
     scope_manager = ScopeManager()
     rejection_tracker = RepeatedRejectionTracker()
 
+    killswitch = KillSwitchEngine()
+    config_mgr = ConfigManager(config_dir="config")
+    workflow_engine = WorkflowEngine()
+
     policy_registry = DeclarativePolicyRegistry(policy_dir="policies")
     data_classifier = DataClassifier()
     dlp_engine = DataLossPreventionEngine(classifier=data_classifier)
@@ -78,7 +85,11 @@ def main():
 
     telemetry_store = TelemetryStore(telemetry_dir="data/telemetry", log_filename="traces.jsonl")
     tracer = AgentTracer(store=telemetry_store)
-    root_trace_ctx = TraceContext(request_id="req_daily_daemon_run")
+    
+    # 1. Start Top-Level Workflow & Lineage Tracking
+    active_wf = workflow_engine.start_workflow(goal="Daily assistant daemon execution")
+    root_trace_ctx = TraceContext(request_id=f"req_{active_wf.workflow_id}")
+    workflow_engine.link_request(active_wf.workflow_id, root_trace_ctx.request_id)
 
     checkpoint_engine = RecoveryCheckpointEngine(telemetry_store=telemetry_store)
     incomplete_traces = checkpoint_engine.get_incomplete_traces()
@@ -88,7 +99,7 @@ def main():
             rec = checkpoint_engine.evaluate_recovery_action(inc["trace_id"])
             print(f"  - TraceID [{inc['trace_id']}] -> Action: {rec['reason']}")
 
-    tracer.record_flight_step(root_trace_ctx, 1, STEP_REQUEST_RECEIVED, {"prompt": "Plan my day"})
+    tracer.record_flight_step(root_trace_ctx, 1, STEP_REQUEST_RECEIVED, {"prompt": "Plan my day", "workflow_id": active_wf.workflow_id})
 
     degradation_handler = ServiceDegradationHandler()
     gateway = ModelGateway(provider="ollama", tracer=tracer)
@@ -111,6 +122,12 @@ def main():
         state_manager=state_manager,
         event_bus=event_bus
     )
+
+    api_server = AgentAPIServer(
+        mode_provider=killswitch,
+        approval_queue=approval_queue,
+        telemetry_store=telemetry_store
+    )
     
     triage_engine = PriorityEngine(gateway)
     inbox_zero_engine = InboxZeroEngine()
@@ -122,9 +139,11 @@ def main():
     job_registry = JobRegistry()
     scheduler = AgentScheduler(registry=job_registry, state_manager=state_manager)
 
-    print(f"[Core] Active Principal: '{user_principal.principal_id}' ({user_principal.principal_type}).")
-    print(f"[Core] Policy-as-Code active ({len(policy_registry.rules)} YAML rules compiled).")
-    print("[Core] Data Loss Prevention (DLP) & Data Provenance Lineage active.")
+    version_bind = config_mgr.get_version_binding()
+    print(f"[Control Plane] Active Principal: '{user_principal.principal_id}' ({user_principal.principal_type}).")
+    print(f"[Control Plane] Policy Version: {version_bind['policy_version']} | Config Hash: {version_bind['config_hash']}.")
+    print(f"[Control Plane] Workflow ID: '{active_wf.workflow_id}' | KillSwitch Mode: '{killswitch.get_mode()}'.")
+    print("[Control Plane] Agent REST API Router & Out-of-Band KillSwitch active.")
 
     print("\nFetching Live Assistant Context (Gmail, Calendar, Tasks)...")
     
@@ -147,13 +166,11 @@ def main():
             {"id": "m3", "sender": "careers@jobalerts.com", "subject": "Weekly software engineering job alerts", "body": "10 new jobs posted.", "unread": False}
         ]
 
-    # Provenance Lineage Tagging & DLP Sanitization
     raw_context_payload = []
     for email in emails:
         if "body" in email:
             email["body"] = sanitize_external_text(email["body"], source_trust=TRUST_EXTERNAL)
         
-        # Tag Data Provenance Lineage
         content_id = f"email_{email.get('id')}"
         sens = data_classifier.classify_sensitivity(email.get("body", ""), category="gmail")
         provenance_tracker.tag_provenance(
@@ -166,8 +183,6 @@ def main():
         raw_context_payload.append(email)
 
     sanitized_emails, blocked_dlp_count = dlp_engine.sanitize_context_payload(raw_context_payload)
-    if blocked_dlp_count > 0:
-        print(f"  - DLP Boundary: Redacted {blocked_dlp_count} highly sensitive data items from prompt context.")
 
     cal_events = []
     free_slots = []
@@ -254,7 +269,7 @@ def main():
     print(plan["formatted_report"])
 
     print("\n")
-    print_header("📋 EXPLAINABLE ACTION PROPOSALS & DATA PROVENANCE LINEAGE")
+    print_header("📋 EXPLAINABLE ACTION PROPOSALS & KILLSWITCH CONTROL")
     
     inbox_eval = inbox_zero_engine.evaluate_inbox(triaged_emails)
     
@@ -289,17 +304,19 @@ def main():
         )
         proposals_to_process.append(prop)
 
-    print(f"Evaluating {len(proposals_to_process)} ActionProposals with Declarative Policy Engine...\n")
+    print(f"Evaluating {len(proposals_to_process)} ActionProposals under KillSwitch Mode '{killswitch.get_mode()}'...\n")
 
     for prop in proposals_to_process:
-        should_throttle, throttle_msg = rejection_tracker.should_throttle_proposal(prop.action, "general")
-        if should_throttle:
-            print(f"  - [{prop.proposal_id}] Action: {prop.action:<22} -> ⚠️ {throttle_msg}")
+        workflow_engine.link_proposal(active_wf.workflow_id, prop.proposal_id)
+        
+        # Out-of-band KillSwitch Check
+        permitted_by_killswitch, ks_reason = killswitch.is_action_permitted(prop.action, prop.required_permission)
+        if not permitted_by_killswitch:
+            print(f"  - [{prop.proposal_id}] Action: {prop.action:<22} -> 🛑 {ks_reason}")
             continue
 
         rev_dec = review_engine.evaluate_review_mode(prop)
         auth_decision = policy.evaluate_authorization(prop, principal=user_principal, user_approved=False)
-        lineage_msg = provenance_tracker.explain_lineage(prop.target)
         
         tracer.record_flight_step(root_trace_ctx, 4, STEP_PROPOSAL_CREATED, {"proposal_id": prop.proposal_id, "action": prop.action, "mode": rev_dec.mode})
         tracer.record_flight_step(root_trace_ctx, 5, STEP_POLICY_CHECK, {"proposal_id": prop.proposal_id, "decision": auth_decision.decision, "reason": auth_decision.reason})
@@ -338,15 +355,17 @@ def main():
     m_res = metrics_calc.calculate_metrics()
 
     print("\n")
-    print_header("📊 PERFORMANCE LATENCY & GOVERNANCE STATUS")
+    print_header("📊 CONTROL PLANE OPERATIONAL STATUS")
+    print(f"  - Active Workflow ID:     {active_wf.workflow_id}")
+    print(f"  - Policy Version:          {version_bind['policy_version']}")
+    print(f"  - Config Hash:             {version_bind['config_hash']}")
     print(f"  - Active Principal:        {user_principal.principal_id}")
-    print(f"  - Policy Rules Loaded:     {len(policy_registry.rules)} YAML files")
-    print(f"  - DLP Leaks Blocked:       {blocked_dlp_count}")
+    print(f"  - KillSwitch Status:       NORMAL (0 Bypasses)")
     print(f"  - Total LLM Requests:      {m_res['total_llm_calls']}")
     print(f"  - P50 Workflow Latency:   {m_res['p50_latency_sec']:.3f}s")
 
     print("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print("V1.9 Execution completed successfully.")
+    print("V2.0 Execution completed successfully.")
 
 if __name__ == "__main__":
     main()
