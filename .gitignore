@@ -1,9 +1,13 @@
-# Personal Agent Runtime State & Data
-data/state/
-data/events/
-data/logs/
-data/telemetry/
-data/test_*/
+# Personal Agent Runtime State, Data & RAG Context
+data/
+*.db
+*.sqlite
+*.jsonl
+
+# User Personal Context & Knowledge
+user_data/
+rag_context/
+memory_store/
 
 # Secrets & Local Credentials
 .env

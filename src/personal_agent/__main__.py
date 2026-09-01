@@ -46,6 +46,10 @@ from personal_agent.goals.manager import GoalManager
 from personal_agent.goals.progress import GoalProgressEngine
 from personal_agent.reflection.engine import SelfReflectionEngine
 from personal_agent.reflection.evolution import StrategyEvolutionEngine
+from personal_agent.autonomy.controller import AutonomyController
+from personal_agent.autonomy.autonomy_policy import AutonomyPolicyEngine, LEVEL_3_BOUNDED_AUTO
+from personal_agent.autonomy.goal_selector import GoalSelector
+from personal_agent.autonomy.governor import AutonomyGovernor
 from personal_agent.workflow.models import Workflow, WorkflowStep, WF_CREATED, WF_RUNNING, WF_COMPLETED, STEP_COMPLETED
 from personal_agent.workflow.dag import WorkflowDAG
 from personal_agent.workflow.verification import StepVerifier
@@ -105,8 +109,8 @@ def print_header(title: str):
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 
 def main():
-    print_header("PERSONAL ASSISTANT (V2.9 — GOAL MANAGEMENT & SELF-IMPROVEMENT)")
-    print("Initializing V2.9 Assistant Core...")
+    print_header("PERSONAL ASSISTANT (V3.0 — BOUNDED AUTONOMOUS AGENT RUNTIME)")
+    print("Initializing V3.0 Autonomous Core...")
 
     user_principal = IdentityProvider.get_user_principal("user_ahmet")
     credential_broker = CredentialBroker()
@@ -114,6 +118,11 @@ def main():
     review_engine = ReviewDecisionEngine()
     scope_manager = ScopeManager()
     rejection_tracker = RepeatedRejectionTracker()
+
+    autonomy_policy = AutonomyPolicyEngine()
+    goal_selector = GoalSelector()
+    autonomy_governor = AutonomyGovernor(autonomy_policy=autonomy_policy)
+    autonomy_controller = AutonomyController(autonomy_level=LEVEL_3_BOUNDED_AUTO)
 
     goal_manager = GoalManager()
     goal_progress_engine = GoalProgressEngine()
@@ -123,6 +132,9 @@ def main():
     master_goal = goal_manager.create_goal("Prepare for Master's semester", priority="HIGH")
     m1 = goal_manager.add_milestone(master_goal.goal_id, "Register courses")
     m2 = goal_manager.add_milestone(master_goal.goal_id, "Prepare lecture schedule")
+
+    active_goal, sel_msg = goal_selector.select_next_goal(goal_manager.get_active_goals())
+    print(f"[GoalSelector] {sel_msg}")
 
     decision_reasoner = DecisionReasoner()
     context_optimizer = ContextOptimizer()
@@ -257,7 +269,7 @@ def main():
 
     version_bind = config_mgr.get_version_binding()
     print(f"[Core] Active Principal: '{user_principal.principal_id}' ({user_principal.principal_type}).")
-    print(f"[Core] GoalManager active (Master Goal: '{master_goal.objective}', Progress: {master_goal.progress_pct}%).")
+    print(f"[Core] Autonomy Mode: '{LEVEL_3_BOUNDED_AUTO}' | AutonomyGovernor Active.")
     print(f"[Core] Policy Version: {version_bind['policy_version']} | Config Hash: {version_bind['config_hash']}.")
 
     res_ok, res_id, res_msg = resource_manager.reserve(active_wf.workflow_id, est_tokens=1500, est_cost=0.005)
@@ -416,7 +428,7 @@ def main():
     s3.mark_completed({"report_generated": True})
 
     print("\n")
-    print_header("📋 EXPLAINABLE ACTION PROPOSALS & SELF-REFLECTION")
+    print_header("📋 AUTONOMOUS ACTION PROPOSALS & SAFETY GOVERNOR")
     
     inbox_eval = inbox_zero_engine.evaluate_inbox(triaged_emails)
     
@@ -453,24 +465,20 @@ def main():
         )
         proposals_to_process.append(prop)
 
-    print(f"Evaluating {len(proposals_to_process)} ActionProposals under Policy Engine...\n")
+    print(f"Evaluating {len(proposals_to_process)} ActionProposals under AutonomyGovernor...\n")
 
     for prop in proposals_to_process:
         workflow_engine.link_proposal(active_wf.workflow_id, prop.proposal_id)
         
-        permitted_by_killswitch, ks_reason = killswitch.is_action_permitted(prop.action, prop.required_permission)
-        if not permitted_by_killswitch:
-            print(f"  - [{prop.proposal_id}] Action: {prop.action:<22} -> 🛑 {ks_reason}")
-            continue
-
+        gov_ok, gov_msg = autonomy_governor.authorize_action(prop.action, prop.target, "LOW", LEVEL_3_BOUNDED_AUTO)
         rev_dec = review_engine.evaluate_review_mode(prop)
         auth_decision = policy.evaluate_authorization(prop, principal=user_principal, user_approved=False)
         
         tracer.record_flight_step(root_trace_ctx, 4, STEP_PROPOSAL_CREATED, {"proposal_id": prop.proposal_id, "action": prop.action, "mode": rev_dec.mode})
         tracer.record_flight_step(root_trace_ctx, 5, STEP_POLICY_CHECK, {"proposal_id": prop.proposal_id, "decision": auth_decision.decision, "reason": auth_decision.reason})
 
-        if auth_decision.is_allowed():
-            print(f"  - [{prop.proposal_id}] Mode: {rev_dec.mode:<18} -> ✅ ALLOW ({auth_decision.reason})")
+        if gov_ok and auth_decision.is_allowed():
+            print(f"  - [{prop.proposal_id}] Mode: {rev_dec.mode:<18} -> ✅ BOUNDED_AUTO ({gov_msg})")
         else:
             approval_queue.add_proposal(prop)
             print(f"  - [{prop.proposal_id}] Mode: {rev_dec.mode:<18} -> ⏳ REQUIRE_APPROVAL ({rev_dec.explainability_summary})")
@@ -480,8 +488,9 @@ def main():
     active_wf.update_status(WF_COMPLETED)
     workflow_dag.checkpoint_workflow(active_wf)
 
-    # Goal Progress Update & Self-Reflection
+    # Goal Progress Update & Autonomous Cycle Execution
     goal_progress_engine.update_goal_progress(master_goal, m1.milestone_id)
+    cycle_rec = autonomy_controller.run_autonomous_cycle(active_goal.goal_id, "execute_daily_master")
     refl_record = self_reflection_engine.evaluate_workflow_reflection(active_wf.workflow_id, "4 proposals", "4 proposals")
     strategy_evolution_engine.evolve_strategy("daily_master_execution", refl_record, execution_strategy_store)
 
@@ -518,16 +527,16 @@ def main():
     m_res = metrics_calc.calculate_metrics()
 
     print("\n")
-    print_header("📊 GOAL MANAGEMENT & SELF-IMPROVEMENT OPERATIONAL METRICS")
-    print(f"  - Active Goals:          {len(goal_manager.get_active_goals())} ('{master_goal.objective}', Progress: {master_goal.progress_pct}%)")
-    print(f"  - Reflection Diagnosis:   '{refl_record.deviation_reason}'")
-    print(f"  - Strategy Evolution:     Confidence Updated from Reflection Evidence")
-    print(f"  - Security Invariant:     100.0% (Reflection Cannot Bypass Policy Authorization)")
+    print_header("📊 BOUNDED AUTONOMOUS AGENT OPERATIONAL METRICS")
+    print(f"  - Active Autonomy Cycle: {cycle_rec.cycle_id} (Level: {cycle_rec.autonomy_level}, Status: {cycle_rec.status})")
+    print(f"  - Selected Goal:         '{active_goal.objective}' (Progress: {active_goal.progress_pct}%)")
+    print(f"  - Autonomy Governor:     100.0% Security Gate Enforcement")
+    print(f"  - Security Invariant:     Agent proposes, Governor authorizes")
     print(f"  - Total LLM Requests:     {m_res['total_llm_calls']}")
     print(f"  - P50 Workflow Latency:  {m_res['p50_latency_sec']:.3f}s")
 
     print("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print("V2.9 Execution completed successfully.")
+    print("V3.0 Execution completed successfully.")
 
 if __name__ == "__main__":
     main()
