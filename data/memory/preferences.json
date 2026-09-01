@@ -1,0 +1,14 @@
+[
+  {
+    "id": "mem_be4bc722",
+    "type": "preference",
+    "content": "I prefer responding to university emails in the afternoon after 14:00.",
+    "created_at": "2026-09-01T00:01:25.440920+00:00",
+    "updated_at": "2026-09-01T00:01:25.440920+00:00",
+    "source": "user",
+    "confidence": 1.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {}
+  }
+]
