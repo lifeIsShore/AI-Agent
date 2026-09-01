@@ -1,4 +1,6 @@
 import uuid
+import json
+import hashlib
 from dataclasses import dataclass, field
 from datetime import datetime, timezone, timedelta
 from typing import Dict, Any, Optional, List
@@ -29,7 +31,21 @@ class ActionProposal:
     expires_at: Optional[str] = None    # ISO timestamp string (e.g. default TTL: 30 minutes)
     why_proposed: List[str] = field(default_factory=list) # Explainability chain breakdown
     target_checksum: Optional[str] = None # Hash/snapshot of target state for stale proposal validation
+    parameters_hash: Optional[str] = None # Deterministic SHA256 hash binding for parameter tamper-protection
     audit_metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self):
+        if not self.parameters_hash:
+            self.parameters_hash = self.compute_parameters_hash()
+
+    def compute_parameters_hash(self) -> str:
+        """Calculates deterministic SHA256 parameter hash binding."""
+        raw = f"{self.action}:{self.target}:{json.dumps(self.parameters, sort_keys=True)}"
+        return hashlib.sha256(raw.encode('utf-8')).hexdigest()[:16]
+
+    def verify_parameters_integrity(self) -> bool:
+        """Verifies current action parameters match the original parameters_hash."""
+        return self.compute_parameters_hash() == self.parameters_hash
 
     def is_expired(self) -> bool:
         """Returns True if the proposal has exceeded its expiration timestamp."""
@@ -57,6 +73,7 @@ class ActionProposal:
             "expires_at": self.expires_at,
             "why_proposed": self.why_proposed,
             "target_checksum": self.target_checksum,
+            "parameters_hash": self.parameters_hash or self.compute_parameters_hash(),
             "audit_metadata": self.audit_metadata
         }
 
@@ -76,5 +93,6 @@ class ActionProposal:
             expires_at=data.get("expires_at"),
             why_proposed=data.get("why_proposed", []),
             target_checksum=data.get("target_checksum"),
+            parameters_hash=data.get("parameters_hash"),
             audit_metadata=data.get("audit_metadata", {})
         )

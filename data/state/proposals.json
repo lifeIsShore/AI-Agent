@@ -21,6 +21,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "f0b948dee0498a31",
     "audit_metadata": {
       "edited_by_user": true
     }
@@ -45,6 +46,7 @@
       "Risk Level: HIGH | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "f4e8f227741f6502",
     "audit_metadata": {}
   },
   "prop_51daeb2a": {
@@ -67,6 +69,7 @@
       "3. User previously approved archiving tech digests."
     ],
     "target_checksum": null,
+    "parameters_hash": "50aab60f863cb2d6",
     "audit_metadata": {}
   },
   "prop_ee3b39dd": {
@@ -85,6 +88,7 @@
     "expires_at": "2026-09-01T10:21:47.490712+00:00",
     "why_proposed": [],
     "target_checksum": null,
+    "parameters_hash": "a26f492eb0337b71",
     "audit_metadata": {}
   },
   "prop_c76cb4a7": {
@@ -107,6 +111,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": "hash_original_v1",
+    "parameters_hash": "e0dbcc5f4d3cdb4c",
     "audit_metadata": {}
   },
   "prop_de6e0029": {
@@ -129,6 +134,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "ddf307e2f6803281",
     "audit_metadata": {}
   },
   "prop_94fc2dbc": {
@@ -151,6 +157,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "0d22ddacdf9b7aae",
     "audit_metadata": {}
   },
   "prop_842a5a33": {
@@ -173,6 +180,7 @@
       "Risk Level: HIGH | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "45047158ac1a477d",
     "audit_metadata": {}
   },
   "prop_0e198b30": {
@@ -195,6 +203,7 @@
       "Risk Level: HIGH | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "d200f2e6ec3033fc",
     "audit_metadata": {}
   },
   "prop_83bdc2dc": {
@@ -217,6 +226,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "ecb825b8f7c2a352",
     "audit_metadata": {}
   },
   "prop_92a11618": {
@@ -239,6 +249,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "2186f6e66f9625da",
     "audit_metadata": {}
   },
   "prop_bbdd9d84": {
@@ -261,6 +272,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "28827f4e602ca2d0",
     "audit_metadata": {}
   },
   "prop_949676d2": {
@@ -285,6 +297,7 @@
       "3. Allocation honors user afternoon work preference."
     ],
     "target_checksum": null,
+    "parameters_hash": "ac84a172fc54a4e0",
     "audit_metadata": {}
   },
   "prop_0097f6b4": {
@@ -307,6 +320,7 @@
       "3. Similar promotional digests were previously archived."
     ],
     "target_checksum": null,
+    "parameters_hash": "ecb825b8f7c2a352",
     "audit_metadata": {}
   },
   "prop_df6e5078": {
@@ -329,6 +343,7 @@
       "3. Similar promotional digests were previously archived."
     ],
     "target_checksum": null,
+    "parameters_hash": "2186f6e66f9625da",
     "audit_metadata": {}
   },
   "prop_d8afbd73": {
@@ -351,6 +366,7 @@
       "3. Similar promotional digests were previously archived."
     ],
     "target_checksum": null,
+    "parameters_hash": "28827f4e602ca2d0",
     "audit_metadata": {}
   },
   "prop_ee65178f": {
@@ -375,6 +391,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "f0b948dee0498a31",
     "audit_metadata": {
       "edited_by_user": true
     }
@@ -399,6 +416,7 @@
       "Risk Level: HIGH | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "f4e8f227741f6502",
     "audit_metadata": {}
   },
   "prop_29aa695e": {
@@ -421,6 +439,7 @@
       "3. User previously approved archiving tech digests."
     ],
     "target_checksum": null,
+    "parameters_hash": "50aab60f863cb2d6",
     "audit_metadata": {}
   },
   "prop_b9d93e5b": {
@@ -439,6 +458,7 @@
     "expires_at": "2026-09-01T10:45:48.549417+00:00",
     "why_proposed": [],
     "target_checksum": null,
+    "parameters_hash": "a26f492eb0337b71",
     "audit_metadata": {}
   },
   "prop_814790a3": {
@@ -461,6 +481,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": "hash_original_v1",
+    "parameters_hash": "e0dbcc5f4d3cdb4c",
     "audit_metadata": {}
   },
   "prop_400a2b7f": {
@@ -483,6 +504,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "ddf307e2f6803281",
     "audit_metadata": {}
   },
   "prop_a13eab8c": {
@@ -505,6 +527,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "0d22ddacdf9b7aae",
     "audit_metadata": {}
   },
   "prop_99516679": {
@@ -527,6 +550,7 @@
       "Risk Level: HIGH | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "45047158ac1a477d",
     "audit_metadata": {}
   },
   "prop_764eb073": {
@@ -549,6 +573,7 @@
       "Risk Level: HIGH | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "d200f2e6ec3033fc",
     "audit_metadata": {}
   },
   "prop_99f28a08": {
@@ -571,6 +596,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "eae8781e335993ba",
     "audit_metadata": {}
   },
   "prop_a699208e": {
@@ -593,6 +619,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "ecb825b8f7c2a352",
     "audit_metadata": {}
   },
   "prop_7415fff0": {
@@ -615,6 +642,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "2186f6e66f9625da",
     "audit_metadata": {}
   },
   "prop_8df130f6": {
@@ -637,6 +665,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "28827f4e602ca2d0",
     "audit_metadata": {}
   },
   "prop_ec8e7676": {
@@ -661,6 +690,7 @@
       "3. Allocation honors user afternoon work preference."
     ],
     "target_checksum": null,
+    "parameters_hash": "ac84a172fc54a4e0",
     "audit_metadata": {}
   },
   "prop_70f2512e": {
@@ -683,6 +713,7 @@
       "3. Similar promotional digests were previously archived."
     ],
     "target_checksum": null,
+    "parameters_hash": "eae8781e335993ba",
     "audit_metadata": {}
   },
   "prop_686be5fe": {
@@ -705,6 +736,7 @@
       "3. Similar promotional digests were previously archived."
     ],
     "target_checksum": null,
+    "parameters_hash": "ecb825b8f7c2a352",
     "audit_metadata": {}
   },
   "prop_9d2fc6a0": {
@@ -727,6 +759,7 @@
       "3. Similar promotional digests were previously archived."
     ],
     "target_checksum": null,
+    "parameters_hash": "2186f6e66f9625da",
     "audit_metadata": {}
   },
   "prop_c1027a61": {
@@ -751,6 +784,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "f0b948dee0498a31",
     "audit_metadata": {
       "edited_by_user": true
     }
@@ -775,6 +809,7 @@
       "Risk Level: HIGH | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "f4e8f227741f6502",
     "audit_metadata": {}
   },
   "prop_e821505c": {
@@ -797,6 +832,7 @@
       "3. User previously approved archiving tech digests."
     ],
     "target_checksum": null,
+    "parameters_hash": "50aab60f863cb2d6",
     "audit_metadata": {}
   },
   "prop_63269c7d": {
@@ -815,6 +851,7 @@
     "expires_at": "2026-09-01T10:53:08.567710+00:00",
     "why_proposed": [],
     "target_checksum": null,
+    "parameters_hash": "a26f492eb0337b71",
     "audit_metadata": {}
   },
   "prop_050b1c95": {
@@ -837,6 +874,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": "hash_original_v1",
+    "parameters_hash": "e0dbcc5f4d3cdb4c",
     "audit_metadata": {}
   },
   "prop_012fae20": {
@@ -859,6 +897,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "ddf307e2f6803281",
     "audit_metadata": {}
   },
   "prop_34266e76": {
@@ -881,6 +920,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "0d22ddacdf9b7aae",
     "audit_metadata": {}
   },
   "prop_8e88f7c8": {
@@ -903,6 +943,7 @@
       "Risk Level: HIGH | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "45047158ac1a477d",
     "audit_metadata": {}
   },
   "prop_dd5bb50b": {
@@ -925,6 +966,7 @@
       "Risk Level: HIGH | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "d200f2e6ec3033fc",
     "audit_metadata": {}
   },
   "prop_24ac7530": {
@@ -947,6 +989,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "eae8781e335993ba",
     "audit_metadata": {}
   },
   "prop_d1d66fe8": {
@@ -969,6 +1012,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "ecb825b8f7c2a352",
     "audit_metadata": {}
   },
   "prop_f88d4716": {
@@ -991,6 +1035,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "2186f6e66f9625da",
     "audit_metadata": {}
   },
   "prop_cacf05ae": {
@@ -1013,6 +1058,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "28827f4e602ca2d0",
     "audit_metadata": {}
   },
   "prop_b81041ec": {
@@ -1035,6 +1081,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "eae8781e335993ba",
     "audit_metadata": {}
   },
   "prop_ab246492": {
@@ -1057,6 +1104,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "ecb825b8f7c2a352",
     "audit_metadata": {}
   },
   "prop_651c7b8e": {
@@ -1079,6 +1127,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "2186f6e66f9625da",
     "audit_metadata": {}
   },
   "prop_feb8c26f": {
@@ -1101,6 +1150,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "28827f4e602ca2d0",
     "audit_metadata": {}
   },
   "prop_fe965dc2": {
@@ -1125,6 +1175,7 @@
       "3. Allocation honors user afternoon work preference."
     ],
     "target_checksum": null,
+    "parameters_hash": "ac84a172fc54a4e0",
     "audit_metadata": {}
   },
   "prop_d65726ca": {
@@ -1147,6 +1198,7 @@
       "3. Similar promotional digests were previously archived."
     ],
     "target_checksum": null,
+    "parameters_hash": "eae8781e335993ba",
     "audit_metadata": {}
   },
   "prop_1a8dcdc0": {
@@ -1169,6 +1221,7 @@
       "3. Similar promotional digests were previously archived."
     ],
     "target_checksum": null,
+    "parameters_hash": "ecb825b8f7c2a352",
     "audit_metadata": {}
   },
   "prop_0f26455a": {
@@ -1191,6 +1244,7 @@
       "3. Similar promotional digests were previously archived."
     ],
     "target_checksum": null,
+    "parameters_hash": "2186f6e66f9625da",
     "audit_metadata": {}
   },
   "prop_c680727e": {
@@ -1215,6 +1269,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "f0b948dee0498a31",
     "audit_metadata": {
       "edited_by_user": true
     }
@@ -1239,6 +1294,7 @@
       "Risk Level: HIGH | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "f4e8f227741f6502",
     "audit_metadata": {}
   },
   "prop_4d7666c5": {
@@ -1261,6 +1317,7 @@
       "3. User previously approved archiving tech digests."
     ],
     "target_checksum": null,
+    "parameters_hash": "50aab60f863cb2d6",
     "audit_metadata": {}
   },
   "prop_85ecd39d": {
@@ -1279,6 +1336,7 @@
     "expires_at": "2026-09-01T11:22:50.516903+00:00",
     "why_proposed": [],
     "target_checksum": null,
+    "parameters_hash": "a26f492eb0337b71",
     "audit_metadata": {}
   },
   "prop_60a09b8b": {
@@ -1301,6 +1359,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": "hash_original_v1",
+    "parameters_hash": "e0dbcc5f4d3cdb4c",
     "audit_metadata": {}
   },
   "prop_30a4337c": {
@@ -1323,6 +1382,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "ddf307e2f6803281",
     "audit_metadata": {}
   },
   "prop_fe7794ad": {
@@ -1345,6 +1405,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "0d22ddacdf9b7aae",
     "audit_metadata": {}
   },
   "prop_0a7e8a18": {
@@ -1367,6 +1428,7 @@
       "Risk Level: HIGH | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "45047158ac1a477d",
     "audit_metadata": {}
   },
   "prop_75c68d98": {
@@ -1389,6 +1451,7 @@
       "Risk Level: HIGH | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "d200f2e6ec3033fc",
     "audit_metadata": {}
   },
   "prop_06374c44": {
@@ -1411,6 +1474,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "4582247e9353e85d",
     "audit_metadata": {}
   },
   "prop_5daf9889": {
@@ -1433,6 +1497,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "eae8781e335993ba",
     "audit_metadata": {}
   },
   "prop_9ee224c9": {
@@ -1455,6 +1520,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "ecb825b8f7c2a352",
     "audit_metadata": {}
   },
   "prop_a352ebf0": {
@@ -1477,6 +1543,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "2186f6e66f9625da",
     "audit_metadata": {}
   },
   "prop_1a5ca02c": {
@@ -1501,6 +1568,7 @@
       "3. Allocation honors user afternoon work preference."
     ],
     "target_checksum": null,
+    "parameters_hash": "ac84a172fc54a4e0",
     "audit_metadata": {}
   },
   "prop_af2db9da": {
@@ -1523,6 +1591,7 @@
       "3. Similar promotional digests were previously archived."
     ],
     "target_checksum": null,
+    "parameters_hash": "4582247e9353e85d",
     "audit_metadata": {}
   },
   "prop_f4ffa9d8": {
@@ -1545,6 +1614,7 @@
       "3. Similar promotional digests were previously archived."
     ],
     "target_checksum": null,
+    "parameters_hash": "eae8781e335993ba",
     "audit_metadata": {}
   },
   "prop_6df4546f": {
@@ -1567,6 +1637,7 @@
       "3. Similar promotional digests were previously archived."
     ],
     "target_checksum": null,
+    "parameters_hash": "ecb825b8f7c2a352",
     "audit_metadata": {}
   },
   "prop_2a3f665f": {
@@ -1591,6 +1662,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "f0b948dee0498a31",
     "audit_metadata": {
       "edited_by_user": true
     }
@@ -1615,6 +1687,7 @@
       "Risk Level: HIGH | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "f4e8f227741f6502",
     "audit_metadata": {}
   },
   "prop_e183b908": {
@@ -1637,6 +1710,7 @@
       "3. User previously approved archiving tech digests."
     ],
     "target_checksum": null,
+    "parameters_hash": "50aab60f863cb2d6",
     "audit_metadata": {}
   },
   "prop_8e05a427": {
@@ -1655,6 +1729,7 @@
     "expires_at": "2026-09-01T11:30:37.487209+00:00",
     "why_proposed": [],
     "target_checksum": null,
+    "parameters_hash": "a26f492eb0337b71",
     "audit_metadata": {}
   },
   "prop_15c04513": {
@@ -1677,6 +1752,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": "hash_original_v1",
+    "parameters_hash": "e0dbcc5f4d3cdb4c",
     "audit_metadata": {}
   },
   "prop_389208f4": {
@@ -1699,6 +1775,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "ddf307e2f6803281",
     "audit_metadata": {}
   },
   "prop_f4824a83": {
@@ -1721,6 +1798,7 @@
       "Risk Level: MEDIUM | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "0d22ddacdf9b7aae",
     "audit_metadata": {}
   },
   "prop_1e236f1b": {
@@ -1743,6 +1821,7 @@
       "Risk Level: HIGH | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "45047158ac1a477d",
     "audit_metadata": {}
   },
   "prop_08c0e6e5": {
@@ -1765,6 +1844,214 @@
       "Risk Level: HIGH | Permission Level: MODIFY."
     ],
     "target_checksum": null,
+    "parameters_hash": "d200f2e6ec3033fc",
+    "audit_metadata": {}
+  },
+  "prop_ed25adc3": {
+    "proposal_id": "prop_ed25adc3",
+    "action": "create_calendar_event",
+    "target": "primary",
+    "parameters": {
+      "summary": "Thesis draft",
+      "start_time": "14:00",
+      "end_time": "15:00"
+    },
+    "reason": "Allocated into free slot",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "MODIFY",
+    "status": "EXECUTED",
+    "created_at": "2026-09-01T11:48:28.145874+00:00",
+    "expires_at": "2026-09-01T12:48:28.145874+00:00",
+    "why_proposed": [
+      "Action 'create_calendar_event' recommended for target 'primary'.",
+      "Primary reason: Allocated into free slot.",
+      "Risk Level: MEDIUM | Permission Level: MODIFY."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "f0b948dee0498a31",
+    "audit_metadata": {
+      "edited_by_user": true
+    }
+  },
+  "prop_aeaf2546": {
+    "proposal_id": "prop_aeaf2546",
+    "action": "trash_email",
+    "target": "msg_555",
+    "parameters": {
+      "msg_id": "msg_555"
+    },
+    "reason": "Move email to trash",
+    "confidence": 1.0,
+    "risk_level": "HIGH",
+    "required_permission": "MODIFY",
+    "status": "REJECTED",
+    "created_at": "2026-09-01T11:48:28.230988+00:00",
+    "expires_at": "2026-09-01T12:48:28.230988+00:00",
+    "why_proposed": [
+      "Action 'trash_email' recommended for target 'msg_555'.",
+      "Primary reason: Move email to trash.",
+      "Risk Level: HIGH | Permission Level: MODIFY."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "f4e8f227741f6502",
+    "audit_metadata": {}
+  },
+  "prop_85344671": {
+    "proposal_id": "prop_85344671",
+    "action": "archive_email",
+    "target": "msg_newsletter",
+    "parameters": {
+      "msg_id": "msg_newsletter"
+    },
+    "reason": "Automated digest recommendation",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "MODIFY",
+    "status": "PROPOSED",
+    "created_at": "2026-09-01T11:48:28.459199+00:00",
+    "expires_at": "2026-09-01T12:48:28.459199+00:00",
+    "why_proposed": [
+      "1. Sender is an automated newsletter service.",
+      "2. Message contains promotional unsubscribe headers.",
+      "3. User previously approved archiving tech digests."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "50aab60f863cb2d6",
+    "audit_metadata": {}
+  },
+  "prop_a6aedc5c": {
+    "proposal_id": "prop_a6aedc5c",
+    "action": "archive_email",
+    "target": "msg_expired",
+    "parameters": {
+      "msg_id": "msg_expired"
+    },
+    "reason": "",
+    "confidence": 1.0,
+    "risk_level": "LOW",
+    "required_permission": "READ_ONLY",
+    "status": "EXPIRED",
+    "created_at": "2026-09-01T11:48:28.544531+00:00",
+    "expires_at": "2026-09-01T11:38:28.544531+00:00",
+    "why_proposed": [],
+    "target_checksum": null,
+    "parameters_hash": "a26f492eb0337b71",
+    "audit_metadata": {}
+  },
+  "prop_e46dee6b": {
+    "proposal_id": "prop_e46dee6b",
+    "action": "archive_email",
+    "target": "msg_999",
+    "parameters": {
+      "msg_id": "msg_999"
+    },
+    "reason": "",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "MODIFY",
+    "status": "FAILED",
+    "created_at": "2026-09-01T11:48:28.609638+00:00",
+    "expires_at": "2026-09-01T12:48:28.609638+00:00",
+    "why_proposed": [
+      "Action 'archive_email' recommended for target 'msg_999'.",
+      "Primary reason: Automated task policy recommendation.",
+      "Risk Level: MEDIUM | Permission Level: MODIFY."
+    ],
+    "target_checksum": "hash_original_v1",
+    "parameters_hash": "e0dbcc5f4d3cdb4c",
+    "audit_metadata": {}
+  },
+  "prop_df5982b8": {
+    "proposal_id": "prop_df5982b8",
+    "action": "archive_email",
+    "target": "email_1",
+    "parameters": {
+      "msg_id": "email_1"
+    },
+    "reason": "Newsletter",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "MODIFY",
+    "status": "EXECUTED",
+    "created_at": "2026-09-01T11:48:28.650077+00:00",
+    "expires_at": "2026-09-01T12:48:28.650077+00:00",
+    "why_proposed": [
+      "Action 'archive_email' recommended for target 'email_1'.",
+      "Primary reason: Newsletter.",
+      "Risk Level: MEDIUM | Permission Level: MODIFY."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "ddf307e2f6803281",
+    "audit_metadata": {}
+  },
+  "prop_528551f6": {
+    "proposal_id": "prop_528551f6",
+    "action": "archive_email",
+    "target": "email_2",
+    "parameters": {
+      "msg_id": "email_2"
+    },
+    "reason": "Digest",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "MODIFY",
+    "status": "EXECUTED",
+    "created_at": "2026-09-01T11:48:28.650077+00:00",
+    "expires_at": "2026-09-01T12:48:28.650077+00:00",
+    "why_proposed": [
+      "Action 'archive_email' recommended for target 'email_2'.",
+      "Primary reason: Digest.",
+      "Risk Level: MEDIUM | Permission Level: MODIFY."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "0d22ddacdf9b7aae",
+    "audit_metadata": {}
+  },
+  "prop_30f0a152": {
+    "proposal_id": "prop_30f0a152",
+    "action": "trash_email",
+    "target": "msg_10",
+    "parameters": {
+      "msg_id": "msg_10"
+    },
+    "reason": "",
+    "confidence": 1.0,
+    "risk_level": "HIGH",
+    "required_permission": "MODIFY",
+    "status": "REJECTED",
+    "created_at": "2026-09-01T11:48:28.851335+00:00",
+    "expires_at": "2026-09-01T12:48:28.851335+00:00",
+    "why_proposed": [
+      "Action 'trash_email' recommended for target 'msg_10'.",
+      "Primary reason: Automated task policy recommendation.",
+      "Risk Level: HIGH | Permission Level: MODIFY."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "45047158ac1a477d",
+    "audit_metadata": {}
+  },
+  "prop_8f918d91": {
+    "proposal_id": "prop_8f918d91",
+    "action": "trash_email",
+    "target": "msg_11",
+    "parameters": {
+      "msg_id": "msg_11"
+    },
+    "reason": "",
+    "confidence": 1.0,
+    "risk_level": "HIGH",
+    "required_permission": "MODIFY",
+    "status": "PENDING_APPROVAL",
+    "created_at": "2026-09-01T11:48:28.851335+00:00",
+    "expires_at": "2026-09-01T12:48:28.851335+00:00",
+    "why_proposed": [
+      "Action 'trash_email' recommended for target 'msg_11'.",
+      "Primary reason: Automated task policy recommendation.",
+      "Risk Level: HIGH | Permission Level: MODIFY."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "d200f2e6ec3033fc",
     "audit_metadata": {}
   }
 }

@@ -2,7 +2,7 @@ import time
 import uuid
 from typing import List, Dict, Any, Optional, Tuple
 from personal_agent.policy.proposal import (
-    ActionProposal, STATUS_PENDING_APPROVAL, STATUS_APPROVED, STATUS_REJECTED, STATUS_EXECUTED, STATUS_FAILED, STATUS_EXPIRED
+    ActionProposal, STATUS_PENDING_APPROVAL, STATUS_APPROVED, STATUS_REJECTED, STATUS_EXECUTED, STATUS_FAILED, STATUS_EXPIRED, STATUS_DENIED
 )
 from personal_agent.tools.registry import ToolRegistry
 from personal_agent.security.audit import AuditLogger
@@ -64,7 +64,8 @@ class ApprovalQueue:
                     "action": proposal.action,
                     "target": proposal.target,
                     "risk_level": proposal.risk_level,
-                    "expires_at": proposal.expires_at
+                    "expires_at": proposal.expires_at,
+                    "parameters_hash": proposal.parameters_hash
                 }
             ))
 
@@ -96,7 +97,8 @@ class ApprovalQueue:
             "expires_at": prop.expires_at,
             "is_expired": prop.is_expired(),
             "why_proposed": prop.why_proposed,
-            "target_checksum": prop.target_checksum
+            "target_checksum": prop.target_checksum,
+            "parameters_hash": prop.parameters_hash
         }
 
     def approve_proposal(
@@ -135,6 +137,26 @@ class ApprovalQueue:
         if proposal.status != STATUS_PENDING_APPROVAL:
             return False, f"Proposal '{proposal_id}' is not in PENDING_APPROVAL state (current: {proposal.status}).", None
 
+        # Apply edited parameters if provided (recomputes parameters_hash for authorized edits)
+        if edited_params:
+            proposal.parameters.update(edited_params)
+            proposal.parameters_hash = proposal.compute_parameters_hash()
+            proposal.audit_metadata["edited_by_user"] = True
+
+        # Parameter Integrity Hash Verification
+        if not proposal.verify_parameters_integrity():
+            proposal.status = STATUS_DENIED
+            self._save_state()
+            reason = "Parameters hash verification failed (Tamper attempt detected)."
+            self.audit_logger.log_proposal(
+                proposal=proposal,
+                policy_decision=reason,
+                user_approved=True,
+                execution_status="DENIED",
+                execution_result=reason
+            )
+            return False, reason, None
+
         # Stale Target Validation Check (if target validator callback supplied)
         if target_validator and callable(target_validator):
             isValid, reason = target_validator(proposal.target, proposal.target_checksum)
@@ -149,11 +171,6 @@ class ApprovalQueue:
                     execution_result=reason
                 )
                 return False, f"Target state changed: {reason}. Proposal re-evaluation required.", None
-
-        # Apply edited parameters if provided
-        if edited_params:
-            proposal.parameters.update(edited_params)
-            proposal.audit_metadata["edited_by_user"] = True
 
         proposal.status = STATUS_APPROVED
         if self.event_bus:
