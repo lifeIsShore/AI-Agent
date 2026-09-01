@@ -3,6 +3,7 @@ import json
 from datetime import datetime, timezone
 from typing import List, Dict, Any, Optional
 from personal_agent.policy.proposal import ActionProposal
+from personal_agent.policy.capabilities import resolve_capability
 
 class AuditLogger:
     def __init__(self, log_dir: str = "data/logs", log_filename: str = "audit.jsonl"):
@@ -17,21 +18,28 @@ class AuditLogger:
         user_approved: bool,
         execution_status: str,
         execution_result: Optional[Any] = None,
-        latency_sec: float = 0.0
+        latency_sec: float = 0.0,
+        principal_id: str = "user_ahmet",
+        credential_scope: str = "OAuth2"
     ) -> Dict[str, Any]:
-        """Appends a structured audit entry to the audit.jsonl log file."""
+        """Appends a structured, 15-field flight audit entry to audit.jsonl log file."""
+        capability = resolve_capability(proposal.action) or proposal.action
         entry = {
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "proposal_id": proposal.proposal_id,
+            "principal_id": principal_id,
             "action": proposal.action,
+            "capability": capability,
             "target": proposal.target,
             "parameters": proposal.parameters,
+            "parameters_hash": proposal.parameters_hash or proposal.compute_parameters_hash(),
             "reason": proposal.reason,
             "confidence": proposal.confidence,
             "risk_level": proposal.risk_level,
             "required_permission": proposal.required_permission,
             "policy_decision": policy_decision,
             "user_approved": user_approved,
+            "credential_scope": credential_scope,
             "execution_status": execution_status,
             "execution_result": str(execution_result) if execution_result is not None else None,
             "latency_sec": round(latency_sec, 4)

@@ -1,0 +1,25 @@
+# Personal Agent Runtime State & Data
+data/state/
+data/events/
+data/logs/
+data/telemetry/
+data/test_*/
+
+# Secrets & Local Credentials
+.env
+*.env
+credentials.json
+token.json
+
+# Temporary & Recovery Files
+*.tmp
+*.corrupted
+*.log
+
+# Python Cache & Coverage
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/

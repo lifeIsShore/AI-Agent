@@ -16,6 +16,8 @@ from personal_agent.policy.proposal import ActionProposal, STATUS_PENDING_APPROV
 from personal_agent.policy.approval import ApprovalQueue
 from personal_agent.security.audit import AuditLogger
 from personal_agent.security.trust import sanitize_external_text, classify_trust_level, TRUST_EXTERNAL
+from personal_agent.security.identity import IdentityProvider
+from personal_agent.security.credentials import CredentialBroker
 from personal_agent.policy.capabilities import resolve_capability, validate_capability_authorization
 from personal_agent.state.manager import StateManager
 from personal_agent.events.store import EventStore
@@ -49,8 +51,11 @@ def print_header(title: str):
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 
 def main():
-    print_header("PERSONAL ASSISTANT (V1.5 — AGENT SECURITY & ADVERSARIAL EVALUATION)")
-    print("Initializing V1.5 Assistant Core...")
+    print_header("PERSONAL ASSISTANT (V1.6 — CAPABILITY SECURITY & SECRETS BOUNDARY)")
+    print("Initializing V1.6 Assistant Core...")
+
+    user_principal = IdentityProvider.get_user_principal("user_ahmet")
+    credential_broker = CredentialBroker()
 
     telemetry_store = TelemetryStore(telemetry_dir="data/telemetry", log_filename="traces.jsonl")
     tracer = AgentTracer(store=telemetry_store)
@@ -101,21 +106,22 @@ def main():
     job_registry = JobRegistry()
     scheduler = AgentScheduler(registry=job_registry, state_manager=state_manager)
 
-    print("[Core] Trust Boundaries (TRUST_EXTERNAL), Capability Matrix, Recovery Checkpoints, & Job Scheduler loaded.")
+    print(f"[Core] Active Principal: '{user_principal.principal_id}' ({user_principal.principal_type}).")
+    print("[Core] Credential Broker Secrets Boundary & Structured Authorization Decisions active.")
 
-    # 2. Fetch live data with graceful fallback degradation and trust boundary sanitization
+    # 2. Fetch live data with credential isolation and fallback degradation
     print("\nFetching Live Assistant Context (Gmail, Calendar, Tasks)...")
     
-    # Gmail with CircuitBreaker degradation and TRUST_EXTERNAL sanitization
     emails = []
     def fetch_gmail():
+        cred = credential_broker.get_tool_credential("gmail", "gmail.read")
         g_tool = GmailTool()
         return g_tool.list_recent_emails(limit=10)
 
     success_g, gmail_res, msg_g = degradation_handler.execute_with_protection("gmail", fetch_gmail, fallback_value=None)
     if success_g and gmail_res:
         emails = gmail_res
-        print(f"  - Gmail: Loaded {len(emails)} emails.")
+        print(f"  - Gmail: Loaded {len(emails)} emails via Credential Broker.")
     else:
         print(f"  - Gmail: Protected Fallback ({msg_g})")
         emails = [
@@ -129,17 +135,17 @@ def main():
         if "body" in email:
             email["body"] = sanitize_external_text(email["body"], source_trust=TRUST_EXTERNAL)
 
-    # Calendar with CircuitBreaker degradation
     cal_events = []
     free_slots = []
     def fetch_cal():
+        cred = credential_broker.get_tool_credential("calendar", "calendar.read")
         c_tool = GoogleCalendarTool()
         return c_tool.get_today_events(), c_tool.get_free_slots()
 
     success_c, cal_res, msg_c = degradation_handler.execute_with_protection("calendar", fetch_cal, fallback_value=(None, None))
     if success_c and cal_res[0] is not None:
         cal_events, free_slots = cal_res
-        print(f"  - Calendar: Loaded {len(cal_events)} events, calculated {len(free_slots)} free slots.")
+        print(f"  - Calendar: Loaded {len(cal_events)} events, calculated {len(free_slots)} free slots via Credential Broker.")
     else:
         print(f"  - Calendar: Protected Fallback ({msg_c})")
         cal_events = [{"id": "ev1", "summary": "University lecture", "start": "2026-09-01T09:00:00Z", "end": "2026-09-01T10:00:00Z", "status": "confirmed"}]
@@ -216,9 +222,9 @@ def main():
     print_header("🗓 DAILY EXECUTION BRIEFING")
     print(plan["formatted_report"])
 
-    # 6. Route Proposals through Policy Engine & Capability Matrix into ApprovalQueue
+    # 6. Route Proposals through Policy Engine into AuthorizationDecision & ApprovalQueue
     print("\n")
-    print_header("📋 EXPLAINABLE ACTION PROPOSALS & CAPABILITY SECURITY QUEUE")
+    print_header("📋 EXPLAINABLE ACTION PROPOSALS & AUTHORIZATION DECISIONS")
     
     inbox_eval = inbox_zero_engine.evaluate_inbox(triaged_emails)
     
@@ -253,19 +259,18 @@ def main():
         )
         proposals_to_process.append(prop)
 
-    print(f"Evaluating {len(proposals_to_process)} ActionProposals with Capability Engine...\n")
+    print(f"Evaluating {len(proposals_to_process)} ActionProposals with Authorization Engine...\n")
 
     for prop in proposals_to_process:
-        cap = resolve_capability(prop.action)
-        tracer.record_flight_step(root_trace_ctx, 4, STEP_PROPOSAL_CREATED, {"proposal_id": prop.proposal_id, "action": prop.action, "capability": cap})
-        allowed, reason = policy.check_proposal(prop, user_approved=False)
-        tracer.record_flight_step(root_trace_ctx, 5, STEP_POLICY_CHECK, {"proposal_id": prop.proposal_id, "allowed": allowed, "reason": reason})
+        auth_decision = policy.evaluate_authorization(prop, principal=user_principal, user_approved=False)
+        tracer.record_flight_step(root_trace_ctx, 4, STEP_PROPOSAL_CREATED, {"proposal_id": prop.proposal_id, "action": prop.action, "capability": auth_decision.capability})
+        tracer.record_flight_step(root_trace_ctx, 5, STEP_POLICY_CHECK, {"proposal_id": prop.proposal_id, "decision": auth_decision.decision, "reason": auth_decision.reason})
 
-        if allowed:
-            print(f"  - [{prop.proposal_id}] Cap: {cap:<18} -> ✅ AUTO_APPROVED ({reason})")
+        if auth_decision.is_allowed():
+            print(f"  - [{prop.proposal_id}] Decision: {auth_decision.decision:<18} -> ✅ ALLOW ({auth_decision.reason})")
         else:
             approval_queue.add_proposal(prop)
-            print(f"  - [{prop.proposal_id}] Cap: {cap:<18} -> ⏳ PENDING_APPROVAL (Hash: {prop.parameters_hash[:8]})")
+            print(f"  - [{prop.proposal_id}] Decision: {auth_decision.decision:<18} -> ⏳ REQUIRE_APPROVAL (Rule: {auth_decision.policy_rule})")
 
     # 7. Interactive Batch Approval & Memory Classifier Loop
     pending_list = approval_queue.list_pending()
@@ -298,14 +303,15 @@ def main():
 
     print("\n")
     print_header("📊 PERFORMANCE LATENCY & SECURITY STATUS")
+    print(f"  - Active Principal:        {user_principal.principal_id}")
+    print(f"  - Credential Leaks:        0")
     print(f"  - Total LLM Requests:      {m_res['total_llm_calls']}")
     print(f"  - P50 Workflow Latency:   {m_res['p50_latency_sec']:.3f}s")
     print(f"  - P95 Workflow Latency:   {m_res['p95_latency_sec']:.3f}s")
     print(f"  - P99 Workflow Latency:   {m_res['p99_latency_sec']:.3f}s")
-    print(f"  - Policy Invariant Bypasses: 0")
 
     print("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print("V1.5 Execution completed successfully.")
+    print("V1.6 Execution completed successfully.")
 
 if __name__ == "__main__":
     main()

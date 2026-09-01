@@ -1,6 +1,7 @@
 import sys
 import os
 import unittest
+import shutil
 from unittest.mock import MagicMock
 
 # Add src to sys path
@@ -13,16 +14,22 @@ from personal_agent.policy.engine import PolicyEngine, PermissionLevel
 from personal_agent.policy.approval import ApprovalQueue
 from personal_agent.security.audit import AuditLogger
 from personal_agent.tools.registry import ToolRegistry
+from personal_agent.state.manager import StateManager
 from personal_agent.memory.learning import MemoryLearningLoop
 from personal_agent.memory.manager import MemoryManager
 
 class TestV08ApprovalAndMemoryLoop(unittest.TestCase):
 
     def setUp(self):
+        self.test_dir = "data/test_v0_8_state"
+        if os.path.exists(self.test_dir):
+            shutil.rmtree(self.test_dir)
+        os.makedirs(self.test_dir, exist_ok=True)
+
         self.policy = PolicyEngine()
         self.registry = ToolRegistry()
-        self.audit_logger = AuditLogger(log_dir="data/logs", log_filename="test_v0_8_audit.jsonl")
-        self.audit_logger.clear_logs()
+        self.audit_logger = AuditLogger(log_dir=self.test_dir, log_filename="test_v0_8_audit.jsonl")
+        self.state_manager = StateManager(state_dir=self.test_dir)
 
         # Mock memory store & manager
         self.mock_gateway = MagicMock()
@@ -32,11 +39,13 @@ class TestV08ApprovalAndMemoryLoop(unittest.TestCase):
         self.queue = ApprovalQueue(
             tool_registry=self.registry,
             audit_logger=self.audit_logger,
-            memory_loop=self.memory_loop
+            memory_loop=self.memory_loop,
+            state_manager=self.state_manager
         )
 
     def tearDown(self):
-        self.audit_logger.clear_logs()
+        if os.path.exists(self.test_dir):
+            shutil.rmtree(self.test_dir)
 
     def test_status_lifecycle_refinement(self):
         """Test distinction between AUTO_APPROVED, PENDING_APPROVAL, and DENIED in PolicyEngine."""
