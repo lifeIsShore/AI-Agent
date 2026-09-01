@@ -16,7 +16,7 @@ from personal_agent.policy.proposal import ActionProposal, STATUS_PENDING_APPROV
 from personal_agent.policy.approval import ApprovalQueue
 from personal_agent.security.audit import AuditLogger
 from personal_agent.memory.manager import MemoryManager
-from personal_agent.memory.learning import MemoryLearningLoop
+from personal_agent.memory.learning import MemoryLearningLoop, SCOPE_DURABLE_PREFERENCE, SCOPE_EVENT_MEMORY
 from personal_agent.triage.engine import PriorityEngine
 from personal_agent.triage.inbox_zero import InboxZeroEngine
 from personal_agent.context.manager import ContextManager
@@ -28,8 +28,8 @@ def print_header(title: str):
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 
 def main():
-    print_header("PERSONAL ASSISTANT (V0.8 — APPROVAL QUEUE & MEMORY LEARNING LOOP)")
-    print("Initializing V0.8 Assistant Core...")
+    print_header("PERSONAL ASSISTANT (V0.9 — BATCH APPROVAL & MEMORY CLASSIFIER)")
+    print("Initializing V0.9 Assistant Core...")
 
     gateway = ModelGateway(provider="ollama")
     registry = ToolRegistry()
@@ -46,7 +46,7 @@ def main():
     context_manager = ContextManager(gateway=gateway)
     daily_planner = DailyPlannerEngine(user_name="Ahmet")
 
-    print("[Core] Policy Security Boundary, Approval Queue, & Memory Learning Loop initialized.")
+    print("[Core] Policy Security Boundary, Safe Batch Queue, & Memory Classifier initialized.")
 
     # 1. Fetch live data with graceful fallbacks
     print("\nFetching Live Assistant Context (Gmail, Calendar, Tasks)...")
@@ -127,7 +127,7 @@ def main():
 
     # 4. Route Proposals through Policy Engine into ApprovalQueue
     print("\n")
-    print_header("📋 ACTION PROPOSALS & INTERACTIVE APPROVAL QUEUE")
+    print_header("📋 ACTION PROPOSALS & SAFE BATCH APPROVAL QUEUE")
     
     inbox_eval = inbox_zero_engine.evaluate_inbox(triaged_emails)
     
@@ -163,27 +163,31 @@ def main():
             approval_queue.add_proposal(prop)
             print(f"  - [{prop.proposal_id}] Action: {prop.action:<22} -> ⏳ PENDING_APPROVAL ({reason})")
 
-    # 5. Interactive Approval & Memory Learning Demo
+    # 5. Interactive Batch Approval & Memory Classifier Demo
     pending_list = approval_queue.list_pending()
     print(f"\nApproval Queue active pending items: {len(pending_list)}")
     
     if pending_list:
-        print("\nProcessing Pending Queue Decisions & Memory Learning Loop...")
+        print("\nProcessing Safe Batch Approval & Memory Classifier Loop...")
         
-        # Approve first proposal with parameter editing demo
-        first_prop = pending_list[0]
-        print(f"\n1. User APPROVING proposal [{first_prop.proposal_id}] ({first_prop.action})...")
-        success, msg, res = approval_queue.approve_proposal(first_prop.proposal_id)
-        print(f"   Result: {msg}")
+        # Batch approve calendar events
+        cal_pids = [p.proposal_id for p in pending_list if "calendar" in p.action or "event" in p.action]
+        if cal_pids:
+            print(f"\n1. Executing SAFE BATCH APPROVAL on {len(cal_pids)} Calendar Proposals...")
+            batch_res = approval_queue.approve_batch(cal_pids)
+            for pid, (success, msg, res) in zip(cal_pids, batch_res):
+                status_str = "SUCCESS" if success else "FAILED"
+                print(f"   - [{pid}] {status_str}: {msg}")
 
-        # Reject second proposal demo if available
-        if len(pending_list) > 1:
-            second_prop = pending_list[1]
-            print(f"\n2. User REJECTING proposal [{second_prop.proposal_id}] ({second_prop.action})...")
-            success, msg = approval_queue.reject_proposal(second_prop.proposal_id, reason="User prefers manual review")
-            print(f"   Result: {msg}")
+        # Batch reject remaining proposals with user reason demo
+        rem_pids = [p.proposal_id for p in pending_list if p.proposal_id not in cal_pids]
+        if rem_pids:
+            print(f"\n2. Executing SAFE BATCH REJECTION on {len(rem_pids)} Archive Proposals...")
+            batch_rej = approval_queue.reject_batch(rem_pids, reason="User prefers manual inbox review")
+            for pid, (success, msg) in zip(rem_pids, batch_rej):
+                print(f"   - [{pid}] REJECTED: {msg}")
 
-    # 6. Audit Logger Summary & Learned Memories
+    # 6. Audit Logger Summary & Learned Memories (Durable vs Event Memory)
     print("\n")
     print_header("📜 AUDIT LOG RECENT RECORDS (data/logs/audit.jsonl)")
     recent_audit_logs = audit_logger.get_recent_logs(limit=5)
@@ -191,16 +195,17 @@ def main():
         print(f"[{log['timestamp'][:19]}] ID: {log['proposal_id']} | Action: {log['action']} | Decision: {log['policy_decision']} | Status: {log['execution_status']}")
 
     print("\n")
-    print_header("🧠 LEARNED PREFERENCES STORE (V0.8 Memory Loop)")
-    learned_memories = memory_loop.get_learned_preferences()
-    if learned_memories:
-        for m in learned_memories[:3]:
-            print(f"  - [Learned Memory]: {m.get('content')}")
+    print_header("🧠 LEARNED MEMORY STORE (Durable Preferences vs Event Memories)")
+    all_memories = memory_manager.get_context_memories()
+    if all_memories:
+        for m in all_memories[:5]:
+            m_type = m.get('type', 'memory')
+            print(f"  - [{m_type.upper()}] [{m.get('importance')}]: {m.get('content')}")
     else:
         print("  - Memory Store initialized and ready to accumulate learning feedback.")
 
     print("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print("V0.8 Execution completed successfully.")
+    print("V0.9 Execution completed successfully.")
 
 if __name__ == "__main__":
     main()

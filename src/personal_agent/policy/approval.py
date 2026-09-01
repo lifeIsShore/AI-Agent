@@ -126,3 +126,20 @@ class ApprovalQueue:
                 print(f"[ApprovalQueue] Error recording memory feedback: {e}")
 
         return True, f"Proposal '{proposal_id}' rejected."
+
+    def approve_batch(self, proposal_ids: List[str]) -> List[Tuple[bool, str, Optional[Any]]]:
+        """Safely approves a batch of proposals by evaluating each item through individual approval checks."""
+        results = []
+        for pid in proposal_ids:
+            res = self.approve_proposal(pid)
+            results.append(res)
+        return results
+
+    def reject_batch(self, proposal_ids: List[str], reason: Optional[str] = None) -> List[Tuple[bool, str]]:
+        """Safely rejects a batch of proposals by processing each item through individual rejection checks."""
+        results = []
+        for pid in proposal_ids:
+            res = self.reject_proposal(pid, reason=reason)
+            results.append(res)
+        return results
+
