@@ -1,0 +1,12 @@
+policies:
+  - action: system.read
+    permission_level: READ_ONLY
+    risk_level: LOW
+    approval_required: false
+    allowed_principals: ["USER", "AGENT", "SCHEDULER"]
+
+  - action: admin_override_policy
+    permission_level: ADMIN
+    risk_level: CRITICAL
+    approval_required: false
+    allowed_principals: []

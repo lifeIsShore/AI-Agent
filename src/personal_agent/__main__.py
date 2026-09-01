@@ -19,6 +19,10 @@ from personal_agent.policy.approval import ApprovalQueue
 from personal_agent.policy.review import ReviewDecisionEngine, MODE_AUTOMATIC, MODE_QUICK_REVIEW, MODE_DETAILED_REVIEW
 from personal_agent.policy.scopes import ScopeManager, SCOPE_RECURRING
 from personal_agent.policy.rejection import RepeatedRejectionTracker
+from personal_agent.policy.policy_registry import DeclarativePolicyRegistry
+from personal_agent.security.classification import DataClassifier
+from personal_agent.security.dlp import DataLossPreventionEngine
+from personal_agent.security.provenance import ProvenanceTracker
 from personal_agent.security.audit import AuditLogger
 from personal_agent.security.trust import sanitize_external_text, classify_trust_level, TRUST_EXTERNAL
 from personal_agent.security.identity import IdentityProvider
@@ -57,8 +61,8 @@ def print_header(title: str):
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 
 def main():
-    print_header("PERSONAL ASSISTANT (V1.8 — ADAPTIVE HUMAN-IN-THE-LOOP & GOVERNANCE)")
-    print("Initializing V1.8 Assistant Core...")
+    print_header("PERSONAL ASSISTANT (V1.9 — POLICY-AS-CODE, DATA GOVERNANCE & PROVENANCE)")
+    print("Initializing V1.9 Assistant Core...")
 
     user_principal = IdentityProvider.get_user_principal("user_ahmet")
     credential_broker = CredentialBroker()
@@ -66,6 +70,11 @@ def main():
     review_engine = ReviewDecisionEngine()
     scope_manager = ScopeManager()
     rejection_tracker = RepeatedRejectionTracker()
+
+    policy_registry = DeclarativePolicyRegistry(policy_dir="policies")
+    data_classifier = DataClassifier()
+    dlp_engine = DataLossPreventionEngine(classifier=data_classifier)
+    provenance_tracker = ProvenanceTracker()
 
     telemetry_store = TelemetryStore(telemetry_dir="data/telemetry", log_filename="traces.jsonl")
     tracer = AgentTracer(store=telemetry_store)
@@ -95,7 +104,6 @@ def main():
     memory_manager = MemoryManager(gateway=gateway)
     memory_loop = MemoryLearningLoop(memory_manager=memory_manager)
     
-    # Persistent Approval Queue with StateManager and EventBus integration
     approval_queue = ApprovalQueue(
         tool_registry=registry,
         audit_logger=audit_logger,
@@ -109,17 +117,15 @@ def main():
     context_manager = ContextManager(gateway=gateway)
     daily_planner = DailyPlannerEngine(user_name="Ahmet")
 
-    # Replay any unprocessed events from disk log on startup
     event_bus.replay_unprocessed()
 
-    # 1. Initialize Agent Scheduler & Register Jobs
     job_registry = JobRegistry()
     scheduler = AgentScheduler(registry=job_registry, state_manager=state_manager)
 
     print(f"[Core] Active Principal: '{user_principal.principal_id}' ({user_principal.principal_type}).")
-    print("[Core] ReviewDecisionEngine, Delegated Scopes, & Repeated Rejection Tracker active.")
+    print(f"[Core] Policy-as-Code active ({len(policy_registry.rules)} YAML rules compiled).")
+    print("[Core] Data Loss Prevention (DLP) & Data Provenance Lineage active.")
 
-    # 2. Fetch live data with credential isolation and fallback degradation
     print("\nFetching Live Assistant Context (Gmail, Calendar, Tasks)...")
     
     emails = []
@@ -141,10 +147,27 @@ def main():
             {"id": "m3", "sender": "careers@jobalerts.com", "subject": "Weekly software engineering job alerts", "body": "10 new jobs posted.", "unread": False}
         ]
 
-    # Sanitize external email text for prompt injections
+    # Provenance Lineage Tagging & DLP Sanitization
+    raw_context_payload = []
     for email in emails:
         if "body" in email:
             email["body"] = sanitize_external_text(email["body"], source_trust=TRUST_EXTERNAL)
+        
+        # Tag Data Provenance Lineage
+        content_id = f"email_{email.get('id')}"
+        sens = data_classifier.classify_sensitivity(email.get("body", ""), category="gmail")
+        provenance_tracker.tag_provenance(
+            content_id=content_id,
+            source="gmail",
+            source_id=str(email.get("id")),
+            trust_level="EXTERNAL",
+            sensitivity=sens
+        )
+        raw_context_payload.append(email)
+
+    sanitized_emails, blocked_dlp_count = dlp_engine.sanitize_context_payload(raw_context_payload)
+    if blocked_dlp_count > 0:
+        print(f"  - DLP Boundary: Redacted {blocked_dlp_count} highly sensitive data items from prompt context.")
 
     cal_events = []
     free_slots = []
@@ -162,7 +185,6 @@ def main():
         cal_events = [{"id": "ev1", "summary": "University lecture", "start": "2026-09-01T09:00:00Z", "end": "2026-09-01T10:00:00Z", "status": "confirmed"}]
         free_slots = [{"start": "10:00", "end": "12:00", "duration_minutes": 120}, {"start": "14:00", "end": "17:00", "duration_minutes": 180}]
 
-    # Register Scheduler Daemon Jobs
     scheduler.register_job(Job(
         job_id="morning_briefing",
         name="Morning Briefing & Planning",
@@ -188,13 +210,11 @@ def main():
         handler=lambda: memory_maintenance_job(memory_loop)
     ))
 
-    # 3. Execute Scheduler Daemon Tick
     print("\nExecuting Scheduler Daemon Tick...")
     tick_results = scheduler.run_daemon_tick()
     for res in tick_results:
         print(f"  - Job [{res['job_id']}] -> Status: {res['status']} | Output: {res['output']}")
 
-    # 4. Model Routing & Context Assembly
     model_decision = model_router.route_request(
         intent=INTENT_PLAN_DAY,
         context_bytes=3500,
@@ -206,7 +226,7 @@ def main():
 
     tracer.record_flight_step(root_trace_ctx, 2, STEP_INTENT_DETECTED, {"intent": "PLAN_DAY", "model": model_decision.model_name})
     triaged_emails = []
-    for email in emails:
+    for email in sanitized_emails:
         event_bus.publish(AgentEvent(
             event_type=EVENT_EMAIL_RECEIVED,
             source="GmailTool",
@@ -228,23 +248,13 @@ def main():
 
     tracer.record_flight_step(root_trace_ctx, 3, STEP_CONTEXT_BUILT, {"items": len(triaged_emails)})
 
-    tracer.record_context_efficiency(
-        trace_ctx=root_trace_ctx,
-        intent="PLAN_DAY",
-        item_counts={"emails": len(triaged_emails), "calendar": len(cal_events), "tasks": 0},
-        total_bytes=len(context_pkg.to_prompt_context()),
-        latency_sec=0.01
-    )
-
-    # 5. Generate Daily Execution Plan
     plan = daily_planner.generate_daily_plan(context_pkg, free_slots=free_slots)
 
     print_header("🗓 DAILY EXECUTION BRIEFING")
     print(plan["formatted_report"])
 
-    # 6. Route Proposals through Policy Engine & ReviewDecisionEngine
     print("\n")
-    print_header("📋 EXPLAINABLE ACTION PROPOSALS & ADAPTIVE REVIEW CARDS")
+    print_header("📋 EXPLAINABLE ACTION PROPOSALS & DATA PROVENANCE LINEAGE")
     
     inbox_eval = inbox_zero_engine.evaluate_inbox(triaged_emails)
     
@@ -279,10 +289,9 @@ def main():
         )
         proposals_to_process.append(prop)
 
-    print(f"Evaluating {len(proposals_to_process)} ActionProposals with Review Decision Engine...\n")
+    print(f"Evaluating {len(proposals_to_process)} ActionProposals with Declarative Policy Engine...\n")
 
     for prop in proposals_to_process:
-        # Check repeated rejection throttling
         should_throttle, throttle_msg = rejection_tracker.should_throttle_proposal(prop.action, "general")
         if should_throttle:
             print(f"  - [{prop.proposal_id}] Action: {prop.action:<22} -> ⚠️ {throttle_msg}")
@@ -290,6 +299,7 @@ def main():
 
         rev_dec = review_engine.evaluate_review_mode(prop)
         auth_decision = policy.evaluate_authorization(prop, principal=user_principal, user_approved=False)
+        lineage_msg = provenance_tracker.explain_lineage(prop.target)
         
         tracer.record_flight_step(root_trace_ctx, 4, STEP_PROPOSAL_CREATED, {"proposal_id": prop.proposal_id, "action": prop.action, "mode": rev_dec.mode})
         tracer.record_flight_step(root_trace_ctx, 5, STEP_POLICY_CHECK, {"proposal_id": prop.proposal_id, "decision": auth_decision.decision, "reason": auth_decision.reason})
@@ -299,10 +309,7 @@ def main():
         else:
             approval_queue.add_proposal(prop)
             print(f"  - [{prop.proposal_id}] Mode: {rev_dec.mode:<18} -> ⏳ REQUIRE_APPROVAL ({rev_dec.explainability_summary})")
-            if rev_dec.mode == MODE_DETAILED_REVIEW:
-                print(prop.format_explainable_card())
 
-    # 7. Interactive Batch Approval & Memory Classifier Loop
     pending_list = approval_queue.list_pending()
     print(f"\nApproval Queue active pending items (Persisted to disk): {len(pending_list)}")
     
@@ -327,23 +334,19 @@ def main():
 
     tracer.record_flight_step(root_trace_ctx, 7, STEP_TRACE_COMPLETED, {"status": "SUCCESS"})
 
-    # 8. Telemetry & Metric Analytics Summary
     metrics_calc = TelemetryMetricsCalculator(store=telemetry_store)
     m_res = metrics_calc.calculate_metrics()
 
     print("\n")
     print_header("📊 PERFORMANCE LATENCY & GOVERNANCE STATUS")
     print(f"  - Active Principal:        {user_principal.principal_id}")
-    print(f"  - Routed Model Tier:       {model_decision.selected_tier}")
-    print(f"  - Credential Leaks:        0")
-    print(f"  - Repeated Proposals:      Throttled & Governed")
+    print(f"  - Policy Rules Loaded:     {len(policy_registry.rules)} YAML files")
+    print(f"  - DLP Leaks Blocked:       {blocked_dlp_count}")
     print(f"  - Total LLM Requests:      {m_res['total_llm_calls']}")
     print(f"  - P50 Workflow Latency:   {m_res['p50_latency_sec']:.3f}s")
-    print(f"  - P95 Workflow Latency:   {m_res['p95_latency_sec']:.3f}s")
-    print(f"  - P99 Workflow Latency:   {m_res['p99_latency_sec']:.3f}s")
 
     print("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print("V1.8 Execution completed successfully.")
+    print("V1.9 Execution completed successfully.")
 
 if __name__ == "__main__":
     main()

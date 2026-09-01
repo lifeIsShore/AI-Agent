@@ -1,0 +1,18 @@
+policies:
+  - action: calendar.read
+    permission_level: READ_ONLY
+    risk_level: LOW
+    approval_required: false
+    allowed_principals: ["USER", "AGENT", "SCHEDULER"]
+
+  - action: calendar.create
+    permission_level: MODIFY
+    risk_level: MEDIUM
+    approval_required: true
+    allowed_principals: ["USER", "AGENT"]
+
+  - action: calendar.delete
+    permission_level: MODIFY
+    risk_level: HIGH
+    approval_required: true
+    allowed_principals: ["USER"]
