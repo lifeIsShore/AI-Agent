@@ -1,0 +1,49 @@
+import uuid
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from typing import Dict, Any, Optional
+
+@dataclass
+class ActionProposal:
+    action: str
+    target: str
+    parameters: Dict[str, Any] = field(default_factory=dict)
+    reason: str = ""
+    confidence: float = 1.0
+    risk_level: str = "LOW"             # LOW | MEDIUM | HIGH | CRITICAL
+    required_permission: str = "READ_ONLY" # READ_ONLY | ANALYZE | PROPOSE | MODIFY
+    status: str = "PENDING"             # PENDING | APPROVED | DENIED | EXECUTED | FAILED
+    proposal_id: str = field(default_factory=lambda: f"prop_{uuid.uuid4().hex[:8]}")
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    audit_metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "proposal_id": self.proposal_id,
+            "action": self.action,
+            "target": self.target,
+            "parameters": self.parameters,
+            "reason": self.reason,
+            "confidence": self.confidence,
+            "risk_level": self.risk_level,
+            "required_permission": self.required_permission,
+            "status": self.status,
+            "created_at": self.created_at,
+            "audit_metadata": self.audit_metadata
+        }
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'ActionProposal':
+        return cls(
+            proposal_id=data.get("proposal_id", f"prop_{uuid.uuid4().hex[:8]}"),
+            action=data.get("action", ""),
+            target=data.get("target", ""),
+            parameters=data.get("parameters", {}),
+            reason=data.get("reason", ""),
+            confidence=data.get("confidence", 1.0),
+            risk_level=data.get("risk_level", "LOW"),
+            required_permission=data.get("required_permission", "READ_ONLY"),
+            status=data.get("status", "PENDING"),
+            created_at=data.get("created_at", datetime.now(timezone.utc).isoformat()),
+            audit_metadata=data.get("audit_metadata", {})
+        )

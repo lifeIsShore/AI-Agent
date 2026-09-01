@@ -12,6 +12,8 @@ from personal_agent.tools.gmail import GmailTool
 from personal_agent.tools.calendar import GoogleCalendarTool
 from personal_agent.tools.tasks import GoogleTasksTool
 from personal_agent.policy.engine import PolicyEngine, PermissionLevel
+from personal_agent.policy.proposal import ActionProposal
+from personal_agent.security.audit import AuditLogger
 from personal_agent.triage.engine import PriorityEngine
 from personal_agent.triage.inbox_zero import InboxZeroEngine
 from personal_agent.context.manager import ContextManager
@@ -24,21 +26,22 @@ def print_header(title: str):
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 
 def main():
-    print_header("PERSONAL ASSISTANT (V0.6 — GMAIL PRODUCTIVITY & DAILY PLANNER)")
-    print("Initializing V0.6 Assistant Core...")
+    print_header("PERSONAL ASSISTANT (V0.7 — ACTION PROPOSALS & AUDIT ARCHITECTURE)")
+    print("Initializing V0.7 Assistant Core...")
 
     gateway = ModelGateway(provider="ollama")
     registry = ToolRegistry()
     registry.register_default_tools()
     
     policy = PolicyEngine()
+    audit_logger = AuditLogger()
     triage_engine = PriorityEngine(gateway)
     inbox_zero_engine = InboxZeroEngine()
     memory_manager = MemoryManager(gateway=gateway)
     context_manager = ContextManager(gateway=gateway)
     daily_planner = DailyPlannerEngine(user_name="Ahmet")
 
-    print("[Core] Registered tools, Intent Budgets, & Security Policy Engine loaded.")
+    print("[Core] ActionProposal models, Policy Security Boundary, & AuditLogger initialized.")
 
     # 1. Fetch live data with graceful fallbacks
     print("\nFetching Live Assistant Context (Gmail, Calendar, Tasks)...")
@@ -95,23 +98,15 @@ def main():
             {"id": "t2", "title": "Review job alerts", "status": "needsAction"}
         ]
 
-    # 2. Perform Structured Email Priority Triage (V0.5.1 with requires_planning)
-    print("\nTriaging emails with PriorityEngine (structured requires_planning flag)...")
+    # 2. Triaging & Context Assembly
     triaged_emails = []
-    planning_emails_count = 0
     for email in emails:
         analysis, _ = triage_engine.evaluate(email)
         analysis["id"] = email.get("id")
         analysis["sender"] = email.get("sender")
         analysis["subject"] = email.get("subject")
         triaged_emails.append(analysis)
-        if analysis.get("requires_planning"):
-            planning_emails_count += 1
 
-    print(f"  - Triaged {len(triaged_emails)} emails -> {planning_emails_count} marked requires_planning=True for Calendar.")
-
-    # 3. Assemble Intent-Dependent Context
-    print("Assembling intent-dependent context package with ContextManager...")
     context_pkg = context_manager.assemble_context(
         user_request="Plan my day",
         emails=triaged_emails,
@@ -119,62 +114,71 @@ def main():
         tasks=tasks
     )
 
-    print(f"  - Intent: PLAN_DAY -> Budgets: max_emails={context_pkg.trace['budgets']['max_emails']} (planning emails only), RAG={context_pkg.trace['budgets']['max_rag_chunks']}")
-
-    # 4. Generate Daily Execution Plan
-    print("\nSynthesizing Daily Plan with DailyPlannerEngine...\n")
+    # 3. Generate Daily Execution Plan
     plan = daily_planner.generate_daily_plan(context_pkg, free_slots=free_slots)
 
     print_header("🗓 DAILY EXECUTION BRIEFING")
     print(plan["formatted_report"])
 
-    # 5. Inbox Zero Engine Proposals (V0.6)
+    # 4. Process Proposals through ActionProposal -> PolicyEngine -> AuditLogger
     print("\n")
-    print_header("📥 V0.6 GMAIL INBOX ZERO ENGINE")
+    print_header("📋 ACTION PROPOSAL & AUDIT LOGGING PIPELINE")
+    
     inbox_eval = inbox_zero_engine.evaluate_inbox(triaged_emails)
-    print(f"{inbox_eval['summary']}\n")
-
-    if inbox_eval["archive_proposals"]:
-        print("Proposed Archive Actions (requires_planning = False):")
-        for prop in inbox_eval["archive_proposals"][:3]:
-            print(f"  - [Archive] {prop['subject']} ({prop['reason']})")
-        if len(inbox_eval["archive_proposals"]) > 3:
-            print(f"    ... and {len(inbox_eval['archive_proposals']) - 3} more.")
-        print()
-
-    if inbox_eval["draft_proposals"]:
-        print("Proposed Reply Drafts:")
-        for prop in inbox_eval["draft_proposals"]:
-            print(f"  - [Draft Reply] To: {prop['to']} | Subject: {prop['subject']}")
-
-    # 6. Security & Policy Enforcement Audit
-    print("\n")
-    print_header("🔒 POLICY ENGINE SECURITY LEVEL AUDIT")
-    print("Tool Operation Permissions Matrix:")
-    print("──────────────────────────────")
     
-    test_ops = [
-        ("read_recent_emails", "Read emails"),
-        ("get_today_events", "Read calendar"),
-        ("list_tasks", "Read tasks"),
-        ("get_free_slots", "Calculate free time"),
-        ("generate_daily_plan", "Suggest schedule"),
-        ("archive_email", "Archive email"),
-        ("trash_email", "Move email to trash"),
-        ("apply_label", "Apply Gmail label"),
-        ("create_draft", "Create email reply draft"),
-        ("create_calendar_event", "Create calendar event"),
-        ("complete_task", "Complete task")
-    ]
+    proposals_to_process = []
     
-    for tool_name, desc in test_ops:
-        lvl = policy.get_permission_level(tool_name)
-        allowed, reason = policy.check_permission(tool_name, {})
-        status_str = "✅ AUTO-ALLOWED" if allowed else "⛔ REQUIRES HUMAN APPROVAL"
-        print(f"  - {desc:<25} [{lvl.name:<9}] -> {status_str}")
+    # Calendar proposals
+    for p in plan.get("proposals", []):
+        prop = policy.create_proposal(
+            action=p.get("action", "create_calendar_event"),
+            target="primary_calendar",
+            parameters={"summary": p.get("summary"), "start_time": p.get("start_time"), "end_time": p.get("end_time")},
+            reason=p.get("reason", "Daily planner schedule block")
+        )
+        proposals_to_process.append(prop)
+
+    # Inbox Zero proposals
+    for p in inbox_eval.get("archive_proposals", [])[:3]:
+        prop = policy.create_proposal(
+            action=p.get("action", "archive_email"),
+            target=f"email_{p.get('msg_id')}",
+            parameters={"msg_id": p.get("msg_id")},
+            reason=p.get("reason", "Inbox Zero archive recommendation")
+        )
+        proposals_to_process.append(prop)
+
+    print(f"Processing {len(proposals_to_process)} structured ActionProposals through Policy Engine...\n")
+
+    for prop in proposals_to_process:
+        allowed, reason = policy.check_proposal(prop, user_approved=False)
+        status_str = "✅ AUTO-APPROVED" if allowed else "⛔ BLOCKED (NEEDS APPROVAL)"
+        
+        # Log to Audit Logger
+        audit_logger.log_proposal(
+            proposal=prop,
+            policy_decision=reason,
+            user_approved=False,
+            execution_status="APPROVED" if allowed else "BLOCKED",
+            execution_result="Simulated proposal evaluation",
+            latency_sec=0.01
+        )
+
+        print(f"Proposal [{prop.proposal_id}]")
+        print(f"  - Action:     {prop.action}")
+        print(f"  - Target:     {prop.target}")
+        print(f"  - Risk Level: {prop.risk_level} | Permission: {prop.required_permission}")
+        print(f"  - Status:     {status_str}")
+        print(f"  - Reason:     {prop.reason}\n")
+
+    # 5. Display Persistent Audit Summary
+    print_header("📜 AUDIT LOG RECENT RECORDS (data/logs/audit.jsonl)")
+    recent_audit_logs = audit_logger.get_recent_logs(limit=5)
+    for log in recent_audit_logs:
+        print(f"[{log['timestamp'][:19]}] ID: {log['proposal_id']} | Action: {log['action']} | Risk: {log['risk_level']} | Status: {log['execution_status']}")
 
     print("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print("V0.6 Execution completed successfully.")
+    print("V0.7 Execution completed successfully.")
 
 if __name__ == "__main__":
     main()
