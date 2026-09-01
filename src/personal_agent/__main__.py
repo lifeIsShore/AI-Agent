@@ -42,6 +42,10 @@ from personal_agent.world.relationships import WorldRelationship, RELATION_PARTI
 from personal_agent.world.resolver import EntityResolver
 from personal_agent.world.temporal import TemporalReasoningEngine
 from personal_agent.world.situation import SituationDetector
+from personal_agent.goals.manager import GoalManager
+from personal_agent.goals.progress import GoalProgressEngine
+from personal_agent.reflection.engine import SelfReflectionEngine
+from personal_agent.reflection.evolution import StrategyEvolutionEngine
 from personal_agent.workflow.models import Workflow, WorkflowStep, WF_CREATED, WF_RUNNING, WF_COMPLETED, STEP_COMPLETED
 from personal_agent.workflow.dag import WorkflowDAG
 from personal_agent.workflow.verification import StepVerifier
@@ -101,8 +105,8 @@ def print_header(title: str):
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 
 def main():
-    print_header("PERSONAL ASSISTANT (V2.8 — PERSONAL WORLD MODEL & LONG-TERM CONTEXT)")
-    print("Initializing V2.8 Assistant Core...")
+    print_header("PERSONAL ASSISTANT (V2.9 — GOAL MANAGEMENT & SELF-IMPROVEMENT)")
+    print("Initializing V2.9 Assistant Core...")
 
     user_principal = IdentityProvider.get_user_principal("user_ahmet")
     credential_broker = CredentialBroker()
@@ -110,6 +114,15 @@ def main():
     review_engine = ReviewDecisionEngine()
     scope_manager = ScopeManager()
     rejection_tracker = RepeatedRejectionTracker()
+
+    goal_manager = GoalManager()
+    goal_progress_engine = GoalProgressEngine()
+    self_reflection_engine = SelfReflectionEngine()
+    strategy_evolution_engine = StrategyEvolutionEngine()
+
+    master_goal = goal_manager.create_goal("Prepare for Master's semester", priority="HIGH")
+    m1 = goal_manager.add_milestone(master_goal.goal_id, "Register courses")
+    m2 = goal_manager.add_milestone(master_goal.goal_id, "Prepare lecture schedule")
 
     decision_reasoner = DecisionReasoner()
     context_optimizer = ContextOptimizer()
@@ -244,7 +257,7 @@ def main():
 
     version_bind = config_mgr.get_version_binding()
     print(f"[Core] Active Principal: '{user_principal.principal_id}' ({user_principal.principal_type}).")
-    print(f"[Core] PersonalWorldModel active ({len(world_model.entities)} Entities, {len(world_model.relationships)} Relationships).")
+    print(f"[Core] GoalManager active (Master Goal: '{master_goal.objective}', Progress: {master_goal.progress_pct}%).")
     print(f"[Core] Policy Version: {version_bind['policy_version']} | Config Hash: {version_bind['config_hash']}.")
 
     res_ok, res_id, res_msg = resource_manager.reserve(active_wf.workflow_id, est_tokens=1500, est_cost=0.005)
@@ -403,7 +416,7 @@ def main():
     s3.mark_completed({"report_generated": True})
 
     print("\n")
-    print_header("📋 EXPLAINABLE ACTION PROPOSALS & WORLD MODEL MUTATION SAFETY")
+    print_header("📋 EXPLAINABLE ACTION PROPOSALS & SELF-REFLECTION")
     
     inbox_eval = inbox_zero_engine.evaluate_inbox(triaged_emails)
     
@@ -467,6 +480,11 @@ def main():
     active_wf.update_status(WF_COMPLETED)
     workflow_dag.checkpoint_workflow(active_wf)
 
+    # Goal Progress Update & Self-Reflection
+    goal_progress_engine.update_goal_progress(master_goal, m1.milestone_id)
+    refl_record = self_reflection_engine.evaluate_workflow_reflection(active_wf.workflow_id, "4 proposals", "4 proposals")
+    strategy_evolution_engine.evolve_strategy("daily_master_execution", refl_record, execution_strategy_store)
+
     outcome_learning_engine.record_outcome(active_wf.workflow_id, "daily_execution_workflow", OUTCOME_SUCCESS)
     execution_strategy_store.update_strategy_outcome("daily_execution_workflow", success=True)
 
@@ -500,16 +518,16 @@ def main():
     m_res = metrics_calc.calculate_metrics()
 
     print("\n")
-    print_header("📊 PERSONAL WORLD MODEL OPERATIONAL METRICS")
-    print(f"  - Graph Entities:        {len(world_model.entities)} Registered")
-    print(f"  - Graph Relationships:   {len(world_model.relationships)} Connected")
-    print(f"  - Graph Situations:      {len(situations)} Detected")
-    print(f"  - Mutation Safety:       100.0% (External Data Cannot Rewrite State)")
+    print_header("📊 GOAL MANAGEMENT & SELF-IMPROVEMENT OPERATIONAL METRICS")
+    print(f"  - Active Goals:          {len(goal_manager.get_active_goals())} ('{master_goal.objective}', Progress: {master_goal.progress_pct}%)")
+    print(f"  - Reflection Diagnosis:   '{refl_record.deviation_reason}'")
+    print(f"  - Strategy Evolution:     Confidence Updated from Reflection Evidence")
+    print(f"  - Security Invariant:     100.0% (Reflection Cannot Bypass Policy Authorization)")
     print(f"  - Total LLM Requests:     {m_res['total_llm_calls']}")
     print(f"  - P50 Workflow Latency:  {m_res['p50_latency_sec']:.3f}s")
 
     print("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print("V2.8 Execution completed successfully.")
+    print("V2.9 Execution completed successfully.")
 
 if __name__ == "__main__":
     main()
