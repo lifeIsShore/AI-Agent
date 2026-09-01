@@ -1,4 +1,5 @@
 import time
+import uuid
 from typing import List, Dict, Any, Optional, Tuple
 from personal_agent.policy.proposal import (
     ActionProposal, STATUS_PENDING_APPROVAL, STATUS_APPROVED, STATUS_REJECTED, STATUS_EXECUTED, STATUS_FAILED, STATUS_EXPIRED
@@ -6,6 +7,11 @@ from personal_agent.policy.proposal import (
 from personal_agent.tools.registry import ToolRegistry
 from personal_agent.security.audit import AuditLogger
 from personal_agent.state.manager import StateManager
+from personal_agent.events.bus import EventBus
+from personal_agent.events.event import (
+    AgentEvent, EVENT_PROPOSAL_CREATED, EVENT_PROPOSAL_APPROVED, EVENT_PROPOSAL_REJECTED,
+    EVENT_PROPOSAL_EXPIRED, EVENT_ACTION_EXECUTED, EVENT_ACTION_FAILED
+)
 
 class ApprovalQueue:
     def __init__(
@@ -13,12 +19,14 @@ class ApprovalQueue:
         tool_registry: ToolRegistry,
         audit_logger: Optional[AuditLogger] = None,
         memory_loop: Optional[Any] = None,
-        state_manager: Optional[StateManager] = None
+        state_manager: Optional[StateManager] = None,
+        event_bus: Optional[EventBus] = None
     ):
         self.registry = tool_registry
         self.audit_logger = audit_logger or AuditLogger()
         self.memory_loop = memory_loop
         self.state_manager = state_manager or StateManager()
+        self.event_bus = event_bus
         
         # Load persistent state from disk if available
         self.queue: Dict[str, ActionProposal] = self.state_manager.load_proposals()
@@ -34,11 +42,31 @@ class ApprovalQueue:
         for pid, prop in list(self.queue.items()):
             if prop.is_expired():
                 prop.status = STATUS_EXPIRED
+                if self.event_bus:
+                    self.event_bus.publish(AgentEvent(
+                        event_type=EVENT_PROPOSAL_EXPIRED,
+                        source="ApprovalQueue",
+                        entity_id=pid,
+                        payload={"action": prop.action, "target": prop.target}
+                    ))
 
     def add_proposal(self, proposal: ActionProposal):
-        """Adds an ActionProposal to the approval queue and persists to disk."""
+        """Adds an ActionProposal to the approval queue, persists to disk, and emits event."""
         self.queue[proposal.proposal_id] = proposal
         self._save_state()
+
+        if self.event_bus:
+            self.event_bus.publish(AgentEvent(
+                event_type=EVENT_PROPOSAL_CREATED,
+                source="ApprovalQueue",
+                entity_id=proposal.proposal_id,
+                payload={
+                    "action": proposal.action,
+                    "target": proposal.target,
+                    "risk_level": proposal.risk_level,
+                    "expires_at": proposal.expires_at
+                }
+            ))
 
     def list_pending(self) -> List[ActionProposal]:
         """Returns all proposals currently waiting for human approval."""
@@ -77,15 +105,24 @@ class ApprovalQueue:
         edited_params: Optional[Dict[str, Any]] = None,
         target_validator: Optional[Any] = None
     ) -> Tuple[bool, str, Optional[Any]]:
-        """Approves (and optionally edits parameters for) a pending proposal, executes the tool, logs audit, and notifies memory loop."""
+        """Approves (and optionally edits parameters for) a pending proposal, executes tool, logs audit, and emits events."""
         proposal = self.get_proposal(proposal_id)
         if not proposal:
             return False, f"Proposal ID '{proposal_id}' not found in queue.", None
+
+        execution_id = f"exec_{uuid.uuid4().hex[:10]}"
 
         # Expiration Check
         if proposal.is_expired():
             proposal.status = STATUS_EXPIRED
             self._save_state()
+            if self.event_bus:
+                self.event_bus.publish(AgentEvent(
+                    event_type=EVENT_PROPOSAL_EXPIRED,
+                    source="ApprovalQueue",
+                    entity_id=proposal_id,
+                    payload={"action": proposal.action}
+                ))
             self.audit_logger.log_proposal(
                 proposal=proposal,
                 policy_decision="Approval attempted after TTL expiration",
@@ -119,6 +156,14 @@ class ApprovalQueue:
             proposal.audit_metadata["edited_by_user"] = True
 
         proposal.status = STATUS_APPROVED
+        if self.event_bus:
+            self.event_bus.publish(AgentEvent(
+                event_type=EVENT_PROPOSAL_APPROVED,
+                source="ApprovalQueue",
+                entity_id=proposal_id,
+                payload={"action": proposal.action, "execution_id": execution_id}
+            ))
+
         func = self.registry.get_tool(proposal.action)
         if not func:
             proposal.status = STATUS_FAILED
@@ -151,6 +196,14 @@ class ApprovalQueue:
                 latency_sec=elapsed
             )
 
+            if self.event_bus:
+                self.event_bus.publish(AgentEvent(
+                    event_type=EVENT_ACTION_EXECUTED,
+                    source="ApprovalQueue",
+                    entity_id=proposal_id,
+                    payload={"execution_id": execution_id, "result": str(result)}
+                ))
+
             # Trigger Memory Learning Feedback Loop if available
             if self.memory_loop:
                 try:
@@ -173,10 +226,19 @@ class ApprovalQueue:
                 execution_result=err_msg,
                 latency_sec=elapsed
             )
+
+            if self.event_bus:
+                self.event_bus.publish(AgentEvent(
+                    event_type=EVENT_ACTION_FAILED,
+                    source="ApprovalQueue",
+                    entity_id=proposal_id,
+                    payload={"execution_id": execution_id, "error": err_msg}
+                ))
+
             return False, f"Tool execution failed: {err_msg}", None
 
     def reject_proposal(self, proposal_id: str, reason: Optional[str] = None) -> Tuple[bool, str]:
-        """Rejects a pending proposal, logs audit record, and triggers memory learning signal."""
+        """Rejects a pending proposal, logs audit record, emits event, and triggers memory learning signal."""
         proposal = self.get_proposal(proposal_id)
         if not proposal:
             return False, f"Proposal ID '{proposal_id}' not found in queue."
@@ -196,6 +258,14 @@ class ApprovalQueue:
             execution_result=None,
             latency_sec=0.0
         )
+
+        if self.event_bus:
+            self.event_bus.publish(AgentEvent(
+                event_type=EVENT_PROPOSAL_REJECTED,
+                source="ApprovalQueue",
+                entity_id=proposal_id,
+                payload={"reason": reject_reason}
+            ))
 
         # Trigger Memory Learning Feedback Loop if available
         if self.memory_loop:

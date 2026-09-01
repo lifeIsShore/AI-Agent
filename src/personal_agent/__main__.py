@@ -16,6 +16,9 @@ from personal_agent.policy.proposal import ActionProposal, STATUS_PENDING_APPROV
 from personal_agent.policy.approval import ApprovalQueue
 from personal_agent.security.audit import AuditLogger
 from personal_agent.state.manager import StateManager
+from personal_agent.events.store import EventStore
+from personal_agent.events.bus import EventBus
+from personal_agent.events.event import AgentEvent, EVENT_EMAIL_RECEIVED, EVENT_ACTION_EXECUTED
 from personal_agent.memory.manager import MemoryManager
 from personal_agent.memory.learning import MemoryLearningLoop, SCOPE_DURABLE_PREFERENCE, SCOPE_EVENT_MEMORY
 from personal_agent.triage.engine import PriorityEngine
@@ -35,25 +38,29 @@ def print_header(title: str):
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 
 def main():
-    print_header("PERSONAL ASSISTANT (V1.0 — PERSISTENT AGENT RUNTIME)")
-    print("Initializing V1.0 Persistent Assistant Runtime...")
+    print_header("PERSONAL ASSISTANT (V1.1 — EVENT-DRIVEN AGENT ARCHITECTURE)")
+    print("Initializing V1.1 Assistant Core...")
 
     gateway = ModelGateway(provider="ollama")
     registry = ToolRegistry()
     registry.register_default_tools()
     
     state_manager = StateManager(state_dir="data/state")
+    event_store = EventStore(events_dir="data/events", log_filename="events.jsonl")
+    event_bus = EventBus(event_store=event_store)
+    
     policy = PolicyEngine()
     audit_logger = AuditLogger()
     memory_manager = MemoryManager(gateway=gateway)
     memory_loop = MemoryLearningLoop(memory_manager=memory_manager)
     
-    # Persistent Approval Queue auto-restores pending state from data/state/proposals.json
+    # Persistent Approval Queue with StateManager and EventBus integration
     approval_queue = ApprovalQueue(
         tool_registry=registry,
         audit_logger=audit_logger,
         memory_loop=memory_loop,
-        state_manager=state_manager
+        state_manager=state_manager,
+        event_bus=event_bus
     )
     
     triage_engine = PriorityEngine(gateway)
@@ -61,11 +68,14 @@ def main():
     context_manager = ContextManager(gateway=gateway)
     daily_planner = DailyPlannerEngine(user_name="Ahmet")
 
+    # Replay any unprocessed events from disk log on startup
+    event_bus.replay_unprocessed()
+
     # 1. Initialize Agent Scheduler & Register Jobs
     job_registry = JobRegistry()
     scheduler = AgentScheduler(registry=job_registry, state_manager=state_manager)
 
-    print("[Core] Persistent State Store (data/state/), Approval Queue, & Job Scheduler loaded.")
+    print("[Core] Persistent State Store (data/state/), Event Bus (data/events/), Approval Queue, & Job Scheduler loaded.")
 
     # 2. Fetch live data with graceful fallbacks
     print("\nFetching Live Assistant Context (Gmail, Calendar, Tasks)...")
@@ -142,6 +152,13 @@ def main():
     # 4. Triaging & Context Assembly
     triaged_emails = []
     for email in emails:
+        # Publish EMAIL_RECEIVED event to EventBus
+        event_bus.publish(AgentEvent(
+            event_type=EVENT_EMAIL_RECEIVED,
+            source="GmailTool",
+            entity_id=str(email.get("id")),
+            payload={"sender": email.get("sender"), "subject": email.get("subject")}
+        ))
         analysis, _ = triage_engine.evaluate(email)
         analysis["id"] = email.get("id")
         analysis["sender"] = email.get("sender")
@@ -230,7 +247,7 @@ def main():
             for pid, (success, msg) in zip(rem_pids, batch_rej):
                 print(f"   - [{pid}] REJECTED: {msg}")
 
-    # 8. Persistent Audit & State Summary
+    # 8. Persistent Audit & Event Store Summary
     print("\n")
     print_header("📜 AUDIT LOG RECENT RECORDS (data/logs/audit.jsonl)")
     recent_audit_logs = audit_logger.get_recent_logs(limit=5)
@@ -238,16 +255,14 @@ def main():
         print(f"[{log['timestamp'][:19]}] ID: {log['proposal_id']} | Action: {log['action']} | Decision: {log['policy_decision']} | Status: {log['execution_status']}")
 
     print("\n")
-    print_header("🧠 PERSISTENT STATE STORE (data/state/runtime.json)")
-    saved_runtime = state_manager.load_runtime_state()
-    if saved_runtime:
-        print(f"  - Last Daemon Tick: {saved_runtime.get('last_tick')[:19]}")
-        print(f"  - Registered Daemon Jobs: {len(saved_runtime.get('jobs', []))}")
-        for j in saved_runtime.get('jobs', []):
-            print(f"    * Job [{j['job_id']}] '{j['name']}': Next Run -> {j['next_run'][:19]}")
+    print_header("⚡ PERSISTENT EVENT STORE (data/events/events.jsonl)")
+    recent_events = event_store.load_all_events()
+    print(f"  - Total Recorded Events: {len(recent_events)}")
+    for evt in recent_events[-5:]:
+        print(f"  - [{evt.timestamp[:19]}] Type: {evt.event_type:<22} | Source: {evt.source:<12} | Entity: {evt.entity_id}")
 
     print("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print("V1.0 Execution completed successfully.")
+    print("V1.1 Execution completed successfully.")
 
 if __name__ == "__main__":
     main()

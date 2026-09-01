@@ -1,5 +1,6 @@
 import json
 import time
+import uuid
 import hashlib
 from typing import Dict, Any, List, Optional
 from personal_agent.models.gateway import ModelGateway
@@ -7,6 +8,8 @@ from personal_agent.tools.registry import ToolRegistry
 from personal_agent.policy.engine import PolicyEngine
 from personal_agent.policy.proposal import ActionProposal, STATUS_EXECUTED, STATUS_FAILED, STATUS_EXPIRED
 from personal_agent.security.audit import AuditLogger
+from personal_agent.events.bus import EventBus
+from personal_agent.events.event import AgentEvent, EVENT_ACTION_EXECUTED, EVENT_ACTION_FAILED
 
 class AgentRuntime:
     def __init__(
@@ -14,12 +17,14 @@ class AgentRuntime:
         model_gateway: ModelGateway,
         tool_registry: ToolRegistry,
         policy_engine: PolicyEngine,
-        audit_logger: Optional[AuditLogger] = None
+        audit_logger: Optional[AuditLogger] = None,
+        event_bus: Optional[EventBus] = None
     ):
         self.llm = model_gateway
         self.tools = tool_registry
         self.policy = policy_engine
         self.audit_logger = audit_logger or AuditLogger()
+        self.event_bus = event_bus
         self.messages: List[Dict[str, Any]] = []
         self.idempotency_cache: Dict[str, Dict[str, Any]] = {}
 
@@ -55,11 +60,12 @@ class AgentRuntime:
                 
                 target_str = str(tool_args.get("msg_id") or tool_args.get("event_id") or tool_args.get("task_id") or "system")
                 idem_key = self.get_idempotency_key(tool_name, target_str, tool_args)
+                execution_id = f"exec_{uuid.uuid4().hex[:10]}"
 
                 # Check Idempotency Cache (Prevent duplicate execution on network retries)
                 if idem_key in self.idempotency_cache:
                     cached_res = self.idempotency_cache[idem_key]
-                    print(f"[Idempotency Cache Hit] Tool '{tool_name}' already executed cleanly. Returning cached result.")
+                    print(f"[Idempotency Cache Hit] Tool '{tool_name}' already executed cleanly (Key: {idem_key}). Returning cached result.")
                     self.messages.append({
                         "role": "tool",
                         "content": str(cached_res["result"]),
@@ -87,10 +93,15 @@ class AgentRuntime:
                             result = func(**tool_args)
                             elapsed = time.time() - start_time
                             proposal.status = STATUS_EXECUTED
-                            print(f"[Tool Execution] Success ({elapsed:.2f}s): {result}")
+                            print(f"[Tool Execution {execution_id}] Success ({elapsed:.2f}s): {result}")
 
-                            # Cache execution result for idempotency protection
-                            self.idempotency_cache[idem_key] = {"result": result, "timestamp": time.time()}
+                            # Cache execution result with execution_id
+                            self.idempotency_cache[idem_key] = {
+                                "execution_id": execution_id,
+                                "proposal_id": proposal.proposal_id,
+                                "result": result,
+                                "timestamp": time.time()
+                            }
 
                             self.audit_logger.log_proposal(
                                 proposal=proposal,
@@ -101,6 +112,21 @@ class AgentRuntime:
                                 latency_sec=elapsed
                             )
 
+                            # Publish ACTION_EXECUTED event to EventBus
+                            if self.event_bus:
+                                self.event_bus.publish(AgentEvent(
+                                    event_type=EVENT_ACTION_EXECUTED,
+                                    source="AgentRuntime",
+                                    entity_id=proposal.proposal_id,
+                                    payload={
+                                        "execution_id": execution_id,
+                                        "idempotency_key": idem_key,
+                                        "action": tool_name,
+                                        "target": target_str,
+                                        "result": str(result)
+                                    }
+                                ))
+
                             self.messages.append({
                                 "role": "tool",
                                 "content": str(result),
@@ -109,18 +135,33 @@ class AgentRuntime:
                         except Exception as e:
                             elapsed = time.time() - start_time
                             proposal.status = STATUS_FAILED
+                            err_msg = str(e)
                             self.audit_logger.log_proposal(
                                 proposal=proposal,
                                 policy_decision=reason,
                                 user_approved=user_approved,
                                 execution_status="FAILED",
-                                execution_result=str(e),
+                                execution_result=err_msg,
                                 latency_sec=elapsed
                             )
 
+                            if self.event_bus:
+                                self.event_bus.publish(AgentEvent(
+                                    event_type=EVENT_ACTION_FAILED,
+                                    source="AgentRuntime",
+                                    entity_id=proposal.proposal_id,
+                                    payload={
+                                        "execution_id": execution_id,
+                                        "idempotency_key": idem_key,
+                                        "action": tool_name,
+                                        "target": target_str,
+                                        "error": err_msg
+                                    }
+                                ))
+
                             self.messages.append({
                                 "role": "tool",
-                                "content": f"Error executing tool: {e}",
+                                "content": f"Error executing tool: {err_msg}",
                                 "name": tool_name
                             })
                 else:
