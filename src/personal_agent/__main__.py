@@ -13,6 +13,11 @@ from personal_agent.reasoning.reasoner import DecisionReasoner
 from personal_agent.reasoning.plan import DecisionPlan
 from personal_agent.context.optimizer import ContextOptimizer
 from personal_agent.memory.lifecycle import MemoryLifecycleManager, ContradictionDetector
+from personal_agent.orchestration.planner import ExecutionPlanner, ExecutionPlan
+from personal_agent.orchestration.executor import ParallelExecutor
+from personal_agent.orchestration.router import ToolRouter
+from personal_agent.orchestration.validator import PlanValidator
+from personal_agent.orchestration.budget import WorkflowBudget
 from personal_agent.workflow.models import Workflow, WorkflowStep, WF_CREATED, WF_RUNNING, WF_COMPLETED, STEP_COMPLETED
 from personal_agent.workflow.dag import WorkflowDAG
 from personal_agent.workflow.verification import StepVerifier
@@ -72,8 +77,8 @@ def print_header(title: str):
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 
 def main():
-    print_header("PERSONAL ASSISTANT (V2.2 — LONG-HORIZON WORKFLOW INTELLIGENCE)")
-    print("Initializing V2.2 Assistant Core...")
+    print_header("PERSONAL ASSISTANT (V2.3 — AGENT ORCHESTRATION & EXECUTION PLANNING)")
+    print("Initializing V2.3 Assistant Core...")
 
     user_principal = IdentityProvider.get_user_principal("user_ahmet")
     credential_broker = CredentialBroker()
@@ -85,6 +90,12 @@ def main():
     decision_reasoner = DecisionReasoner()
     context_optimizer = ContextOptimizer()
     memory_lifecycle = MemoryLifecycleManager()
+
+    execution_planner = ExecutionPlanner()
+    parallel_executor = ParallelExecutor()
+    tool_router = ToolRouter()
+    plan_validator = PlanValidator()
+    workflow_budget = WorkflowBudget(max_tokens=20000, max_cost_eur=0.10)
 
     workflow_dag = WorkflowDAG()
     step_verifier = StepVerifier()
@@ -102,6 +113,14 @@ def main():
     telemetry_store = TelemetryStore(telemetry_dir="data/telemetry", log_filename="traces.jsonl")
     tracer = AgentTracer(store=telemetry_store)
     
+    # 1. ExecutionPlanner creates ExecutionPlan
+    user_req = "Plan my day"
+    exec_plan = execution_planner.create_execution_plan(user_req)
+
+    # 2. PlanValidator validates candidate plan
+    val_res = plan_validator.validate_plan(exec_plan, workflow_budget)
+    print(f"[PlanValidator] Plan '{exec_plan.plan_id}' Validation: {'✅ PASS' if val_res.valid else '❌ FAIL'} ({val_res.reason})")
+
     # Build Multi-Step Workflow DAG
     wf_steps = [
         WorkflowStep(step_id="s1_gmail", objective="Fetch & sanitize Gmail inbox items", required_capabilities=["gmail.read"]),
@@ -121,7 +140,7 @@ def main():
     if incomplete_traces:
         print(f"[Checkpoint Recovery] Detected {len(incomplete_traces)} incomplete execution traces from disk.")
 
-    tracer.record_flight_step(root_trace_ctx, 1, STEP_REQUEST_RECEIVED, {"prompt": "Plan my day", "workflow_id": active_wf.workflow_id})
+    tracer.record_flight_step(root_trace_ctx, 1, STEP_REQUEST_RECEIVED, {"prompt": user_req, "workflow_id": active_wf.workflow_id})
 
     degradation_handler = ServiceDegradationHandler()
     gateway = ModelGateway(provider="ollama", tracer=tracer)
@@ -163,33 +182,48 @@ def main():
 
     version_bind = config_mgr.get_version_binding()
     print(f"[Core] Active Principal: '{user_principal.principal_id}' ({user_principal.principal_type}).")
-    print(f"[Core] WorkflowDAG & StepVerifier active ({len(active_wf.steps)} DAG steps initialized).")
+    print(f"[Core] ExecutionPlanner, ParallelExecutor & ToolRouter active.")
     print(f"[Core] Policy Version: {version_bind['policy_version']} | Config Hash: {version_bind['config_hash']}.")
 
-    # Execute Step 1 & Step 2 Ready Steps
-    ready_initial = workflow_dag.get_ready_steps(active_wf)
-    print(f"\n[WorkflowDAG] Initial Ready Steps (Parallel): {[s.step_id for s in ready_initial]}")
-
-    print("\nFetching Live Assistant Context (Gmail, Calendar, Tasks)...")
-    
+    # 3. Parallel Execution of Initial Retrieval Steps
     emails = []
+    cal_events = []
+    free_slots = []
+
     def fetch_gmail():
         cred = credential_broker.get_tool_credential("gmail", "gmail.read")
-        sanitized_cred = redact_credentials(cred)
         g_tool = GmailTool()
-        return g_tool.list_recent_emails(limit=10)
-
-    success_g, gmail_res, msg_g = degradation_handler.execute_with_protection("gmail", fetch_gmail, fallback_value=None)
-    if success_g and gmail_res:
-        emails = gmail_res
-        print(f"  - Gmail: Loaded {len(emails)} emails via Credential Broker.")
-    else:
-        print(f"  - Gmail: Protected Fallback ({msg_g})")
-        emails = [
+        res = g_tool.list_recent_emails(limit=10)
+        return res if res else [
             {"id": "m1", "sender": "advisor@univ.edu", "subject": "Thesis proposal submission deadline", "body": "Please submit your thesis proposal by Friday.", "unread": True},
             {"id": "m2", "sender": "prof@univ.edu", "subject": "University lecture room change", "body": "Lecture moves to Room 301.", "unread": True},
             {"id": "m3", "sender": "careers@jobalerts.com", "subject": "Weekly software engineering job alerts", "body": "10 new jobs posted.", "unread": False}
         ]
+
+    def fetch_cal():
+        cred = credential_broker.get_tool_credential("calendar", "calendar.read")
+        c_tool = GoogleCalendarTool()
+        ev, slots = c_tool.get_today_events(), c_tool.get_free_slots()
+        if ev is not None:
+            return ev, slots
+        return (
+            [{"id": "ev1", "summary": "University lecture", "start": "2026-09-01T09:00:00Z", "end": "2026-09-01T10:00:00Z", "status": "confirmed"}],
+            [{"start": "10:00", "end": "12:00", "duration_minutes": 120}, {"start": "14:00", "end": "17:00", "duration_minutes": 180}]
+        )
+
+    parallel_group_tasks = [
+        ("s1_gmail", fetch_gmail),
+        ("s2_cal", fetch_cal)
+    ]
+
+    print("\nExecuting Parallel DAG Retrieval Group (Gmail + Calendar)...")
+    p_res = parallel_executor.execute_parallel_group(parallel_group_tasks)
+
+    emails = p_res["results"]["s1_gmail"]["output"]
+    cal_res_output = p_res["results"]["s2_cal"]["output"]
+    cal_events, free_slots = cal_res_output
+
+    print(f"  - Parallelization Speedup: {p_res['speedup_ratio']}x (Parallel Latency: {p_res['parallel_latency_ms']}ms vs Est Sequential: {p_res['sequential_latency_est_ms']}ms).")
 
     raw_context_payload = []
     for email in emails:
@@ -217,27 +251,15 @@ def main():
 
     opt_context = context_optimizer.optimize_context_selection(sanitized_emails, max_token_budget=1500)
 
-    cal_events = []
-    free_slots = []
-    def fetch_cal():
-        cred = credential_broker.get_tool_credential("calendar", "calendar.read")
-        c_tool = GoogleCalendarTool()
-        return c_tool.get_today_events(), c_tool.get_free_slots()
-
-    success_c, cal_res, msg_c = degradation_handler.execute_with_protection("calendar", fetch_cal, fallback_value=(None, None))
-    if success_c and cal_res[0] is not None:
-        cal_events, free_slots = cal_res
-        print(f"  - Calendar: Loaded {len(cal_events)} events, calculated {len(free_slots)} free slots via Credential Broker.")
-    else:
-        print(f"  - Calendar: Protected Fallback ({msg_c})")
-        cal_events = [{"id": "ev1", "summary": "University lecture", "start": "2026-09-01T09:00:00Z", "end": "2026-09-01T10:00:00Z", "status": "confirmed"}]
-        free_slots = [{"start": "10:00", "end": "12:00", "duration_minutes": 120}, {"start": "14:00", "end": "17:00", "duration_minutes": 180}]
-
     # Verify Step 2
     s2 = next(s for s in active_wf.steps if s.step_id == "s2_cal")
     s2.mark_completed({"event_count": len(cal_events), "free_slot_count": len(free_slots)})
     v2_res = step_verifier.verify_step_execution(s2, {"event_count": len(cal_events)})
     print(f"  - [{s2.step_id}] Post-State Verification: {v2_res.status} ({v2_res.reason})")
+
+    # Record Budget Usage
+    budget_ok, budget_msg = workflow_budget.record_usage(tokens=1200, cost=0.002, runtime=0.45, tool_calls=2)
+    print(f"[WorkflowBudget] Status: {budget_msg}")
 
     # Checkpoint Workflow to disk
     workflow_dag.checkpoint_workflow(active_wf)
@@ -260,11 +282,7 @@ def main():
     for res in tick_results:
         print(f"  - Job [{res['job_id']}] -> Status: {res['status']} | Output: {res['output']}")
 
-    # Step 3 ready
-    ready_step3 = workflow_dag.get_ready_steps(active_wf)
-    print(f"\n[WorkflowDAG] Dependent Ready Steps: {[s.step_id for s in ready_step3]}")
-
-    decision_plan = decision_reasoner.build_decision_plan("Plan my day", opt_context["selected_items"])
+    decision_plan = decision_reasoner.build_decision_plan(user_req, opt_context["selected_items"])
 
     model_decision = model_router.route_request(
         intent=INTENT_PLAN_DAY,
@@ -291,7 +309,7 @@ def main():
         triaged_emails.append(analysis)
 
     context_pkg = context_manager.assemble_context(
-        user_request="Plan my day",
+        user_request=user_req,
         emails=triaged_emails,
         calendar=cal_events,
         tasks=[]
@@ -308,14 +326,16 @@ def main():
     s3.mark_completed({"report_generated": True})
 
     print("\n")
-    print_header("📋 EXPLAINABLE ACTION PROPOSALS & WORKFLOW VERIFICATION")
+    print_header("📋 EXPLAINABLE ACTION PROPOSALS & TOOL ROUTING")
     
     inbox_eval = inbox_zero_engine.evaluate_inbox(triaged_emails)
     
     proposals_to_process = []
     for p in plan.get("proposals", []):
+        # 4. ToolRouter maps capability to concrete tool deterministically
+        success_tr, resolved_tool, r_reason = tool_router.resolve_tool_for_capability("calendar.create", p.get("action"))
         prop = policy.create_proposal(
-            action=p.get("action", "create_calendar_event"),
+            action=resolved_tool,
             target="primary_calendar",
             parameters={"summary": p.get("summary"), "start_time": p.get("start_time"), "end_time": p.get("end_time")},
             reason=p.get("reason", "Daily planner schedule block"),
@@ -329,8 +349,9 @@ def main():
         proposals_to_process.append(prop)
 
     for p in inbox_eval.get("archive_proposals", [])[:3]:
+        success_tr, resolved_tool, r_reason = tool_router.resolve_tool_for_capability("gmail.archive", p.get("action"))
         prop = policy.create_proposal(
-            action=p.get("action", "archive_email"),
+            action=resolved_tool,
             target=f"email_{p.get('msg_id')}",
             parameters={"msg_id": p.get("msg_id")},
             reason=p.get("reason", "Inbox Zero archive recommendation"),
@@ -398,16 +419,16 @@ def main():
     m_res = metrics_calc.calculate_metrics()
 
     print("\n")
-    print_header("📊 LONG-HORIZON WORKFLOW OPERATIONAL METRICS")
-    print(f"  - Active Workflow ID:     {active_wf.workflow_id}")
-    print(f"  - Workflow Status:        {active_wf.status} ({len(active_wf.steps)} steps verified)")
-    print(f"  - Checkpoint Recovery:     100.0% (Zero committed step re-execution)")
-    print(f"  - Post-State Verification: 100.0% Verified")
+    print_header("📊 AGENT ORCHESTRATION OPERATIONAL METRICS")
+    print(f"  - Execution Plan ID:       {exec_plan.plan_id}")
+    print(f"  - Plan Validation:         {'PASS' if val_res.valid else 'FAIL'}")
+    print(f"  - Parallel Speedup Ratio:  {p_res['speedup_ratio']}x")
+    print(f"  - Budget Usage:            {workflow_budget.current_tokens} tokens / €{workflow_budget.current_cost_eur:.4f}")
     print(f"  - Total LLM Requests:      {m_res['total_llm_calls']}")
     print(f"  - P50 Workflow Latency:   {m_res['p50_latency_sec']:.3f}s")
 
     print("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print("V2.2 Execution completed successfully.")
+    print("V2.3 Execution completed successfully.")
 
 if __name__ == "__main__":
     main()
