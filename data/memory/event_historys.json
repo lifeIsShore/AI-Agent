@@ -4543,5 +4543,253 @@
       "observations": 1,
       "last_observed_at": "2026-09-01T13:23:13.393738+00:00"
     }
+  },
+  {
+    "id": "mem_43b66735",
+    "type": "event_history",
+    "content": "User approved action 'create_calendar_event' on target 'primary' (Reason: Allocated into free slot).",
+    "created_at": "2026-09-01T13:29:14.023939+00:00",
+    "updated_at": "2026-09-01T13:29:14.023939+00:00",
+    "source": "user",
+    "confidence": 0.68,
+    "importance": "low",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "ACTION",
+      "condition": {
+        "action": "create_calendar_event"
+      },
+      "confidence": 0.68,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:29:14.023939+00:00"
+    }
+  },
+  {
+    "id": "mem_4f350901",
+    "type": "event_history",
+    "content": "User rejected action 'trash_email' on target 'msg_555' (Reason: Don't delete this email).",
+    "created_at": "2026-09-01T13:29:14.114951+00:00",
+    "updated_at": "2026-09-01T13:29:14.114951+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "low",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "TARGET",
+      "condition": {
+        "action": "trash_email",
+        "target": "msg_555"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:29:14.114951+00:00"
+    }
+  },
+  {
+    "id": "mem_06e97d41",
+    "type": "event_history",
+    "content": "User rejected action 'trash_email' on target 'receipt_456' (Reason: Keep receipts).",
+    "created_at": "2026-09-01T13:29:14.343612+00:00",
+    "updated_at": "2026-09-01T13:29:14.343612+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "low",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "TARGET",
+      "condition": {
+        "action": "trash_email",
+        "target": "receipt_456"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:29:14.343612+00:00"
+    }
+  },
+  {
+    "id": "mem_bd33b3ce",
+    "type": "event_history",
+    "content": "User rejected action 'create_calendar_event' on target 'primary' (Reason: Not today).",
+    "created_at": "2026-09-01T13:29:15.315327+00:00",
+    "updated_at": "2026-09-01T13:29:15.315327+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "low",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "ACTION",
+      "condition": {
+        "action": "create_calendar_event"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:29:15.315327+00:00"
+    }
+  },
+  {
+    "id": "mem_bba705be",
+    "type": "event_history",
+    "content": "User rejected action 'trash_email' on target 'msg_10' (Reason: Batch reject by user).",
+    "created_at": "2026-09-01T13:29:15.539278+00:00",
+    "updated_at": "2026-09-01T13:29:15.539278+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "low",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "TARGET",
+      "condition": {
+        "action": "trash_email",
+        "target": "msg_10"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:29:15.538623+00:00"
+    }
+  },
+  {
+    "id": "mem_e034622e",
+    "type": "event_history",
+    "content": "User rejected action 'trash_email' on target 'msg_11' (Reason: Batch reject by user).",
+    "created_at": "2026-09-01T13:29:15.670373+00:00",
+    "updated_at": "2026-09-01T13:29:15.670373+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "low",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "TARGET",
+      "condition": {
+        "action": "trash_email",
+        "target": "msg_11"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:29:15.670373+00:00"
+    }
+  },
+  {
+    "id": "mem_4bd568c1",
+    "type": "event_history",
+    "content": "User approved action 'create_calendar_event' on target 'primary' (Reason: Allocated into free slot).",
+    "created_at": "2026-09-01T13:30:06.032235+00:00",
+    "updated_at": "2026-09-01T13:30:06.032235+00:00",
+    "source": "user",
+    "confidence": 0.68,
+    "importance": "low",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "ACTION",
+      "condition": {
+        "action": "create_calendar_event"
+      },
+      "confidence": 0.68,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:30:06.032235+00:00"
+    }
+  },
+  {
+    "id": "mem_2a3bb71c",
+    "type": "event_history",
+    "content": "User rejected action 'trash_email' on target 'msg_555' (Reason: Don't delete this email).",
+    "created_at": "2026-09-01T13:30:06.074986+00:00",
+    "updated_at": "2026-09-01T13:30:06.074986+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "low",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "TARGET",
+      "condition": {
+        "action": "trash_email",
+        "target": "msg_555"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:30:06.074986+00:00"
+    }
+  },
+  {
+    "id": "mem_105504b6",
+    "type": "event_history",
+    "content": "User rejected action 'trash_email' on target 'receipt_456' (Reason: Keep receipts).",
+    "created_at": "2026-09-01T13:30:06.221416+00:00",
+    "updated_at": "2026-09-01T13:30:06.221416+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "low",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "TARGET",
+      "condition": {
+        "action": "trash_email",
+        "target": "receipt_456"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:30:06.221416+00:00"
+    }
+  },
+  {
+    "id": "mem_aa089160",
+    "type": "event_history",
+    "content": "User rejected action 'create_calendar_event' on target 'primary' (Reason: Not today).",
+    "created_at": "2026-09-01T13:30:06.709456+00:00",
+    "updated_at": "2026-09-01T13:30:06.709456+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "low",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "ACTION",
+      "condition": {
+        "action": "create_calendar_event"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:30:06.709456+00:00"
+    }
+  },
+  {
+    "id": "mem_2f66a47d",
+    "type": "event_history",
+    "content": "User rejected action 'trash_email' on target 'msg_10' (Reason: Batch reject by user).",
+    "created_at": "2026-09-01T13:30:06.795537+00:00",
+    "updated_at": "2026-09-01T13:30:06.795537+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "low",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "TARGET",
+      "condition": {
+        "action": "trash_email",
+        "target": "msg_10"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:30:06.795537+00:00"
+    }
+  },
+  {
+    "id": "mem_d00a4c8b",
+    "type": "event_history",
+    "content": "User rejected action 'trash_email' on target 'msg_11' (Reason: Batch reject by user).",
+    "created_at": "2026-09-01T13:30:06.841066+00:00",
+    "updated_at": "2026-09-01T13:30:06.841066+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "low",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "TARGET",
+      "condition": {
+        "action": "trash_email",
+        "target": "msg_11"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:30:06.841066+00:00"
+    }
   }
 ]
