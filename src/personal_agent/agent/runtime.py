@@ -10,6 +10,8 @@ from personal_agent.policy.proposal import ActionProposal, STATUS_EXECUTED, STAT
 from personal_agent.security.audit import AuditLogger
 from personal_agent.events.bus import EventBus
 from personal_agent.events.event import AgentEvent, EVENT_ACTION_EXECUTED, EVENT_ACTION_FAILED
+from personal_agent.telemetry.trace import TraceContext
+from personal_agent.telemetry.tracer import AgentTracer
 
 class AgentRuntime:
     def __init__(
@@ -18,13 +20,15 @@ class AgentRuntime:
         tool_registry: ToolRegistry,
         policy_engine: PolicyEngine,
         audit_logger: Optional[AuditLogger] = None,
-        event_bus: Optional[EventBus] = None
+        event_bus: Optional[EventBus] = None,
+        tracer: Optional[AgentTracer] = None
     ):
         self.llm = model_gateway
         self.tools = tool_registry
         self.policy = policy_engine
         self.audit_logger = audit_logger or AuditLogger()
         self.event_bus = event_bus
+        self.tracer = tracer or AgentTracer()
         self.messages: List[Dict[str, Any]] = []
         self.idempotency_cache: Dict[str, Dict[str, Any]] = {}
 
@@ -33,13 +37,15 @@ class AgentRuntime:
         raw_str = f"{action}:{target}:{json.dumps(parameters, sort_keys=True)}"
         return hashlib.sha256(raw_str.encode('utf-8')).hexdigest()[:16]
 
-    def process_request(self, user_prompt: str, user_approved: bool = False) -> str:
+    def process_request(self, user_prompt: str, user_approved: bool = False, trace_ctx: Optional[TraceContext] = None) -> str:
+        ctx = trace_ctx or TraceContext()
         self.messages.append({"role": "user", "content": user_prompt})
         
         # 1. Call LLM
         response = self.llm.chat(
             messages=self.messages,
-            tools=self.tools.get_all_schemas() if self.tools.get_all_schemas() else None
+            tools=self.tools.get_all_schemas() if self.tools.get_all_schemas() else None,
+            trace_ctx=ctx
         )
         
         self.messages.append(response)
@@ -62,6 +68,9 @@ class AgentRuntime:
                 idem_key = self.get_idempotency_key(tool_name, target_str, tool_args)
                 execution_id = f"exec_{uuid.uuid4().hex[:10]}"
 
+                # Derive child trace span with execution_id
+                span_ctx = ctx.create_child_span(execution_id=execution_id)
+
                 # Check Idempotency Cache (Prevent duplicate execution on network retries)
                 if idem_key in self.idempotency_cache:
                     cached_res = self.idempotency_cache[idem_key]
@@ -80,6 +89,7 @@ class AgentRuntime:
                     parameters=tool_args,
                     reason=f"LLM tool invocation request for '{tool_name}'"
                 )
+                span_ctx.proposal_id = proposal.proposal_id
 
                 is_allowed, reason = self.policy.check_proposal(proposal, user_approved=user_approved)
                 print(f"[Policy Proposal {proposal.proposal_id}] Risk: {proposal.risk_level} | Decision: {reason}")
@@ -111,6 +121,14 @@ class AgentRuntime:
                                 execution_result=result,
                                 latency_sec=elapsed
                             )
+
+                            # Record telemetry span
+                            if self.tracer:
+                                self.tracer.record_span(span_ctx, "TOOL_EXECUTION_SUCCESS", {
+                                    "action": tool_name,
+                                    "target": target_str,
+                                    "latency_sec": round(elapsed, 3)
+                                })
 
                             # Publish ACTION_EXECUTED event to EventBus
                             if self.event_bus:
@@ -144,6 +162,12 @@ class AgentRuntime:
                                 execution_result=err_msg,
                                 latency_sec=elapsed
                             )
+
+                            if self.tracer:
+                                self.tracer.record_span(span_ctx, "TOOL_EXECUTION_FAILED", {
+                                    "action": tool_name,
+                                    "error": err_msg
+                                })
 
                             if self.event_bus:
                                 self.event_bus.publish(AgentEvent(
@@ -181,7 +205,7 @@ class AgentRuntime:
                     })
 
             # Call LLM again with tool results
-            final_response = self.llm.chat(messages=self.messages)
+            final_response = self.llm.chat(messages=self.messages, trace_ctx=ctx)
             self.messages.append(final_response)
             return final_response.get("content", "")
             

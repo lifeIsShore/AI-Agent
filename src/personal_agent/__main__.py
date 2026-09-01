@@ -19,6 +19,9 @@ from personal_agent.state.manager import StateManager
 from personal_agent.events.store import EventStore
 from personal_agent.events.bus import EventBus
 from personal_agent.events.event import AgentEvent, EVENT_EMAIL_RECEIVED, EVENT_ACTION_EXECUTED
+from personal_agent.telemetry.store import TelemetryStore
+from personal_agent.telemetry.tracer import AgentTracer
+from personal_agent.telemetry.trace import TraceContext
 from personal_agent.memory.manager import MemoryManager
 from personal_agent.memory.learning import MemoryLearningLoop, SCOPE_DURABLE_PREFERENCE, SCOPE_EVENT_MEMORY
 from personal_agent.triage.engine import PriorityEngine
@@ -38,10 +41,14 @@ def print_header(title: str):
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 
 def main():
-    print_header("PERSONAL ASSISTANT (V1.1 — EVENT-DRIVEN AGENT ARCHITECTURE)")
-    print("Initializing V1.1 Assistant Core...")
+    print_header("PERSONAL ASSISTANT (V1.2 — AGENT OBSERVABILITY & EXECUTION TRACING)")
+    print("Initializing V1.2 Assistant Core...")
 
-    gateway = ModelGateway(provider="ollama")
+    telemetry_store = TelemetryStore(telemetry_dir="data/telemetry", log_filename="traces.jsonl")
+    tracer = AgentTracer(store=telemetry_store)
+    root_trace_ctx = TraceContext(request_id="req_daily_daemon_run")
+
+    gateway = ModelGateway(provider="ollama", tracer=tracer)
     registry = ToolRegistry()
     registry.register_default_tools()
     
@@ -75,7 +82,7 @@ def main():
     job_registry = JobRegistry()
     scheduler = AgentScheduler(registry=job_registry, state_manager=state_manager)
 
-    print("[Core] Persistent State Store (data/state/), Event Bus (data/events/), Approval Queue, & Job Scheduler loaded.")
+    print("[Core] Persistent State Store (data/state/), Event Bus (data/events/), Telemetry Tracing (data/telemetry/), & Job Scheduler loaded.")
 
     # 2. Fetch live data with graceful fallbacks
     print("\nFetching Live Assistant Context (Gmail, Calendar, Tasks)...")
@@ -152,7 +159,6 @@ def main():
     # 4. Triaging & Context Assembly
     triaged_emails = []
     for email in emails:
-        # Publish EMAIL_RECEIVED event to EventBus
         event_bus.publish(AgentEvent(
             event_type=EVENT_EMAIL_RECEIVED,
             source="GmailTool",
@@ -170,6 +176,14 @@ def main():
         emails=triaged_emails,
         calendar=cal_events,
         tasks=[]
+    )
+
+    tracer.record_context_efficiency(
+        trace_ctx=root_trace_ctx,
+        intent="PLAN_DAY",
+        item_counts={"emails": len(triaged_emails), "calendar": len(cal_events), "tasks": 0},
+        total_bytes=len(context_pkg.to_prompt_context()),
+        latency_sec=0.01
     )
 
     # 5. Generate Daily Execution Plan
@@ -247,22 +261,18 @@ def main():
             for pid, (success, msg) in zip(rem_pids, batch_rej):
                 print(f"   - [{pid}] REJECTED: {msg}")
 
-    # 8. Persistent Audit & Event Store Summary
+    # 8. Telemetry & Execution Tracing Summary
     print("\n")
-    print_header("📜 AUDIT LOG RECENT RECORDS (data/logs/audit.jsonl)")
-    recent_audit_logs = audit_logger.get_recent_logs(limit=5)
-    for log in recent_audit_logs:
-        print(f"[{log['timestamp'][:19]}] ID: {log['proposal_id']} | Action: {log['action']} | Decision: {log['policy_decision']} | Status: {log['execution_status']}")
-
-    print("\n")
-    print_header("⚡ PERSISTENT EVENT STORE (data/events/events.jsonl)")
-    recent_events = event_store.load_all_events()
-    print(f"  - Total Recorded Events: {len(recent_events)}")
-    for evt in recent_events[-5:]:
-        print(f"  - [{evt.timestamp[:19]}] Type: {evt.event_type:<22} | Source: {evt.source:<12} | Entity: {evt.entity_id}")
+    print_header("📊 EXECUTION TELEMETRY & TRACING STORE (data/telemetry/traces.jsonl)")
+    recent_traces = telemetry_store.get_recent_traces(limit=5)
+    print(f"  - Total Trace Spans Recorded: {len(recent_traces)}")
+    for tr in recent_traces[-5:]:
+        t_type = tr.get("type", "SPAN")
+        t_id = tr.get("trace_id", "none")
+        print(f"  - [{tr['timestamp'][:19]}] Type: {t_type:<20} | TraceID: {t_id} | Payload/Tokens: {tr.get('total_tokens', tr.get('item_counts', tr.get('step', '')))}")
 
     print("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print("V1.1 Execution completed successfully.")
+    print("V1.2 Execution completed successfully.")
 
 if __name__ == "__main__":
     main()
