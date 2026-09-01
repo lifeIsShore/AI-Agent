@@ -2272,7 +2272,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "calendar.create",
-    "status": "PENDING_APPROVAL",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:13:57.350493+00:00",
     "expires_at": "2026-09-01T13:13:57.350493+00:00",
     "why_proposed": [
@@ -2295,7 +2295,7 @@
     "confidence": 1.0,
     "risk_level": "HIGH",
     "required_permission": "gmail.trash",
-    "status": "REJECTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:13:57.438332+00:00",
     "expires_at": "2026-09-01T13:13:57.438332+00:00",
     "why_proposed": [
@@ -2318,7 +2318,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "gmail.archive",
-    "status": "PROPOSED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:13:57.608506+00:00",
     "expires_at": "2026-09-01T13:13:57.608506+00:00",
     "why_proposed": [
@@ -2360,7 +2360,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "gmail.archive",
-    "status": "FAILED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:13:57.784352+00:00",
     "expires_at": "2026-09-01T13:13:57.784352+00:00",
     "why_proposed": [
@@ -2383,7 +2383,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "gmail.archive",
-    "status": "EXECUTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:13:57.829801+00:00",
     "expires_at": "2026-09-01T13:13:57.829801+00:00",
     "why_proposed": [
@@ -2406,7 +2406,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "gmail.archive",
-    "status": "EXECUTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:13:57.829801+00:00",
     "expires_at": "2026-09-01T13:13:57.829801+00:00",
     "why_proposed": [
@@ -2429,7 +2429,7 @@
     "confidence": 1.0,
     "risk_level": "HIGH",
     "required_permission": "gmail.trash",
-    "status": "REJECTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:13:58.043965+00:00",
     "expires_at": "2026-09-01T13:13:58.043965+00:00",
     "why_proposed": [
@@ -2452,7 +2452,7 @@
     "confidence": 1.0,
     "risk_level": "HIGH",
     "required_permission": "gmail.trash",
-    "status": "REJECTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:13:58.043965+00:00",
     "expires_at": "2026-09-01T13:13:58.043965+00:00",
     "why_proposed": [
@@ -2477,7 +2477,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "calendar.create",
-    "status": "PENDING_APPROVAL",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:09.257207+00:00",
     "expires_at": "2026-09-01T13:14:09.257207+00:00",
     "why_proposed": [
@@ -2500,7 +2500,7 @@
     "confidence": 1.0,
     "risk_level": "HIGH",
     "required_permission": "gmail.trash",
-    "status": "REJECTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:09.305213+00:00",
     "expires_at": "2026-09-01T13:14:09.305213+00:00",
     "why_proposed": [
@@ -2523,7 +2523,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "gmail.archive",
-    "status": "PROPOSED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:09.477055+00:00",
     "expires_at": "2026-09-01T13:14:09.477055+00:00",
     "why_proposed": [
@@ -2565,7 +2565,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "gmail.archive",
-    "status": "FAILED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:09.623925+00:00",
     "expires_at": "2026-09-01T13:14:09.623925+00:00",
     "why_proposed": [
@@ -2588,7 +2588,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "gmail.archive",
-    "status": "EXECUTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:09.679262+00:00",
     "expires_at": "2026-09-01T13:14:09.679262+00:00",
     "why_proposed": [
@@ -2611,7 +2611,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "gmail.archive",
-    "status": "EXECUTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:09.679262+00:00",
     "expires_at": "2026-09-01T13:14:09.679262+00:00",
     "why_proposed": [
@@ -2634,7 +2634,7 @@
     "confidence": 1.0,
     "risk_level": "HIGH",
     "required_permission": "gmail.trash",
-    "status": "REJECTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:09.866427+00:00",
     "expires_at": "2026-09-01T13:14:09.866427+00:00",
     "why_proposed": [
@@ -2657,7 +2657,7 @@
     "confidence": 1.0,
     "risk_level": "HIGH",
     "required_permission": "gmail.trash",
-    "status": "REJECTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:09.866427+00:00",
     "expires_at": "2026-09-01T13:14:09.866427+00:00",
     "why_proposed": [
@@ -2680,7 +2680,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "gmail.archive",
-    "status": "PROPOSED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:25.590319+00:00",
     "expires_at": "2026-09-01T13:14:25.590319+00:00",
     "why_proposed": [
@@ -2722,7 +2722,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "gmail.archive",
-    "status": "FAILED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:25.729654+00:00",
     "expires_at": "2026-09-01T13:14:25.729654+00:00",
     "why_proposed": [
@@ -2745,7 +2745,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "gmail.archive",
-    "status": "EXECUTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:25.792683+00:00",
     "expires_at": "2026-09-01T13:14:25.792683+00:00",
     "why_proposed": [
@@ -2768,7 +2768,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "gmail.archive",
-    "status": "EXECUTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:25.792683+00:00",
     "expires_at": "2026-09-01T13:14:25.792683+00:00",
     "why_proposed": [
@@ -2791,7 +2791,7 @@
     "confidence": 1.0,
     "risk_level": "HIGH",
     "required_permission": "gmail.trash",
-    "status": "REJECTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:26.033841+00:00",
     "expires_at": "2026-09-01T13:14:26.033841+00:00",
     "why_proposed": [
@@ -2814,7 +2814,7 @@
     "confidence": 1.0,
     "risk_level": "HIGH",
     "required_permission": "gmail.trash",
-    "status": "REJECTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:26.034847+00:00",
     "expires_at": "2026-09-01T13:14:26.034847+00:00",
     "why_proposed": [
@@ -2837,7 +2837,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "gmail.archive",
-    "status": "PROPOSED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:40.087623+00:00",
     "expires_at": "2026-09-01T13:14:40.087623+00:00",
     "why_proposed": [
@@ -2879,7 +2879,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "gmail.archive",
-    "status": "FAILED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:40.171411+00:00",
     "expires_at": "2026-09-01T13:14:40.171411+00:00",
     "why_proposed": [
@@ -2902,7 +2902,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "gmail.archive",
-    "status": "EXECUTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:40.204681+00:00",
     "expires_at": "2026-09-01T13:14:40.204681+00:00",
     "why_proposed": [
@@ -2925,7 +2925,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "gmail.archive",
-    "status": "EXECUTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:40.204681+00:00",
     "expires_at": "2026-09-01T13:14:40.204681+00:00",
     "why_proposed": [
@@ -2948,7 +2948,7 @@
     "confidence": 1.0,
     "risk_level": "HIGH",
     "required_permission": "gmail.trash",
-    "status": "REJECTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:40.409211+00:00",
     "expires_at": "2026-09-01T13:14:40.409211+00:00",
     "why_proposed": [
@@ -2971,7 +2971,7 @@
     "confidence": 1.0,
     "risk_level": "HIGH",
     "required_permission": "gmail.trash",
-    "status": "REJECTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:40.409211+00:00",
     "expires_at": "2026-09-01T13:14:40.409211+00:00",
     "why_proposed": [
@@ -2994,7 +2994,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "gmail.archive",
-    "status": "PROPOSED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:52.402497+00:00",
     "expires_at": "2026-09-01T13:14:52.402497+00:00",
     "why_proposed": [
@@ -3036,7 +3036,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "gmail.archive",
-    "status": "FAILED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:52.517728+00:00",
     "expires_at": "2026-09-01T13:14:52.517728+00:00",
     "why_proposed": [
@@ -3059,7 +3059,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "gmail.archive",
-    "status": "EXECUTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:52.570130+00:00",
     "expires_at": "2026-09-01T13:14:52.570130+00:00",
     "why_proposed": [
@@ -3082,7 +3082,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "gmail.archive",
-    "status": "EXECUTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:52.570130+00:00",
     "expires_at": "2026-09-01T13:14:52.570130+00:00",
     "why_proposed": [
@@ -3105,7 +3105,7 @@
     "confidence": 1.0,
     "risk_level": "HIGH",
     "required_permission": "gmail.trash",
-    "status": "REJECTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:52.781407+00:00",
     "expires_at": "2026-09-01T13:14:52.781407+00:00",
     "why_proposed": [
@@ -3128,7 +3128,7 @@
     "confidence": 1.0,
     "risk_level": "HIGH",
     "required_permission": "gmail.trash",
-    "status": "REJECTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:14:52.781956+00:00",
     "expires_at": "2026-09-01T13:14:52.781956+00:00",
     "why_proposed": [
@@ -3151,7 +3151,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "gmail.archive",
-    "status": "PROPOSED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:15:03.996587+00:00",
     "expires_at": "2026-09-01T13:15:03.996587+00:00",
     "why_proposed": [
@@ -3193,7 +3193,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "gmail.archive",
-    "status": "FAILED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:15:04.108629+00:00",
     "expires_at": "2026-09-01T13:15:04.108629+00:00",
     "why_proposed": [
@@ -3216,7 +3216,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "gmail.archive",
-    "status": "EXECUTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:15:04.153878+00:00",
     "expires_at": "2026-09-01T13:15:04.153878+00:00",
     "why_proposed": [
@@ -3239,7 +3239,7 @@
     "confidence": 1.0,
     "risk_level": "MEDIUM",
     "required_permission": "gmail.archive",
-    "status": "EXECUTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:15:04.153878+00:00",
     "expires_at": "2026-09-01T13:15:04.153878+00:00",
     "why_proposed": [
@@ -3262,7 +3262,7 @@
     "confidence": 1.0,
     "risk_level": "HIGH",
     "required_permission": "gmail.trash",
-    "status": "REJECTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:15:04.368556+00:00",
     "expires_at": "2026-09-01T13:15:04.368556+00:00",
     "why_proposed": [
@@ -3285,7 +3285,7 @@
     "confidence": 1.0,
     "risk_level": "HIGH",
     "required_permission": "gmail.trash",
-    "status": "REJECTED",
+    "status": "EXPIRED",
     "created_at": "2026-09-01T12:15:04.369208+00:00",
     "expires_at": "2026-09-01T13:15:04.369208+00:00",
     "why_proposed": [
@@ -5800,6 +5800,320 @@
     "status": "REJECTED",
     "created_at": "2026-09-01T13:13:41.433007+00:00",
     "expires_at": "2026-09-01T14:13:41.433007+00:00",
+    "why_proposed": [
+      "Action 'trash_email' recommended for target 'msg_11'.",
+      "Primary reason: Automated task policy recommendation.",
+      "Capability Scope: gmail.trash | Risk Level: HIGH."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "d200f2e6ec3033fc",
+    "audit_metadata": {}
+  },
+  "prop_d96c30b0": {
+    "proposal_id": "prop_d96c30b0",
+    "action": "archive_email",
+    "target": "msg_newsletter",
+    "parameters": {
+      "msg_id": "msg_newsletter"
+    },
+    "reason": "Automated digest recommendation",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.archive",
+    "status": "PROPOSED",
+    "created_at": "2026-09-01T13:16:48.225694+00:00",
+    "expires_at": "2026-09-01T14:16:48.225694+00:00",
+    "why_proposed": [
+      "1. Sender is an automated newsletter service.",
+      "2. Message contains promotional unsubscribe headers.",
+      "3. User previously approved archiving tech digests."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "50aab60f863cb2d6",
+    "audit_metadata": {}
+  },
+  "prop_658773ce": {
+    "proposal_id": "prop_658773ce",
+    "action": "archive_email",
+    "target": "msg_expired",
+    "parameters": {
+      "msg_id": "msg_expired"
+    },
+    "reason": "",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "READ_ONLY",
+    "status": "EXPIRED",
+    "created_at": "2026-09-01T13:16:48.324836+00:00",
+    "expires_at": "2026-09-01T13:06:48.324836+00:00",
+    "why_proposed": [],
+    "target_checksum": null,
+    "parameters_hash": "a26f492eb0337b71",
+    "audit_metadata": {}
+  },
+  "prop_fd950104": {
+    "proposal_id": "prop_fd950104",
+    "action": "archive_email",
+    "target": "msg_999",
+    "parameters": {
+      "msg_id": "msg_999"
+    },
+    "reason": "",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.archive",
+    "status": "FAILED",
+    "created_at": "2026-09-01T13:16:48.386949+00:00",
+    "expires_at": "2026-09-01T14:16:48.386949+00:00",
+    "why_proposed": [
+      "Action 'archive_email' recommended for target 'msg_999'.",
+      "Primary reason: Automated task policy recommendation.",
+      "Capability Scope: gmail.archive | Risk Level: MEDIUM."
+    ],
+    "target_checksum": "hash_original_v1",
+    "parameters_hash": "e0dbcc5f4d3cdb4c",
+    "audit_metadata": {}
+  },
+  "prop_3d6c4ea3": {
+    "proposal_id": "prop_3d6c4ea3",
+    "action": "archive_email",
+    "target": "email_1",
+    "parameters": {
+      "msg_id": "email_1"
+    },
+    "reason": "Newsletter",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.archive",
+    "status": "EXECUTED",
+    "created_at": "2026-09-01T13:16:48.446106+00:00",
+    "expires_at": "2026-09-01T14:16:48.446106+00:00",
+    "why_proposed": [
+      "Action 'archive_email' recommended for target 'email_1'.",
+      "Primary reason: Newsletter.",
+      "Capability Scope: gmail.archive | Risk Level: MEDIUM."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "ddf307e2f6803281",
+    "audit_metadata": {}
+  },
+  "prop_98323844": {
+    "proposal_id": "prop_98323844",
+    "action": "archive_email",
+    "target": "email_2",
+    "parameters": {
+      "msg_id": "email_2"
+    },
+    "reason": "Digest",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.archive",
+    "status": "EXECUTED",
+    "created_at": "2026-09-01T13:16:48.446106+00:00",
+    "expires_at": "2026-09-01T14:16:48.446106+00:00",
+    "why_proposed": [
+      "Action 'archive_email' recommended for target 'email_2'.",
+      "Primary reason: Digest.",
+      "Capability Scope: gmail.archive | Risk Level: MEDIUM."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "0d22ddacdf9b7aae",
+    "audit_metadata": {}
+  },
+  "prop_911b897b": {
+    "proposal_id": "prop_911b897b",
+    "action": "trash_email",
+    "target": "msg_10",
+    "parameters": {
+      "msg_id": "msg_10"
+    },
+    "reason": "",
+    "confidence": 1.0,
+    "risk_level": "HIGH",
+    "required_permission": "gmail.trash",
+    "status": "REJECTED",
+    "created_at": "2026-09-01T13:16:48.655824+00:00",
+    "expires_at": "2026-09-01T14:16:48.655824+00:00",
+    "why_proposed": [
+      "Action 'trash_email' recommended for target 'msg_10'.",
+      "Primary reason: Automated task policy recommendation.",
+      "Capability Scope: gmail.trash | Risk Level: HIGH."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "45047158ac1a477d",
+    "audit_metadata": {}
+  },
+  "prop_99cf9de2": {
+    "proposal_id": "prop_99cf9de2",
+    "action": "trash_email",
+    "target": "msg_11",
+    "parameters": {
+      "msg_id": "msg_11"
+    },
+    "reason": "",
+    "confidence": 1.0,
+    "risk_level": "HIGH",
+    "required_permission": "gmail.trash",
+    "status": "REJECTED",
+    "created_at": "2026-09-01T13:16:48.655824+00:00",
+    "expires_at": "2026-09-01T14:16:48.655824+00:00",
+    "why_proposed": [
+      "Action 'trash_email' recommended for target 'msg_11'.",
+      "Primary reason: Automated task policy recommendation.",
+      "Capability Scope: gmail.trash | Risk Level: HIGH."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "d200f2e6ec3033fc",
+    "audit_metadata": {}
+  },
+  "prop_ac977051": {
+    "proposal_id": "prop_ac977051",
+    "action": "archive_email",
+    "target": "msg_newsletter",
+    "parameters": {
+      "msg_id": "msg_newsletter"
+    },
+    "reason": "Automated digest recommendation",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.archive",
+    "status": "PROPOSED",
+    "created_at": "2026-09-01T13:17:18.111117+00:00",
+    "expires_at": "2026-09-01T14:17:18.111117+00:00",
+    "why_proposed": [
+      "1. Sender is an automated newsletter service.",
+      "2. Message contains promotional unsubscribe headers.",
+      "3. User previously approved archiving tech digests."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "50aab60f863cb2d6",
+    "audit_metadata": {}
+  },
+  "prop_1d6409ed": {
+    "proposal_id": "prop_1d6409ed",
+    "action": "archive_email",
+    "target": "msg_expired",
+    "parameters": {
+      "msg_id": "msg_expired"
+    },
+    "reason": "",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "READ_ONLY",
+    "status": "EXPIRED",
+    "created_at": "2026-09-01T13:17:18.212660+00:00",
+    "expires_at": "2026-09-01T13:07:18.212660+00:00",
+    "why_proposed": [],
+    "target_checksum": null,
+    "parameters_hash": "a26f492eb0337b71",
+    "audit_metadata": {}
+  },
+  "prop_5519d5b3": {
+    "proposal_id": "prop_5519d5b3",
+    "action": "archive_email",
+    "target": "msg_999",
+    "parameters": {
+      "msg_id": "msg_999"
+    },
+    "reason": "",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.archive",
+    "status": "FAILED",
+    "created_at": "2026-09-01T13:17:18.291547+00:00",
+    "expires_at": "2026-09-01T14:17:18.291547+00:00",
+    "why_proposed": [
+      "Action 'archive_email' recommended for target 'msg_999'.",
+      "Primary reason: Automated task policy recommendation.",
+      "Capability Scope: gmail.archive | Risk Level: MEDIUM."
+    ],
+    "target_checksum": "hash_original_v1",
+    "parameters_hash": "e0dbcc5f4d3cdb4c",
+    "audit_metadata": {}
+  },
+  "prop_43b4dbb8": {
+    "proposal_id": "prop_43b4dbb8",
+    "action": "archive_email",
+    "target": "email_1",
+    "parameters": {
+      "msg_id": "email_1"
+    },
+    "reason": "Newsletter",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.archive",
+    "status": "EXECUTED",
+    "created_at": "2026-09-01T13:17:18.370277+00:00",
+    "expires_at": "2026-09-01T14:17:18.370277+00:00",
+    "why_proposed": [
+      "Action 'archive_email' recommended for target 'email_1'.",
+      "Primary reason: Newsletter.",
+      "Capability Scope: gmail.archive | Risk Level: MEDIUM."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "ddf307e2f6803281",
+    "audit_metadata": {}
+  },
+  "prop_d0059ece": {
+    "proposal_id": "prop_d0059ece",
+    "action": "archive_email",
+    "target": "email_2",
+    "parameters": {
+      "msg_id": "email_2"
+    },
+    "reason": "Digest",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.archive",
+    "status": "EXECUTED",
+    "created_at": "2026-09-01T13:17:18.370277+00:00",
+    "expires_at": "2026-09-01T14:17:18.370277+00:00",
+    "why_proposed": [
+      "Action 'archive_email' recommended for target 'email_2'.",
+      "Primary reason: Digest.",
+      "Capability Scope: gmail.archive | Risk Level: MEDIUM."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "0d22ddacdf9b7aae",
+    "audit_metadata": {}
+  },
+  "prop_3b2fd6f7": {
+    "proposal_id": "prop_3b2fd6f7",
+    "action": "trash_email",
+    "target": "msg_10",
+    "parameters": {
+      "msg_id": "msg_10"
+    },
+    "reason": "",
+    "confidence": 1.0,
+    "risk_level": "HIGH",
+    "required_permission": "gmail.trash",
+    "status": "REJECTED",
+    "created_at": "2026-09-01T13:17:18.676815+00:00",
+    "expires_at": "2026-09-01T14:17:18.676815+00:00",
+    "why_proposed": [
+      "Action 'trash_email' recommended for target 'msg_10'.",
+      "Primary reason: Automated task policy recommendation.",
+      "Capability Scope: gmail.trash | Risk Level: HIGH."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "45047158ac1a477d",
+    "audit_metadata": {}
+  },
+  "prop_d74aa242": {
+    "proposal_id": "prop_d74aa242",
+    "action": "trash_email",
+    "target": "msg_11",
+    "parameters": {
+      "msg_id": "msg_11"
+    },
+    "reason": "",
+    "confidence": 1.0,
+    "risk_level": "HIGH",
+    "required_permission": "gmail.trash",
+    "status": "REJECTED",
+    "created_at": "2026-09-01T13:17:18.677469+00:00",
+    "expires_at": "2026-09-01T14:17:18.677469+00:00",
     "why_proposed": [
       "Action 'trash_email' recommended for target 'msg_11'.",
       "Primary reason: Automated task policy recommendation.",
