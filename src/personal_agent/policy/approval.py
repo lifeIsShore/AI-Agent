@@ -1,7 +1,7 @@
 import time
 from typing import List, Dict, Any, Optional, Tuple
 from personal_agent.policy.proposal import (
-    ActionProposal, STATUS_PENDING_APPROVAL, STATUS_APPROVED, STATUS_REJECTED, STATUS_EXECUTED, STATUS_FAILED
+    ActionProposal, STATUS_PENDING_APPROVAL, STATUS_APPROVED, STATUS_REJECTED, STATUS_EXECUTED, STATUS_FAILED, STATUS_EXPIRED
 )
 from personal_agent.tools.registry import ToolRegistry
 from personal_agent.security.audit import AuditLogger
@@ -19,24 +19,73 @@ class ApprovalQueue:
 
     def list_pending(self) -> List[ActionProposal]:
         """Returns all proposals currently waiting for human approval."""
-        return [p for p in self.queue.values() if p.status == STATUS_PENDING_APPROVAL]
+        return [p for p in self.queue.values() if p.status == STATUS_PENDING_APPROVAL and not p.is_expired()]
 
     def get_proposal(self, proposal_id: str) -> Optional[ActionProposal]:
         """Retrieves a proposal by its ID."""
         return self.queue.get(proposal_id)
 
+    def get_proposal_details(self, proposal_id: str) -> Optional[Dict[str, Any]]:
+        """Returns detailed explainability breakdown for a proposal."""
+        prop = self.get_proposal(proposal_id)
+        if not prop:
+            return None
+
+        return {
+            "proposal_id": prop.proposal_id,
+            "action": prop.action,
+            "target": prop.target,
+            "parameters": prop.parameters,
+            "reason": prop.reason,
+            "confidence": f"{int(prop.confidence * 100)}%",
+            "risk_level": prop.risk_level,
+            "required_permission": prop.required_permission,
+            "created_at": prop.created_at,
+            "expires_at": prop.expires_at,
+            "is_expired": prop.is_expired(),
+            "why_proposed": prop.why_proposed,
+            "target_checksum": prop.target_checksum
+        }
+
     def approve_proposal(
         self,
         proposal_id: str,
-        edited_params: Optional[Dict[str, Any]] = None
+        edited_params: Optional[Dict[str, Any]] = None,
+        target_validator: Optional[Any] = None
     ) -> Tuple[bool, str, Optional[Any]]:
         """Approves (and optionally edits parameters for) a pending proposal, executes the tool, logs audit, and notifies memory loop."""
         proposal = self.get_proposal(proposal_id)
         if not proposal:
             return False, f"Proposal ID '{proposal_id}' not found in queue.", None
 
+        # Expiration Check
+        if proposal.is_expired():
+            proposal.status = STATUS_EXPIRED
+            self.audit_logger.log_proposal(
+                proposal=proposal,
+                policy_decision="Approval attempted after TTL expiration",
+                user_approved=True,
+                execution_status="EXPIRED",
+                execution_result="Execution blocked due to proposal expiration"
+            )
+            return False, f"Proposal '{proposal_id}' has expired (TTL exceeded). Execution blocked.", None
+
         if proposal.status != STATUS_PENDING_APPROVAL:
             return False, f"Proposal '{proposal_id}' is not in PENDING_APPROVAL state (current: {proposal.status}).", None
+
+        # Stale Target Validation Check (if target validator callback supplied)
+        if target_validator and callable(target_validator):
+            isValid, reason = target_validator(proposal.target, proposal.target_checksum)
+            if not isValid:
+                proposal.status = STATUS_FAILED
+                self.audit_logger.log_proposal(
+                    proposal=proposal,
+                    policy_decision=f"Target state validation failed: {reason}",
+                    user_approved=True,
+                    execution_status="STALE_TARGET",
+                    execution_result=reason
+                )
+                return False, f"Target state changed: {reason}. Proposal re-evaluation required.", None
 
         # Apply edited parameters if provided
         if edited_params:
@@ -142,4 +191,3 @@ class ApprovalQueue:
             res = self.reject_proposal(pid, reason=reason)
             results.append(res)
         return results
-

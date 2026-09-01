@@ -406,5 +406,215 @@
     "importance": "high",
     "expires_at": null,
     "metadata": {}
+  },
+  {
+    "id": "mem_353eced1",
+    "type": "preference",
+    "content": "User archiving newsletter (100% confidence)",
+    "created_at": "2026-09-01T10:24:49.318553+00:00",
+    "updated_at": "2026-09-01T10:24:49.318553+00:00",
+    "source": "user",
+    "confidence": 1.0,
+    "importance": "medium",
+    "expires_at": null,
+    "metadata": {
+      "confidence": 1.0,
+      "observations": 50
+    }
+  },
+  {
+    "id": "mem_b0426611",
+    "type": "preference",
+    "content": "User approved action 'archive_email' on target 'email_1' (Reason: Newsletter).",
+    "created_at": "2026-09-01T10:24:49.326771+00:00",
+    "updated_at": "2026-09-01T10:24:49.326771+00:00",
+    "source": "user",
+    "confidence": 0.68,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.68,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T10:24:49.326771+00:00"
+    }
+  },
+  {
+    "id": "mem_b68f606a",
+    "type": "preference",
+    "content": "User approved action 'archive_email' on target 'email_2' (Reason: Digest).",
+    "created_at": "2026-09-01T10:24:49.340871+00:00",
+    "updated_at": "2026-09-01T10:24:49.340871+00:00",
+    "source": "user",
+    "confidence": 0.68,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.68,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T10:24:49.340871+00:00"
+    }
+  },
+  {
+    "id": "mem_6d67e453",
+    "type": "preference",
+    "content": "User usually approves archiving newsletters from LinkedIn.",
+    "created_at": "2026-09-01T10:24:53.539019+00:00",
+    "updated_at": "2026-09-01T10:24:53.539019+00:00",
+    "source": "user",
+    "confidence": 1.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {}
+  },
+  {
+    "id": "mem_be0c348b",
+    "type": "preference",
+    "content": "User approved action 'archive_email' on target 'newsletter_123' (Reason: Weekly tech digest).",
+    "created_at": "2026-09-01T10:24:53.571249+00:00",
+    "updated_at": "2026-09-01T10:24:53.571249+00:00",
+    "source": "user",
+    "confidence": 0.68,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "CATEGORY",
+      "condition": {
+        "action": "archive_email",
+        "category": "newsletter"
+      },
+      "confidence": 0.68,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T10:24:53.571249+00:00"
+    }
+  },
+  {
+    "id": "mem_2b5e85c3",
+    "type": "preference",
+    "content": "User archiving newsletter (100% confidence)",
+    "created_at": "2026-09-01T10:24:53.636008+00:00",
+    "updated_at": "2026-09-01T10:24:53.636008+00:00",
+    "source": "user",
+    "confidence": 1.0,
+    "importance": "medium",
+    "expires_at": null,
+    "metadata": {
+      "confidence": 1.0,
+      "observations": 50
+    }
+  },
+  {
+    "id": "mem_733158d2",
+    "type": "preference",
+    "content": "User approved action 'archive_email' on target 'email_1' (Reason: Newsletter).",
+    "created_at": "2026-09-01T10:24:53.678524+00:00",
+    "updated_at": "2026-09-01T10:24:53.678524+00:00",
+    "source": "user",
+    "confidence": 0.68,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.68,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T10:24:53.678524+00:00"
+    }
+  },
+  {
+    "id": "mem_d0b366d6",
+    "type": "preference",
+    "content": "User approved action 'archive_email' on target 'email_2' (Reason: Digest).",
+    "created_at": "2026-09-01T10:24:53.709554+00:00",
+    "updated_at": "2026-09-01T10:24:53.709554+00:00",
+    "source": "user",
+    "confidence": 0.68,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.68,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T10:24:53.709554+00:00"
+    }
+  },
+  {
+    "id": "mem_ad0ee945",
+    "type": "preference",
+    "content": "User rejected action 'archive_email' on target 'email_1a05c6265fb0e961' (Reason: User prefers manual inbox review).",
+    "created_at": "2026-09-01T10:25:59.963286+00:00",
+    "updated_at": "2026-09-01T10:25:59.963286+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T10:25:59.963286+00:00"
+    }
+  },
+  {
+    "id": "mem_fdc4503c",
+    "type": "preference",
+    "content": "User rejected action 'archive_email' on target 'email_1a05c50903bcb2cc' (Reason: User prefers manual inbox review).",
+    "created_at": "2026-09-01T10:25:59.968287+00:00",
+    "updated_at": "2026-09-01T10:25:59.968287+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T10:25:59.968287+00:00"
+    }
+  },
+  {
+    "id": "mem_4ca6db41",
+    "type": "preference",
+    "content": "User rejected action 'archive_email' on target 'email_1a05c1eff4073348' (Reason: User prefers manual inbox review).",
+    "created_at": "2026-09-01T10:25:59.988629+00:00",
+    "updated_at": "2026-09-01T10:25:59.988629+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T10:25:59.988629+00:00"
+    }
   }
 ]

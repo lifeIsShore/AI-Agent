@@ -1,7 +1,8 @@
 from enum import Enum
-from typing import Dict, Any, Tuple, Optional
+from datetime import datetime, timezone, timedelta
+from typing import Dict, Any, Tuple, Optional, List
 from personal_agent.policy.proposal import (
-    ActionProposal, STATUS_PROPOSED, STATUS_AUTO_APPROVED, STATUS_PENDING_APPROVAL, STATUS_DENIED, STATUS_APPROVED
+    ActionProposal, STATUS_PROPOSED, STATUS_AUTO_APPROVED, STATUS_PENDING_APPROVAL, STATUS_DENIED, STATUS_APPROVED, STATUS_EXPIRED
 )
 
 class PermissionLevel(Enum):
@@ -79,12 +80,25 @@ class PolicyEngine:
         target: str,
         parameters: Dict[str, Any],
         reason: str = "",
-        confidence: float = 1.0
+        confidence: float = 1.0,
+        ttl_minutes: int = 60,
+        why_proposed: Optional[List[str]] = None,
+        target_checksum: Optional[str] = None
     ) -> ActionProposal:
-        """Helper to instantiate a formal ActionProposal with inferred security levels."""
+        """Helper to instantiate a formal ActionProposal with TTL expiration and explainability chain."""
         perm_level = self.get_permission_level(action)
         risk_level = self.get_risk_level(action)
         
+        now = datetime.now(timezone.utc)
+        expires_at = (now + timedelta(minutes=ttl_minutes)).isoformat()
+
+        # Build default why_proposed explainability chain if not provided
+        reasons_chain = why_proposed or [
+            f"Action '{action}' recommended for target '{target}'.",
+            f"Primary reason: {reason or 'Automated task policy recommendation'}.",
+            f"Risk Level: {risk_level} | Permission Level: {perm_level.name}."
+        ]
+
         return ActionProposal(
             action=action,
             target=target,
@@ -93,11 +107,20 @@ class PolicyEngine:
             confidence=confidence,
             risk_level=risk_level,
             required_permission=perm_level.name,
-            status=STATUS_PROPOSED
+            status=STATUS_PROPOSED,
+            created_at=now.isoformat(),
+            expires_at=expires_at,
+            why_proposed=reasons_chain,
+            target_checksum=target_checksum
         )
 
     def check_proposal(self, proposal: ActionProposal, user_approved: bool = False) -> Tuple[bool, str]:
-        """Evaluates an ActionProposal object against policy and human authorization requirements."""
+        """Evaluates an ActionProposal object against expiration, policy, and human authorization requirements."""
+        # 1. Expiration Check
+        if proposal.is_expired():
+            proposal.status = STATUS_EXPIRED
+            return False, f"Proposal '{proposal.proposal_id}' has expired (TTL exceeded)"
+
         perm_level = self.get_permission_level(proposal.action)
         proposal.required_permission = perm_level.name
         proposal.risk_level = self.get_risk_level(proposal.action)

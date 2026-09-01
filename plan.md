@@ -1322,3 +1322,1012 @@ This will be much friendlier to your **16 GB RAM** machine.
 So yes — I think this is a much better first agent than starting with the Coding Agent. The Coding Agent can remain **Book III's larger engineering project**, while this becomes our **first practical personal agent** that we can actually use every day.
 
 **Next step remains the same:** run `nvidia-smi`, `ollama list`, and `python --version`. Once you give me those outputs, we'll select the exact small model and build **V0.1 — the first working local Personal Assistant core**.
+
+
+new parts...
+Yes. Looking at the progression from V0.4 → V0.8, you have reached a point where I would **stop adding random features** and start turning the agent into a reliable system.
+
+Your current architecture is already quite coherent:
+
+```text
+                    USER
+                     │
+                     ▼
+              Context Manager
+                     │
+                     ▼
+              Agent Runtime
+                     │
+          ┌──────────┴──────────┐
+          ▼                     ▼
+       Planner              Inbox Zero
+          │                     │
+          └──────────┬──────────┘
+                     ▼
+              ActionProposal
+                     │
+                     ▼
+              ┌─────────────┐
+              │Policy Engine│
+              └──────┬──────┘
+                     │
+        ┌────────────┼────────────┐
+        ▼            ▼            ▼
+      DENIED      AUTO-APPROVE   PENDING
+                                   │
+                              User Decision
+                              /           \
+                         APPROVE          REJECT
+                            │                │
+                            ▼                ▼
+                       Tool Execution      Audit
+                            │                │
+                            └───────┬────────┘
+                                    ▼
+                              Memory Loop
+                                    │
+                                    ▼
+                              Future Context
+```
+
+The next phase should be about making this **robust, explainable, persistent, and genuinely useful every day**.
+
+---
+
+# V0.9 — Approval Intelligence & Memory Quality
+
+I would make **V0.9** your next milestone.
+
+Not another Gmail feature. Not another LLM.
+
+The goal should be:
+
+> **Turn the approval and memory system from a working mechanism into a reliable decision system.**
+
+You currently have the basic loop:
+
+```text
+Proposal → Approval → Execution → Memory
+```
+
+V0.9 should make that loop intelligent.
+
+---
+
+## 1. First: Fix the distinction between event memory and preference memory
+
+This is probably the most important improvement.
+
+Right now you have examples like:
+
+```text
+User rejected action 'create_calendar_event'
+Reason: User prefers manual review.
+```
+
+That's useful, but there are actually different kinds of memories here.
+
+### Type A — Event-specific feedback
+
+```text
+User rejected calendar event X.
+```
+
+This tells the agent almost nothing about future events.
+
+### Type B — General preference
+
+```text
+User prefers manually reviewing calendar events.
+```
+
+This can affect future behavior.
+
+### Type C — Conditional preference
+
+This is even more valuable:
+
+```text
+User usually approves calendar events
+unless they overlap with an existing appointment.
+```
+
+Or:
+
+```text
+User approves newsletter archiving
+but does not want newsletters from financial institutions archived.
+```
+
+Your memory architecture should therefore evolve into:
+
+```text
+                    Memory
+                       │
+          ┌────────────┼────────────┐
+          ▼            ▼            ▼
+       Episodic     Preference    Semantic
+        Memory       Memory       Knowledge
+          │            │            │
+       What           What the     Facts/
+       happened       user likes   documents
+```
+
+Your existing RAG knowledge shouldn't be confused with learned behavioral preferences.
+
+---
+
+# 2. Add confidence to learned preferences
+
+Never let one approval create a strong permanent preference.
+
+For example:
+
+```text
+User approves archive_email once
+```
+
+should **not** immediately become:
+
+```text
+User likes emails automatically archived.
+```
+
+Instead:
+
+```text
+Preference:
+    action = archive_email
+    confidence = 0.35
+    observations = 1
+```
+
+Then:
+
+```text
+approve
+approve
+approve
+reject
+approve
+```
+
+might eventually become:
+
+```text
+Preference:
+    action = archive_email
+    confidence = 0.82
+    observations = 5
+```
+
+You can therefore create a simple learning model:
+
+```text
+Approval
+   ↓
+Positive signal
+
+Rejection
+   ↓
+Negative signal
+
+Repeated behavior
+   ↓
+Preference confidence
+```
+
+But remember your excellent V0.8 rule:
+
+> **Preference confidence must never become permission.**
+
+It can influence reasoning.
+
+It cannot override policy.
+
+---
+
+# 3. Add preference scope
+
+This will become extremely important.
+
+A preference should have a scope.
+
+For example:
+
+```text
+GLOBAL
+ACTION
+TARGET
+CATEGORY
+SENDER
+CONTEXT
+```
+
+Imagine:
+
+```text
+User rejected:
+archive_email
+sender = bank@example.com
+```
+
+The agent should **not** learn:
+
+> "Never archive emails."
+
+It should learn something closer to:
+
+> "Do not archive financial emails."
+
+Similarly:
+
+```text
+User approves archive_email
+category = newsletter
+```
+
+shouldn't mean:
+
+```text
+Archive everything.
+```
+
+Your memory could therefore look conceptually like:
+
+```json
+{
+  "type": "preference",
+  "scope": "category",
+  "condition": {
+    "email_category": "newsletter"
+  },
+  "action": "archive_email",
+  "confidence": 0.91
+}
+```
+
+This is much safer.
+
+---
+
+# 4. Add memory decay
+
+Preferences change.
+
+Suppose you approve newsletter archiving 100 times but then change your behavior.
+
+The agent shouldn't remember your preference forever with 100% confidence.
+
+Use something like:
+
+```text
+confidence_new =
+    confidence_old × decay
+    + current_signal
+```
+
+You don't need sophisticated ML.
+
+Even a simple decay mechanism is enough.
+
+For example:
+
+```text
+Recent behavior       → strong
+6 months old behavior → weaker
+Very old behavior     → weak
+```
+
+This makes your memory system adaptive without becoming unpredictable.
+
+---
+
+# 5. Build a proper Approval Queue
+
+Currently:
+
+```text
+list_pending()
+approve()
+reject()
+```
+
+works.
+
+But V0.9 should turn this into a proper queue model.
+
+Each proposal should expose:
+
+```text
+Proposal ID
+Action
+Target
+Parameters
+Reason
+Confidence
+Risk
+Permission
+Created At
+Expires At
+Status
+```
+
+For example:
+
+```text
+┌───────────────────────────────────────────┐
+│ ARCHIVE EMAIL                             │
+├───────────────────────────────────────────┤
+│ From: LinkedIn                            │
+│ Subject: Weekly job recommendations      │
+│                                           │
+│ Reason: Automated job digest              │
+│ Confidence: 96%                           │
+│ Risk: MEDIUM                              │
+│                                           │
+│ [Approve] [Edit] [Reject] [Details]      │
+└───────────────────────────────────────────┘
+```
+
+The important part is **Details**.
+
+The user should be able to ask:
+
+> Why are you proposing this?
+
+And get:
+
+```text
+Because:
+1. Sender is an automated service.
+2. Message contains newsletter indicators.
+3. It contains an unsubscribe link.
+4. No action is required.
+5. Similar emails were previously archived.
+```
+
+That's explainability.
+
+---
+
+# 6. Add proposal expiration
+
+This is a subtle but important security improvement.
+
+Imagine:
+
+```text
+09:00
+Agent proposes:
+Create meeting at 10:00
+```
+
+You don't approve until:
+
+```text
+14:00
+```
+
+Executing it at that point may be wrong.
+
+So proposals should eventually have:
+
+```text
+created_at
+expires_at
+```
+
+Example:
+
+```text
+Proposal created: 09:00
+Expires: 09:30
+```
+
+If expired:
+
+```text
+STATUS_EXPIRED
+```
+
+and execution becomes impossible.
+
+This is especially important for:
+
+* Calendar events
+* Email replies
+* Time-sensitive tasks
+* Financial operations in the future
+
+---
+
+# 7. Protect against stale proposals
+
+There's another important issue.
+
+Suppose the agent proposes:
+
+```text
+Archive email #123
+```
+
+Then the user edits the email or another process changes its state.
+
+You shouldn't blindly execute the old proposal.
+
+The proposal should contain enough information to validate its target again.
+
+Conceptually:
+
+```text
+Proposal
+   ↓
+Target validation
+   ↓
+Is target still unchanged?
+   │
+ ┌─┴──┐
+YES   NO
+ │     │
+ ▼     ▼
+Execute Re-evaluate
+```
+
+This becomes very important once your agent runs continuously.
+
+---
+
+# V1.0 — Persistent Agent Runtime
+
+After V0.9, I'd make **V1.0** the first genuinely stable release.
+
+The goal:
+
+> **The agent should be capable of running every day without you manually starting individual workflows.**
+
+Right now you have:
+
+```text
+python -m personal_agent
+```
+
+V1.0 should evolve toward:
+
+```text
+Agent Runtime
+      │
+      ├── Gmail watcher
+      ├── Calendar watcher
+      ├── Task manager
+      ├── Memory
+      ├── Planner
+      └── Approval queue
+```
+
+But importantly:
+
+**Don't make everything continuous immediately.**
+
+Use controlled jobs.
+
+---
+
+# 8. Introduce a Scheduler
+
+You already have Calendar/Tasks integration.
+
+Now add an internal scheduler:
+
+```text
+Scheduler
+   │
+   ├── Morning briefing
+   ├── Inbox scan
+   ├── Calendar analysis
+   ├── Task synchronization
+   ├── Memory maintenance
+   └── Evening review
+```
+
+For example:
+
+### 08:00
+
+```text
+Morning execution cycle
+```
+
+Agent generates:
+
+```text
+Today's calendar
+Tasks
+Important emails
+Pending approvals
+Recommended actions
+```
+
+### Every 30–60 minutes
+
+```text
+Inbox monitoring
+```
+
+### 18:00
+
+```text
+Daily review
+```
+
+The agent could summarize:
+
+```text
+Completed:
+✓ 4 tasks
+
+Emails:
+✓ 12 irrelevant emails identified
+✓ 3 awaiting approval
+
+Calendar:
+✓ 2 meetings
+✓ 1 free focus block
+
+Tomorrow:
+⚠ 2 deadlines approaching
+```
+
+That starts making the system genuinely useful.
+
+---
+
+# V1.1 — Unified Event Bus
+
+Once you have several integrations, you'll notice a problem.
+
+Currently:
+
+```text
+Gmail
+Calendar
+Tasks
+Planner
+Memory
+```
+
+can become tightly coupled.
+
+Introduce an internal event layer:
+
+```text
+Gmail
+Calendar
+Tasks
+      │
+      ▼
+   Event Bus
+      │
+ ┌────┼─────┐
+ ▼    ▼     ▼
+Planner Memory Agent
+```
+
+Events could conceptually be:
+
+```text
+EMAIL_RECEIVED
+EMAIL_UPDATED
+TASK_CREATED
+TASK_COMPLETED
+CALENDAR_EVENT_CREATED
+CALENDAR_EVENT_CHANGED
+USER_APPROVED_ACTION
+USER_REJECTED_ACTION
+```
+
+Then the agent doesn't need every subsystem to know about every other subsystem.
+
+---
+
+# V1.2 — Observability
+
+This should be a major milestone.
+
+You already have:
+
+```text
+audit.jsonl
+```
+
+That's excellent.
+
+Now expand it into an actual agent observability system.
+
+Track:
+
+```text
+Request
+ ↓
+Intent
+ ↓
+Context
+ ↓
+LLM call
+ ↓
+Decision
+ ↓
+Proposal
+ ↓
+Policy
+ ↓
+Approval
+ ↓
+Tool
+ ↓
+Result
+ ↓
+Memory
+```
+
+For each execution you want to know:
+
+```text
+Why did the agent do this?
+What information did it see?
+Which model was used?
+What did it propose?
+Why did policy allow/deny it?
+Did the user approve?
+What tool ran?
+What happened?
+```
+
+This will be invaluable when the system becomes more autonomous.
+
+---
+
+# V1.3 — Evaluation Framework
+
+This is where your project becomes much more interesting from an **AI engineering/research perspective**.
+
+You should build an evaluation dataset.
+
+For example:
+
+```text
+100 emails
+100 planning scenarios
+50 calendar scenarios
+50 task scenarios
+50 approval decisions
+```
+
+Then evaluate:
+
+### Classification
+
+```text
+Precision
+Recall
+F1
+```
+
+### Planning
+
+```text
+Correctly planned items
+Incorrectly scheduled items
+Missed planning items
+Calendar conflicts
+```
+
+### Tool safety
+
+```text
+Unauthorized modifications
+= 0
+```
+
+That last metric should ideally be treated as a **hard security invariant**, not merely a normal accuracy metric.
+
+---
+
+# V1.4 — Agent Evals
+
+Then evaluate the complete agent rather than individual components.
+
+For example:
+
+```text
+Scenario:
+User receives 20 emails and has 5 tasks.
+
+Expected:
+- Ignore newsletters
+- Surface urgent university email
+- Don't schedule newsletters
+- Schedule genuine planning tasks
+- Ask approval before modifications
+```
+
+Run the agent.
+
+Then compare:
+
+```text
+Expected Actions
+        vs
+Actual Actions
+```
+
+This gives you regression testing for agent behavior.
+
+Your test suite becomes:
+
+```text
+Unit Tests
+Integration Tests
+Policy Tests
+Security Tests
+Agent Evals
+Live Integration Tests
+```
+
+That's a very strong architecture.
+
+---
+
+# V1.5 — Context Engineering 2.0
+
+Your current intent-dependent context budgets are already a good foundation.
+
+The next step is to make context selection more intelligent.
+
+Instead of:
+
+```text
+PLAN_DAY
+→ 5 emails
+→ 3 memories
+→ 2 RAG chunks
+```
+
+eventually use:
+
+```text
+Intent
+  ↓
+Relevance scoring
+  ↓
+Importance
+  ↓
+Recency
+  ↓
+User preference
+  ↓
+Risk
+  ↓
+Context budget
+```
+
+So an important university deadline could outrank five recent newsletters.
+
+Conceptually:
+
+```text
+Context Score =
+    relevance
+  + importance
+  + recency
+  + preference_match
+  + risk
+```
+
+Then only the highest-value information enters the model.
+
+That becomes **Context Engineering**, not simply RAG.
+
+---
+
+# V1.6 — Model Router
+
+Only after the above is stable would I introduce a proper model-routing layer.
+
+You don't need one giant model for everything.
+
+Something like:
+
+```text
+                   Request
+                      │
+                      ▼
+                 Model Router
+                      │
+       ┌──────────────┼──────────────┐
+       ▼              ▼              ▼
+    Tiny LLM       Medium LLM      Large API
+       │              │              │
+Simple extraction  Planning       Complex reasoning
+classification     reasoning
+```
+
+For example:
+
+### Tiny/local model
+
+Use for:
+
+```text
+Email fact extraction
+Classification
+Simple summaries
+Structured extraction
+```
+
+### Larger local model
+
+Use for:
+
+```text
+Planning
+Complex reasoning
+Memory interpretation
+```
+
+### Optional cloud model
+
+Only when:
+
+```text
+Local model insufficient
+AND
+privacy policy permits it
+AND
+user/system explicitly allows it
+```
+
+That fits your local-first architecture very well.
+
+---
+
+# V1.7 — Tool Security 2.0
+
+Your current Policy Engine is the foundation.
+
+Eventually, I would introduce **capability-based permissions**.
+
+Instead of:
+
+```text
+MODIFY
+```
+
+you could have:
+
+```text
+gmail.read
+gmail.archive
+gmail.label
+gmail.delete
+
+calendar.read
+calendar.create
+calendar.modify
+
+tasks.read
+tasks.create
+tasks.complete
+```
+
+Then policies can become extremely precise.
+
+For example:
+
+```text
+gmail.read
+→ AUTO_APPROVED
+
+gmail.archive
+→ USER_APPROVAL
+
+gmail.delete
+→ ALWAYS_DENIED
+
+calendar.read
+→ AUTO_APPROVED
+
+calendar.create
+→ USER_APPROVAL
+```
+
+That is significantly stronger than a generic `MODIFY` permission.
+
+---
+
+# V2.0 — Semi-Autonomous Personal Agent
+
+Only after all of this would I allow carefully controlled autonomy.
+
+The architecture becomes:
+
+```text
+                         USER
+                           │
+                           ▼
+                     Agent Runtime
+                           │
+             ┌─────────────┼─────────────┐
+             ▼             ▼             ▼
+          Memory        Context       Model Router
+             │             │             │
+             └─────────────┼─────────────┘
+                           ▼
+                       Reasoning
+                           │
+                           ▼
+                    ActionProposal
+                           │
+                           ▼
+                    Policy Engine
+                           │
+              ┌────────────┼────────────┐
+              ▼            ▼            ▼
+           DENIED       APPROVAL      AUTO
+              │            │            │
+              │            ▼            │
+              │         USER            │
+              │            │            │
+              └────────────┼────────────┘
+                           ▼
+                      Tool Registry
+                           │
+                           ▼
+                       Execution
+                           │
+                    ┌──────┴──────┐
+                    ▼             ▼
+                  Audit        Outcome
+                    │             │
+                    └──────┬──────┘
+                           ▼
+                        Memory
+```
+
+At that point, you're no longer really building an "AI chatbot."
+
+You're building a **local-first agent platform**.
+
+---
+
+# The roadmap I'd actually follow
+
+If this were my project, I'd make the roadmap:
+
+| Version  | Main objective                       |
+| -------- | ------------------------------------ |
+| **V0.8** | Approval + learning loop ✅           |
+| **V0.9** | Memory quality + proposal robustness |
+| **V1.0** | Persistent daily runtime             |
+| **V1.1** | Event-driven architecture            |
+| **V1.2** | Observability & tracing              |
+| **V1.3** | Evaluation framework                 |
+| **V1.4** | Agent-level evaluations              |
+| **V1.5** | Advanced context engineering         |
+| **V1.6** | Model routing                        |
+| **V1.7** | Fine-grained tool permissions        |
+| **V2.0** | Controlled semi-autonomous agent     |
+
+And I would **not** rush toward V2.0.
+
+The most valuable work now is actually V0.9–V1.4.
+
+Those versions transform your project from:
+
+> "I built an AI assistant with Gmail, Calendar and Tasks."
+
+into:
+
+> **"I built a policy-controlled, locally deployed agent runtime with structured memory, context management, human-in-the-loop execution, persistent auditing, and measurable behavioral evaluations."**
+
+That is a **much stronger engineering project**, and it also gives you substantially better material for a master's project, portfolio, technical interviews, or eventually a research paper.

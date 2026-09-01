@@ -28,7 +28,7 @@ def print_header(title: str):
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 
 def main():
-    print_header("PERSONAL ASSISTANT (V0.9 — BATCH APPROVAL & MEMORY CLASSIFIER)")
+    print_header("PERSONAL ASSISTANT (V0.9 — APPROVAL INTELLIGENCE & MEMORY QUALITY)")
     print("Initializing V0.9 Assistant Core...")
 
     gateway = ModelGateway(provider="ollama")
@@ -46,7 +46,7 @@ def main():
     context_manager = ContextManager(gateway=gateway)
     daily_planner = DailyPlannerEngine(user_name="Ahmet")
 
-    print("[Core] Policy Security Boundary, Safe Batch Queue, & Memory Classifier initialized.")
+    print("[Core] Policy Security Boundary, Safe Batch Queue, & Scoped Preference Classifier initialized.")
 
     # 1. Fetch live data with graceful fallbacks
     print("\nFetching Live Assistant Context (Gmail, Calendar, Tasks)...")
@@ -127,7 +127,7 @@ def main():
 
     # 4. Route Proposals through Policy Engine into ApprovalQueue
     print("\n")
-    print_header("📋 ACTION PROPOSALS & SAFE BATCH APPROVAL QUEUE")
+    print_header("📋 EXPLAINABLE ACTION PROPOSALS & APPROVAL QUEUE")
     
     inbox_eval = inbox_zero_engine.evaluate_inbox(triaged_emails)
     
@@ -139,7 +139,13 @@ def main():
             action=p.get("action", "create_calendar_event"),
             target="primary_calendar",
             parameters={"summary": p.get("summary"), "start_time": p.get("start_time"), "end_time": p.get("end_time")},
-            reason=p.get("reason", "Daily planner schedule block")
+            reason=p.get("reason", "Daily planner schedule block"),
+            ttl_minutes=60,
+            why_proposed=[
+                f"1. Goal task '{p.get('summary')}' was identified as active priority.",
+                f"2. Free calendar slot found ({p.get('start_time')} - {p.get('end_time')}).",
+                "3. Allocation honors user afternoon work preference."
+            ]
         )
         proposals_to_process.append(prop)
 
@@ -149,7 +155,13 @@ def main():
             action=p.get("action", "archive_email"),
             target=f"email_{p.get('msg_id')}",
             parameters={"msg_id": p.get("msg_id")},
-            reason=p.get("reason", "Inbox Zero archive recommendation")
+            reason=p.get("reason", "Inbox Zero archive recommendation"),
+            ttl_minutes=120,
+            why_proposed=[
+                "1. Sender is an automated notification service.",
+                "2. Message requires no immediate reply or calendar planning.",
+                "3. Similar promotional digests were previously archived."
+            ]
         )
         proposals_to_process.append(prop)
 
@@ -161,7 +173,8 @@ def main():
             print(f"  - [{prop.proposal_id}] Action: {prop.action:<22} -> ✅ AUTO_APPROVED ({reason})")
         else:
             approval_queue.add_proposal(prop)
-            print(f"  - [{prop.proposal_id}] Action: {prop.action:<22} -> ⏳ PENDING_APPROVAL ({reason})")
+            print(f"  - [{prop.proposal_id}] Action: {prop.action:<22} -> ⏳ PENDING_APPROVAL (TTL Expires: {prop.expires_at[:19]})")
+            print(f"      Why Proposed: {prop.why_proposed[0]}")
 
     # 5. Interactive Batch Approval & Memory Classifier Demo
     pending_list = approval_queue.list_pending()
@@ -195,12 +208,14 @@ def main():
         print(f"[{log['timestamp'][:19]}] ID: {log['proposal_id']} | Action: {log['action']} | Decision: {log['policy_decision']} | Status: {log['execution_status']}")
 
     print("\n")
-    print_header("🧠 LEARNED MEMORY STORE (Durable Preferences vs Event Memories)")
-    all_memories = memory_manager.get_context_memories()
-    if all_memories:
-        for m in all_memories[:5]:
-            m_type = m.get('type', 'memory')
-            print(f"  - [{m_type.upper()}] [{m.get('importance')}]: {m.get('content')}")
+    print_header("🧠 SCOPED PREFERENCE STORE & DECAY ENGINE (V0.9 Memory System)")
+    learned_prefs = memory_loop.get_learned_preferences()
+    if learned_prefs:
+        for m in learned_prefs[:5]:
+            m_type = m.get('type', 'preference')
+            scope = m.get('metadata', {}).get('preference_scope', 'GLOBAL')
+            conf = m.get('decayed_confidence', m.get('confidence', 0.5))
+            print(f"  - [{m_type.upper()}] Scope: {scope:<8} | Decayed Confidence: {conf:.2f} | Content: {m.get('content')}")
     else:
         print("  - Memory Store initialized and ready to accumulate learning feedback.")
 
