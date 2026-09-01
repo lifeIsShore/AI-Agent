@@ -1,10 +1,11 @@
 import json
 import time
+import hashlib
 from typing import Dict, Any, List, Optional
 from personal_agent.models.gateway import ModelGateway
 from personal_agent.tools.registry import ToolRegistry
 from personal_agent.policy.engine import PolicyEngine
-from personal_agent.policy.proposal import ActionProposal
+from personal_agent.policy.proposal import ActionProposal, STATUS_EXECUTED, STATUS_FAILED, STATUS_EXPIRED
 from personal_agent.security.audit import AuditLogger
 
 class AgentRuntime:
@@ -20,6 +21,12 @@ class AgentRuntime:
         self.policy = policy_engine
         self.audit_logger = audit_logger or AuditLogger()
         self.messages: List[Dict[str, Any]] = []
+        self.idempotency_cache: Dict[str, Dict[str, Any]] = {}
+
+    def get_idempotency_key(self, action: str, target: str, parameters: Dict[str, Any]) -> str:
+        """Calculates a deterministic idempotency key for an action proposal."""
+        raw_str = f"{action}:{target}:{json.dumps(parameters, sort_keys=True)}"
+        return hashlib.sha256(raw_str.encode('utf-8')).hexdigest()[:16]
 
     def process_request(self, user_prompt: str, user_approved: bool = False) -> str:
         self.messages.append({"role": "user", "content": user_prompt})
@@ -46,8 +53,21 @@ class AgentRuntime:
                 
                 print(f"[Agent] LLM requested tool: {tool_name} with args: {tool_args}")
                 
-                # 3. Create ActionProposal & Evaluate Policy
                 target_str = str(tool_args.get("msg_id") or tool_args.get("event_id") or tool_args.get("task_id") or "system")
+                idem_key = self.get_idempotency_key(tool_name, target_str, tool_args)
+
+                # Check Idempotency Cache (Prevent duplicate execution on network retries)
+                if idem_key in self.idempotency_cache:
+                    cached_res = self.idempotency_cache[idem_key]
+                    print(f"[Idempotency Cache Hit] Tool '{tool_name}' already executed cleanly. Returning cached result.")
+                    self.messages.append({
+                        "role": "tool",
+                        "content": str(cached_res["result"]),
+                        "name": tool_name
+                    })
+                    continue
+
+                # 3. Create ActionProposal & Evaluate Policy
                 proposal = self.policy.create_proposal(
                     action=tool_name,
                     target=target_str,
@@ -66,8 +86,11 @@ class AgentRuntime:
                         try:
                             result = func(**tool_args)
                             elapsed = time.time() - start_time
-                            proposal.status = "EXECUTED"
+                            proposal.status = STATUS_EXECUTED
                             print(f"[Tool Execution] Success ({elapsed:.2f}s): {result}")
+
+                            # Cache execution result for idempotency protection
+                            self.idempotency_cache[idem_key] = {"result": result, "timestamp": time.time()}
 
                             self.audit_logger.log_proposal(
                                 proposal=proposal,
@@ -85,7 +108,7 @@ class AgentRuntime:
                             })
                         except Exception as e:
                             elapsed = time.time() - start_time
-                            proposal.status = "FAILED"
+                            proposal.status = STATUS_FAILED
                             self.audit_logger.log_proposal(
                                 proposal=proposal,
                                 policy_decision=reason,
@@ -101,12 +124,11 @@ class AgentRuntime:
                                 "name": tool_name
                             })
                 else:
-                    proposal.status = "BLOCKED"
                     self.audit_logger.log_proposal(
                         proposal=proposal,
                         policy_decision=reason,
                         user_approved=user_approved,
-                        execution_status="BLOCKED",
+                        execution_status=proposal.status,
                         execution_result=None,
                         latency_sec=0.0
                     )

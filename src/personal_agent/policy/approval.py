@@ -5,20 +5,44 @@ from personal_agent.policy.proposal import (
 )
 from personal_agent.tools.registry import ToolRegistry
 from personal_agent.security.audit import AuditLogger
+from personal_agent.state.manager import StateManager
 
 class ApprovalQueue:
-    def __init__(self, tool_registry: ToolRegistry, audit_logger: Optional[AuditLogger] = None, memory_loop: Optional[Any] = None):
+    def __init__(
+        self,
+        tool_registry: ToolRegistry,
+        audit_logger: Optional[AuditLogger] = None,
+        memory_loop: Optional[Any] = None,
+        state_manager: Optional[StateManager] = None
+    ):
         self.registry = tool_registry
         self.audit_logger = audit_logger or AuditLogger()
         self.memory_loop = memory_loop
-        self.queue: Dict[str, ActionProposal] = {}
+        self.state_manager = state_manager or StateManager()
+        
+        # Load persistent state from disk if available
+        self.queue: Dict[str, ActionProposal] = self.state_manager.load_proposals()
+        self._purge_expired()
+
+    def _save_state(self):
+        """Helper to sync current queue state to disk."""
+        if self.state_manager:
+            self.state_manager.save_proposals(self.queue)
+
+    def _purge_expired(self):
+        """Purges expired proposals from the queue upon loading."""
+        for pid, prop in list(self.queue.items()):
+            if prop.is_expired():
+                prop.status = STATUS_EXPIRED
 
     def add_proposal(self, proposal: ActionProposal):
-        """Adds an ActionProposal to the approval queue."""
+        """Adds an ActionProposal to the approval queue and persists to disk."""
         self.queue[proposal.proposal_id] = proposal
+        self._save_state()
 
     def list_pending(self) -> List[ActionProposal]:
         """Returns all proposals currently waiting for human approval."""
+        self._purge_expired()
         return [p for p in self.queue.values() if p.status == STATUS_PENDING_APPROVAL and not p.is_expired()]
 
     def get_proposal(self, proposal_id: str) -> Optional[ActionProposal]:
@@ -61,6 +85,7 @@ class ApprovalQueue:
         # Expiration Check
         if proposal.is_expired():
             proposal.status = STATUS_EXPIRED
+            self._save_state()
             self.audit_logger.log_proposal(
                 proposal=proposal,
                 policy_decision="Approval attempted after TTL expiration",
@@ -78,6 +103,7 @@ class ApprovalQueue:
             isValid, reason = target_validator(proposal.target, proposal.target_checksum)
             if not isValid:
                 proposal.status = STATUS_FAILED
+                self._save_state()
                 self.audit_logger.log_proposal(
                     proposal=proposal,
                     policy_decision=f"Target state validation failed: {reason}",
@@ -96,6 +122,7 @@ class ApprovalQueue:
         func = self.registry.get_tool(proposal.action)
         if not func:
             proposal.status = STATUS_FAILED
+            self._save_state()
             reason = f"Tool function '{proposal.action}' not registered in ToolRegistry."
             self.audit_logger.log_proposal(
                 proposal=proposal,
@@ -112,6 +139,7 @@ class ApprovalQueue:
             result = func(**proposal.parameters)
             elapsed = time.time() - start_time
             proposal.status = STATUS_EXECUTED
+            self._save_state()
 
             # Log to Audit Logger
             self.audit_logger.log_proposal(
@@ -135,6 +163,7 @@ class ApprovalQueue:
         except Exception as e:
             elapsed = time.time() - start_time
             proposal.status = STATUS_FAILED
+            self._save_state()
             err_msg = str(e)
             self.audit_logger.log_proposal(
                 proposal=proposal,
@@ -156,6 +185,7 @@ class ApprovalQueue:
             return False, f"Proposal '{proposal_id}' is not in PENDING_APPROVAL state (current: {proposal.status})."
 
         proposal.status = STATUS_REJECTED
+        self._save_state()
         reject_reason = reason or "User explicitly rejected proposal"
 
         self.audit_logger.log_proposal(
