@@ -16,6 +16,9 @@ from personal_agent.tools.tasks import GoogleTasksTool
 from personal_agent.policy.engine import PolicyEngine, PermissionLevel
 from personal_agent.policy.proposal import ActionProposal, STATUS_PENDING_APPROVAL, STATUS_AUTO_APPROVED
 from personal_agent.policy.approval import ApprovalQueue
+from personal_agent.policy.review import ReviewDecisionEngine, MODE_AUTOMATIC, MODE_QUICK_REVIEW, MODE_DETAILED_REVIEW
+from personal_agent.policy.scopes import ScopeManager, SCOPE_RECURRING
+from personal_agent.policy.rejection import RepeatedRejectionTracker
 from personal_agent.security.audit import AuditLogger
 from personal_agent.security.trust import sanitize_external_text, classify_trust_level, TRUST_EXTERNAL
 from personal_agent.security.identity import IdentityProvider
@@ -54,12 +57,15 @@ def print_header(title: str):
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 
 def main():
-    print_header("PERSONAL ASSISTANT (V1.7 — INTELLIGENT MODEL ROUTING & COST/LATENCY OPTIMIZATION)")
-    print("Initializing V1.7 Assistant Core...")
+    print_header("PERSONAL ASSISTANT (V1.8 — ADAPTIVE HUMAN-IN-THE-LOOP & GOVERNANCE)")
+    print("Initializing V1.8 Assistant Core...")
 
     user_principal = IdentityProvider.get_user_principal("user_ahmet")
     credential_broker = CredentialBroker()
     model_router = ModelRouter()
+    review_engine = ReviewDecisionEngine()
+    scope_manager = ScopeManager()
+    rejection_tracker = RepeatedRejectionTracker()
 
     telemetry_store = TelemetryStore(telemetry_dir="data/telemetry", log_filename="traces.jsonl")
     tracer = AgentTracer(store=telemetry_store)
@@ -111,7 +117,7 @@ def main():
     scheduler = AgentScheduler(registry=job_registry, state_manager=state_manager)
 
     print(f"[Core] Active Principal: '{user_principal.principal_id}' ({user_principal.principal_type}).")
-    print("[Core] ModelRouter & V1.6.1 Credential Redaction active.")
+    print("[Core] ReviewDecisionEngine, Delegated Scopes, & Repeated Rejection Tracker active.")
 
     # 2. Fetch live data with credential isolation and fallback degradation
     print("\nFetching Live Assistant Context (Gmail, Calendar, Tasks)...")
@@ -119,7 +125,6 @@ def main():
     emails = []
     def fetch_gmail():
         cred = credential_broker.get_tool_credential("gmail", "gmail.read")
-        # Sanitize credentials for logging
         sanitized_cred = redact_credentials(cred)
         g_tool = GmailTool()
         return g_tool.list_recent_emails(limit=10)
@@ -237,9 +242,9 @@ def main():
     print_header("🗓 DAILY EXECUTION BRIEFING")
     print(plan["formatted_report"])
 
-    # 6. Route Proposals through Policy Engine into AuthorizationDecision & ApprovalQueue
+    # 6. Route Proposals through Policy Engine & ReviewDecisionEngine
     print("\n")
-    print_header("📋 EXPLAINABLE ACTION PROPOSALS & AUTHORIZATION DECISIONS")
+    print_header("📋 EXPLAINABLE ACTION PROPOSALS & ADAPTIVE REVIEW CARDS")
     
     inbox_eval = inbox_zero_engine.evaluate_inbox(triaged_emails)
     
@@ -274,18 +279,28 @@ def main():
         )
         proposals_to_process.append(prop)
 
-    print(f"Evaluating {len(proposals_to_process)} ActionProposals with Authorization Engine...\n")
+    print(f"Evaluating {len(proposals_to_process)} ActionProposals with Review Decision Engine...\n")
 
     for prop in proposals_to_process:
+        # Check repeated rejection throttling
+        should_throttle, throttle_msg = rejection_tracker.should_throttle_proposal(prop.action, "general")
+        if should_throttle:
+            print(f"  - [{prop.proposal_id}] Action: {prop.action:<22} -> ⚠️ {throttle_msg}")
+            continue
+
+        rev_dec = review_engine.evaluate_review_mode(prop)
         auth_decision = policy.evaluate_authorization(prop, principal=user_principal, user_approved=False)
-        tracer.record_flight_step(root_trace_ctx, 4, STEP_PROPOSAL_CREATED, {"proposal_id": prop.proposal_id, "action": prop.action, "capability": auth_decision.capability})
+        
+        tracer.record_flight_step(root_trace_ctx, 4, STEP_PROPOSAL_CREATED, {"proposal_id": prop.proposal_id, "action": prop.action, "mode": rev_dec.mode})
         tracer.record_flight_step(root_trace_ctx, 5, STEP_POLICY_CHECK, {"proposal_id": prop.proposal_id, "decision": auth_decision.decision, "reason": auth_decision.reason})
 
         if auth_decision.is_allowed():
-            print(f"  - [{prop.proposal_id}] Decision: {auth_decision.decision:<18} -> ✅ ALLOW ({auth_decision.reason})")
+            print(f"  - [{prop.proposal_id}] Mode: {rev_dec.mode:<18} -> ✅ ALLOW ({auth_decision.reason})")
         else:
             approval_queue.add_proposal(prop)
-            print(f"  - [{prop.proposal_id}] Decision: {auth_decision.decision:<18} -> ⏳ REQUIRE_APPROVAL (Rule: {auth_decision.policy_rule})")
+            print(f"  - [{prop.proposal_id}] Mode: {rev_dec.mode:<18} -> ⏳ REQUIRE_APPROVAL ({rev_dec.explainability_summary})")
+            if rev_dec.mode == MODE_DETAILED_REVIEW:
+                print(prop.format_explainable_card())
 
     # 7. Interactive Batch Approval & Memory Classifier Loop
     pending_list = approval_queue.list_pending()
@@ -317,18 +332,18 @@ def main():
     m_res = metrics_calc.calculate_metrics()
 
     print("\n")
-    print_header("📊 PERFORMANCE LATENCY & MODEL ROUTING METRICS")
-    print(f"  - Routed Model Tier:       {model_decision.selected_tier} ({model_decision.model_name})")
-    print(f"  - Estimated Token Savings:  75.0% (vs remote-large baseline)")
+    print_header("📊 PERFORMANCE LATENCY & GOVERNANCE STATUS")
     print(f"  - Active Principal:        {user_principal.principal_id}")
+    print(f"  - Routed Model Tier:       {model_decision.selected_tier}")
     print(f"  - Credential Leaks:        0")
+    print(f"  - Repeated Proposals:      Throttled & Governed")
     print(f"  - Total LLM Requests:      {m_res['total_llm_calls']}")
     print(f"  - P50 Workflow Latency:   {m_res['p50_latency_sec']:.3f}s")
     print(f"  - P95 Workflow Latency:   {m_res['p95_latency_sec']:.3f}s")
     print(f"  - P99 Workflow Latency:   {m_res['p99_latency_sec']:.3f}s")
 
     print("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print("V1.7 Execution completed successfully.")
+    print("V1.8 Execution completed successfully.")
 
 if __name__ == "__main__":
     main()

@@ -58,6 +58,21 @@ class ActionProposal:
         except ValueError:
             return False
 
+    def format_explainable_card(self) -> str:
+        """Renders rich pre-execution explainability card presentation."""
+        why_str = "\n".join([f"  ├─ {w}" for w in self.why_proposed]) if self.why_proposed else f"  └─ {self.reason or 'Automated recommendation'}"
+        return (
+            f"┌─────────────────────────────────────────────┐\n"
+            f"│ ACTION PROPOSAL: {self.action:<25} │\n"
+            f"├─────────────────────────────────────────────┤\n"
+            f"│ Target:     {self.target:<31} │\n"
+            f"│ Risk Level: {self.risk_level:<31} │\n"
+            f"│ Parameters: {json.dumps(self.parameters)[:31]:<31} │\n"
+            f"│ WHY:                                        │\n"
+            f"{why_str}\n"
+            f"└─────────────────────────────────────────────┘"
+        )
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "proposal_id": self.proposal_id,
