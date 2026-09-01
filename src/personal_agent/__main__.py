@@ -449,6 +449,31 @@ def main():
         )
         proposals_to_process.append(prop)
 
+        # Generate Google Task Action Proposal
+        success_task, resolved_task_tool, _ = tool_router.resolve_tool_for_capability("tasks.create", "create_task")
+        task_prop = policy.create_proposal(
+            action=resolved_task_tool,
+            target="@default",
+            parameters={"title": p.get("summary"), "notes": f"Scheduled block: {p.get('start_time')} - {p.get('end_time')}"},
+            reason=f"Google Tasks item for '{p.get('summary')}'",
+            ttl_minutes=60,
+            why_proposed=["1. Priority daily planner item.", "2. Synchronize to Google Tasks."]
+        )
+        proposals_to_process.append(task_prop)
+
+    # Generate Gmail Label Action Proposals for important emails
+    for email in triaged_emails[:2]:
+        if email.get("id"):
+            label_prop = policy.create_proposal(
+                action="apply_label",
+                target=f"email_{email.get('id')}",
+                parameters={"msg_id": str(email.get("id")), "label_name": "Actionable"},
+                reason="Inbox triage priority label",
+                ttl_minutes=120,
+                why_proposed=["1. Email marked high importance.", "2. Apply 'Actionable' label."]
+            )
+            proposals_to_process.append(label_prop)
+
     for p in inbox_eval.get("archive_proposals", [])[:3]:
         success_tr, resolved_tool, r_reason = tool_router.resolve_tool_for_capability("gmail.archive", p.get("action"))
         prop = policy.create_proposal(
@@ -503,18 +528,18 @@ def main():
     if pending_list:
         print("\nProcessing Safe Batch Approval & Feedback Learning Loop...")
         
-        cal_pids = [p.proposal_id for p in pending_list if "calendar" in p.action or "event" in p.action]
-        if cal_pids:
-            print(f"\n1. Executing SAFE BATCH APPROVAL on {len(cal_pids)} Calendar Proposals...")
-            batch_res = approval_queue.approve_batch(cal_pids)
-            for pid, (success, msg, res) in zip(cal_pids, batch_res):
+        auto_approve_pids = [p.proposal_id for p in pending_list if p.action in ["create_calendar_event", "create_task", "apply_label"]]
+        if auto_approve_pids:
+            print(f"\n1. Executing SAFE BATCH APPROVAL on {len(auto_approve_pids)} Pre-Authorized Proposals (Calendar, Tasks, Labels)...")
+            batch_res = approval_queue.approve_batch(auto_approve_pids)
+            for pid, (success, msg, res) in zip(auto_approve_pids, batch_res):
                 status_str = "SUCCESS" if success else "FAILED"
                 if success:
-                    feedback_loop.process_feedback(pid, "create_calendar_event", FEEDBACK_APPROVE)
+                    feedback_loop.process_feedback(pid, "auto_action", FEEDBACK_APPROVE)
                 print(f"   - [{pid}] {status_str}: {msg}")
                 tracer.record_flight_step(root_trace_ctx, 6, STEP_TOOL_EXECUTION_SUCCESS, {"proposal_id": pid, "msg": msg})
 
-        rem_pids = [p.proposal_id for p in pending_list if p.proposal_id not in cal_pids]
+        rem_pids = [p.proposal_id for p in pending_list if p.proposal_id not in auto_approve_pids]
         if rem_pids:
             print(f"\n2. Executing SAFE BATCH REJECTION on {len(rem_pids)} Archive Proposals...")
             batch_rej = approval_queue.reject_batch(rem_pids, reason="User prefers manual inbox review")

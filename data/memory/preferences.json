@@ -4777,5 +4777,557 @@
       "observations": 1,
       "last_observed_at": "2026-09-01T13:41:48.776231+00:00"
     }
+  },
+  {
+    "id": "mem_252c86ea",
+    "type": "preference",
+    "content": "User rejected action 'archive_email' on target 'email_1a05d3771684973a' (Reason: User prefers manual inbox review).",
+    "created_at": "2026-09-01T13:48:30.200253+00:00",
+    "updated_at": "2026-09-01T13:48:30.200253+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:48:30.200253+00:00"
+    }
+  },
+  {
+    "id": "mem_3161153a",
+    "type": "preference",
+    "content": "User rejected action 'archive_email' on target 'email_1a05cd03eaffbc2e' (Reason: User prefers manual inbox review).",
+    "created_at": "2026-09-01T13:48:30.291841+00:00",
+    "updated_at": "2026-09-01T13:48:30.291841+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:48:30.291841+00:00"
+    }
+  },
+  {
+    "id": "mem_d0721f64",
+    "type": "preference",
+    "content": "User rejected action 'archive_email' on target 'email_1a05ca75ffc99bb2' (Reason: User prefers manual inbox review).",
+    "created_at": "2026-09-01T13:48:30.400404+00:00",
+    "updated_at": "2026-09-01T13:48:30.400404+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:48:30.400404+00:00"
+    }
+  },
+  {
+    "id": "mem_331c61c9",
+    "type": "preference",
+    "content": "User rejected action 'archive_email' on target 'email_1a05c931e29255d6' (Reason: User prefers manual inbox review).",
+    "created_at": "2026-09-01T13:48:30.507417+00:00",
+    "updated_at": "2026-09-01T13:48:30.507417+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:48:30.507417+00:00"
+    }
+  },
+  {
+    "id": "mem_4093b784",
+    "type": "preference",
+    "content": "User rejected action 'archive_email' on target 'email_1a05d3771684973a' (Reason: User prefers manual inbox review).",
+    "created_at": "2026-09-01T13:48:30.626505+00:00",
+    "updated_at": "2026-09-01T13:48:30.626505+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:48:30.625608+00:00"
+    }
+  },
+  {
+    "id": "mem_834f6542",
+    "type": "preference",
+    "content": "User rejected action 'archive_email' on target 'email_1a05cd03eaffbc2e' (Reason: User prefers manual inbox review).",
+    "created_at": "2026-09-01T13:48:30.733876+00:00",
+    "updated_at": "2026-09-01T13:48:30.733876+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:48:30.733876+00:00"
+    }
+  },
+  {
+    "id": "mem_cb26dbfb",
+    "type": "preference",
+    "content": "User rejected action 'archive_email' on target 'email_1a05d3771684973a' (Reason: User prefers manual inbox review).",
+    "created_at": "2026-09-01T13:52:10.310127+00:00",
+    "updated_at": "2026-09-01T13:52:10.310127+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:52:10.310127+00:00"
+    }
+  },
+  {
+    "id": "mem_5ceeaaa5",
+    "type": "preference",
+    "content": "User rejected action 'archive_email' on target 'email_1a05cd03eaffbc2e' (Reason: User prefers manual inbox review).",
+    "created_at": "2026-09-01T13:52:10.430228+00:00",
+    "updated_at": "2026-09-01T13:52:10.430228+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:52:10.430228+00:00"
+    }
+  },
+  {
+    "id": "mem_09f8a588",
+    "type": "preference",
+    "content": "User rejected action 'archive_email' on target 'email_1a05ca75ffc99bb2' (Reason: User prefers manual inbox review).",
+    "created_at": "2026-09-01T13:52:10.566316+00:00",
+    "updated_at": "2026-09-01T13:52:10.566316+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:52:10.566316+00:00"
+    }
+  },
+  {
+    "id": "mem_243c4b7a",
+    "type": "preference",
+    "content": "User rejected action 'archive_email' on target 'email_1a05c931e29255d6' (Reason: User prefers manual inbox review).",
+    "created_at": "2026-09-01T13:52:10.711871+00:00",
+    "updated_at": "2026-09-01T13:52:10.711871+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:52:10.711871+00:00"
+    }
+  },
+  {
+    "id": "mem_1593f98f",
+    "type": "preference",
+    "content": "User rejected action 'archive_email' on target 'email_1a05d3771684973a' (Reason: User prefers manual inbox review).",
+    "created_at": "2026-09-01T13:52:10.878030+00:00",
+    "updated_at": "2026-09-01T13:52:10.878030+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:52:10.878030+00:00"
+    }
+  },
+  {
+    "id": "mem_9ebc890b",
+    "type": "preference",
+    "content": "User rejected action 'archive_email' on target 'email_1a05cd03eaffbc2e' (Reason: User prefers manual inbox review).",
+    "created_at": "2026-09-01T13:52:11.035365+00:00",
+    "updated_at": "2026-09-01T13:52:11.035365+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:52:11.035365+00:00"
+    }
+  },
+  {
+    "id": "mem_e5c7f6a7",
+    "type": "preference",
+    "content": "User usually approves archiving newsletters from LinkedIn.",
+    "created_at": "2026-09-01T13:55:31.177410+00:00",
+    "updated_at": "2026-09-01T13:55:31.177410+00:00",
+    "source": "user",
+    "confidence": 1.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {}
+  },
+  {
+    "id": "mem_60a8c3d2",
+    "type": "preference",
+    "content": "User approved action 'archive_email' on target 'newsletter_123' (Reason: Weekly tech digest).",
+    "created_at": "2026-09-01T13:55:31.231128+00:00",
+    "updated_at": "2026-09-01T13:55:31.231128+00:00",
+    "source": "user",
+    "confidence": 0.68,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "CATEGORY",
+      "condition": {
+        "action": "archive_email",
+        "category": "newsletter"
+      },
+      "confidence": 0.68,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:55:31.231128+00:00"
+    }
+  },
+  {
+    "id": "mem_1708c1c9",
+    "type": "preference",
+    "content": "User archiving newsletter (100% confidence)",
+    "created_at": "2026-09-01T13:55:31.496733+00:00",
+    "updated_at": "2026-09-01T13:55:31.496733+00:00",
+    "source": "user",
+    "confidence": 1.0,
+    "importance": "medium",
+    "expires_at": null,
+    "metadata": {
+      "confidence": 1.0,
+      "observations": 50
+    }
+  },
+  {
+    "id": "mem_81c9c03d",
+    "type": "preference",
+    "content": "User approved action 'archive_email' on target 'email_1' (Reason: Newsletter).",
+    "created_at": "2026-09-01T13:55:31.948508+00:00",
+    "updated_at": "2026-09-01T13:55:31.948508+00:00",
+    "source": "user",
+    "confidence": 0.68,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.68,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:55:31.948508+00:00"
+    }
+  },
+  {
+    "id": "mem_5a069acb",
+    "type": "preference",
+    "content": "User approved action 'archive_email' on target 'email_2' (Reason: Digest).",
+    "created_at": "2026-09-01T13:55:32.038183+00:00",
+    "updated_at": "2026-09-01T13:55:32.038183+00:00",
+    "source": "user",
+    "confidence": 0.68,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.68,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:55:32.038183+00:00"
+    }
+  },
+  {
+    "id": "mem_6a666339",
+    "type": "preference",
+    "content": "User approved action 'create_task' on target '@default' (Reason: Google Tasks item for 'Reply to university email: What's it really like to study at Hult?').",
+    "created_at": "2026-09-01T13:57:55.533078+00:00",
+    "updated_at": "2026-09-01T13:57:55.533078+00:00",
+    "source": "user",
+    "confidence": 0.68,
+    "importance": "medium",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "TARGET",
+      "condition": {
+        "action": "create_task",
+        "target": "@default"
+      },
+      "confidence": 0.68,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:57:55.533078+00:00"
+    }
+  },
+  {
+    "id": "mem_0c380519",
+    "type": "preference",
+    "content": "User approved action 'apply_label' on target 'email_1a05d3e182587859' (Reason: Inbox triage priority label).",
+    "created_at": "2026-09-01T13:57:56.939636+00:00",
+    "updated_at": "2026-09-01T13:57:56.939636+00:00",
+    "source": "user",
+    "confidence": 0.68,
+    "importance": "medium",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "apply_label",
+        "sender": "automated_service"
+      },
+      "confidence": 0.68,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:57:56.939636+00:00"
+    }
+  },
+  {
+    "id": "mem_4b8f43c6",
+    "type": "preference",
+    "content": "User approved action 'apply_label' on target 'email_1a05d3771684973a' (Reason: Inbox triage priority label).",
+    "created_at": "2026-09-01T13:57:57.871100+00:00",
+    "updated_at": "2026-09-01T13:57:57.871100+00:00",
+    "source": "user",
+    "confidence": 0.68,
+    "importance": "medium",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "apply_label",
+        "sender": "automated_service"
+      },
+      "confidence": 0.68,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:57:57.871100+00:00"
+    }
+  },
+  {
+    "id": "mem_f92046d7",
+    "type": "preference",
+    "content": "User rejected action 'archive_email' on target 'email_1a05d3e182587859' (Reason: User prefers manual inbox review).",
+    "created_at": "2026-09-01T13:57:58.051976+00:00",
+    "updated_at": "2026-09-01T13:57:58.051976+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:57:58.051976+00:00"
+    }
+  },
+  {
+    "id": "mem_435dd925",
+    "type": "preference",
+    "content": "User rejected action 'archive_email' on target 'email_1a05d3771684973a' (Reason: User prefers manual inbox review).",
+    "created_at": "2026-09-01T13:57:58.242615+00:00",
+    "updated_at": "2026-09-01T13:57:58.242615+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:57:58.242615+00:00"
+    }
+  },
+  {
+    "id": "mem_2ddf91e2",
+    "type": "preference",
+    "content": "User rejected action 'archive_email' on target 'email_1a05cd03eaffbc2e' (Reason: User prefers manual inbox review).",
+    "created_at": "2026-09-01T13:57:58.439452+00:00",
+    "updated_at": "2026-09-01T13:57:58.439452+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:57:58.439452+00:00"
+    }
+  },
+  {
+    "id": "mem_674df8db",
+    "type": "preference",
+    "content": "User rejected action 'archive_email' on target 'email_1a05ca75ffc99bb2' (Reason: User prefers manual inbox review).",
+    "created_at": "2026-09-01T13:57:58.618132+00:00",
+    "updated_at": "2026-09-01T13:57:58.618132+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:57:58.618132+00:00"
+    }
+  },
+  {
+    "id": "mem_859b7cab",
+    "type": "preference",
+    "content": "User rejected action 'archive_email' on target 'email_1a05c931e29255d6' (Reason: User prefers manual inbox review).",
+    "created_at": "2026-09-01T13:57:58.779717+00:00",
+    "updated_at": "2026-09-01T13:57:58.779717+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:57:58.779717+00:00"
+    }
+  },
+  {
+    "id": "mem_4dcdc395",
+    "type": "preference",
+    "content": "User rejected action 'archive_email' on target 'email_1a05d3e182587859' (Reason: User prefers manual inbox review).",
+    "created_at": "2026-09-01T13:57:58.982943+00:00",
+    "updated_at": "2026-09-01T13:57:58.982943+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:57:58.981936+00:00"
+    }
+  },
+  {
+    "id": "mem_17b04fd8",
+    "type": "preference",
+    "content": "User rejected action 'archive_email' on target 'email_1a05d3771684973a' (Reason: User prefers manual inbox review).",
+    "created_at": "2026-09-01T13:57:59.155349+00:00",
+    "updated_at": "2026-09-01T13:57:59.155349+00:00",
+    "source": "user",
+    "confidence": 0.0,
+    "importance": "high",
+    "expires_at": null,
+    "metadata": {
+      "preference_scope": "SENDER",
+      "condition": {
+        "action": "archive_email",
+        "sender": "automated_service"
+      },
+      "confidence": 0.0,
+      "observations": 1,
+      "last_observed_at": "2026-09-01T13:57:59.155349+00:00"
+    }
   }
 ]

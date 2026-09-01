@@ -5,7 +5,7 @@ from personal_agent.tools.gmail import (
 from personal_agent.tools.calendar import (
     get_today_events, get_week_events, get_free_slots, create_calendar_event
 )
-from personal_agent.tools.tasks import list_tasks, get_task
+from personal_agent.tools.tasks import list_tasks, get_task, create_task, complete_task
 
 class ToolRegistry:
     def __init__(self):
@@ -82,12 +82,13 @@ class ToolRegistry:
             func=create_calendar_event
         )
         self.register(
-            name="list_tasks",
-            schema={"description": "List active Google tasks", "parameters": {"type": "object", "properties": {"tasklist_id": {"type": "string"}}}},
-            func=list_tasks
+            name="create_task",
+            schema={"description": "Create a new Google task", "parameters": {"type": "object", "properties": {"title": {"type": "string"}, "notes": {"type": "string"}, "due": {"type": "string"}}}},
+            func=create_task
         )
         self.register(
-            name="get_task",
-            schema={"description": "Get details of a specific task", "parameters": {"type": "object", "properties": {"task_id": {"type": "string"}}}},
-            func=get_task
+            name="complete_task",
+            schema={"description": "Complete a Google task", "parameters": {"type": "object", "properties": {"task_id": {"type": "string"}}}},
+            func=complete_task
         )
+

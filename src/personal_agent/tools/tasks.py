@@ -133,3 +133,16 @@ def get_task(task_id: str, tasklist_id: str = "@default") -> str:
     tool = GoogleTasksTool()
     task = tool.get_task(task_id=task_id, tasklist_id=tasklist_id)
     return json.dumps(task, indent=2)
+
+def create_task(title: str, notes: Optional[str] = None, due: Optional[str] = None, tasklist_id: str = "@default") -> str:
+    """Create a new Google task."""
+    tool = GoogleTasksTool()
+    res = tool.create_task(title=title, notes=notes, due=due, tasklist_id=tasklist_id)
+    return json.dumps(res, indent=2)
+
+def complete_task(task_id: str, tasklist_id: str = "@default") -> str:
+    """Mark a Google task as completed."""
+    tool = GoogleTasksTool()
+    res = tool.complete_task(task_id=task_id, tasklist_id=tasklist_id)
+    return json.dumps(res, indent=2)
+
