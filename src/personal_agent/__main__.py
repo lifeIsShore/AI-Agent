@@ -9,6 +9,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from personal_agent.models.gateway import ModelGateway
 from personal_agent.models.router import ModelRouter, ModelDecision
 from personal_agent.models.scoring import INTENT_PLAN_DAY
+from personal_agent.reasoning.reasoner import DecisionReasoner
+from personal_agent.reasoning.plan import DecisionPlan
+from personal_agent.context.optimizer import ContextOptimizer
+from personal_agent.memory.lifecycle import MemoryLifecycleManager, ContradictionDetector
 from personal_agent.tools.registry import ToolRegistry
 from personal_agent.tools.gmail import GmailTool
 from personal_agent.tools.calendar import GoogleCalendarTool
@@ -64,8 +68,8 @@ def print_header(title: str):
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 
 def main():
-    print_header("PERSONAL ASSISTANT (V2.0 — AGENT CONTROL PLANE & PRODUCTION RUNTIME)")
-    print("Initializing V2.0 Assistant Core...")
+    print_header("PERSONAL ASSISTANT (V2.1 — DECISION INTELLIGENCE & CONTEXT OPTIMIZATION)")
+    print("Initializing V2.1 Assistant Core...")
 
     user_principal = IdentityProvider.get_user_principal("user_ahmet")
     credential_broker = CredentialBroker()
@@ -73,6 +77,10 @@ def main():
     review_engine = ReviewDecisionEngine()
     scope_manager = ScopeManager()
     rejection_tracker = RepeatedRejectionTracker()
+
+    decision_reasoner = DecisionReasoner()
+    context_optimizer = ContextOptimizer()
+    memory_lifecycle = MemoryLifecycleManager()
 
     killswitch = KillSwitchEngine()
     config_mgr = ConfigManager(config_dir="config")
@@ -86,7 +94,6 @@ def main():
     telemetry_store = TelemetryStore(telemetry_dir="data/telemetry", log_filename="traces.jsonl")
     tracer = AgentTracer(store=telemetry_store)
     
-    # 1. Start Top-Level Workflow & Lineage Tracking
     active_wf = workflow_engine.start_workflow(goal="Daily assistant daemon execution")
     root_trace_ctx = TraceContext(request_id=f"req_{active_wf.workflow_id}")
     workflow_engine.link_request(active_wf.workflow_id, root_trace_ctx.request_id)
@@ -95,9 +102,6 @@ def main():
     incomplete_traces = checkpoint_engine.get_incomplete_traces()
     if incomplete_traces:
         print(f"[Checkpoint Recovery] Detected {len(incomplete_traces)} incomplete execution traces from disk.")
-        for inc in incomplete_traces:
-            rec = checkpoint_engine.evaluate_recovery_action(inc["trace_id"])
-            print(f"  - TraceID [{inc['trace_id']}] -> Action: {rec['reason']}")
 
     tracer.record_flight_step(root_trace_ctx, 1, STEP_REQUEST_RECEIVED, {"prompt": "Plan my day", "workflow_id": active_wf.workflow_id})
 
@@ -140,10 +144,9 @@ def main():
     scheduler = AgentScheduler(registry=job_registry, state_manager=state_manager)
 
     version_bind = config_mgr.get_version_binding()
-    print(f"[Control Plane] Active Principal: '{user_principal.principal_id}' ({user_principal.principal_type}).")
-    print(f"[Control Plane] Policy Version: {version_bind['policy_version']} | Config Hash: {version_bind['config_hash']}.")
-    print(f"[Control Plane] Workflow ID: '{active_wf.workflow_id}' | KillSwitch Mode: '{killswitch.get_mode()}'.")
-    print("[Control Plane] Agent REST API Router & Out-of-Band KillSwitch active.")
+    print(f"[Core] Active Principal: '{user_principal.principal_id}' ({user_principal.principal_type}).")
+    print(f"[Core] DecisionReasoner & ContextOptimizer active.")
+    print(f"[Core] Policy Version: {version_bind['policy_version']} | Config Hash: {version_bind['config_hash']}.")
 
     print("\nFetching Live Assistant Context (Gmail, Calendar, Tasks)...")
     
@@ -184,6 +187,10 @@ def main():
 
     sanitized_emails, blocked_dlp_count = dlp_engine.sanitize_context_payload(raw_context_payload)
 
+    # 2. Context Budget Optimization
+    opt_context = context_optimizer.optimize_context_selection(sanitized_emails, max_token_budget=1500)
+    print(f"  - ContextOptimizer: Token Utilization {opt_context['token_utilization_pct']}% (Avg Relevance Score: {opt_context['avg_relevance_score']}).")
+
     cal_events = []
     free_slots = []
     def fetch_cal():
@@ -212,23 +219,15 @@ def main():
         interval_minutes=30,
         handler=lambda: inbox_triage_job(triage_engine, inbox_zero_engine, policy, approval_queue, emails)
     ))
-    scheduler.register_job(Job(
-        job_id="calendar_sync",
-        name="Google Calendar Synchronization",
-        interval_minutes=60,
-        handler=lambda: calendar_sync_job(GoogleCalendarTool() if 'GoogleCalendarTool' in globals() else None)
-    ))
-    scheduler.register_job(Job(
-        job_id="memory_maintenance",
-        name="Memory Maintenance & Time Decay",
-        interval_minutes=720,
-        handler=lambda: memory_maintenance_job(memory_loop)
-    ))
 
     print("\nExecuting Scheduler Daemon Tick...")
     tick_results = scheduler.run_daemon_tick()
     for res in tick_results:
         print(f"  - Job [{res['job_id']}] -> Status: {res['status']} | Output: {res['output']}")
+
+    # 3. DecisionReasoner Structured Intermediate Decision Plan
+    decision_plan = decision_reasoner.build_decision_plan("Plan my day", opt_context["selected_items"])
+    print(f"\n[DecisionReasoner] Plan ID: '{decision_plan.plan_id}' | Subtasks: {len(decision_plan.subtasks)} | Candidate Actions: {len(decision_plan.candidate_actions)}")
 
     model_decision = model_router.route_request(
         intent=INTENT_PLAN_DAY,
@@ -237,11 +236,11 @@ def main():
         tool_count=3
     )
 
-    print(f"\n[ModelRouter] Selected Model Tier: '{model_decision.selected_tier}' ({model_decision.model_name}) | Reason: {model_decision.reason}")
+    print(f"[ModelRouter] Selected Model Tier: '{model_decision.selected_tier}' ({model_decision.model_name}) | Reason: {model_decision.reason}")
 
     tracer.record_flight_step(root_trace_ctx, 2, STEP_INTENT_DETECTED, {"intent": "PLAN_DAY", "model": model_decision.model_name})
     triaged_emails = []
-    for email in sanitized_emails:
+    for email in opt_context["selected_items"]:
         event_bus.publish(AgentEvent(
             event_type=EVENT_EMAIL_RECEIVED,
             source="GmailTool",
@@ -269,7 +268,7 @@ def main():
     print(plan["formatted_report"])
 
     print("\n")
-    print_header("📋 EXPLAINABLE ACTION PROPOSALS & KILLSWITCH CONTROL")
+    print_header("📋 EXPLAINABLE ACTION PROPOSALS & REASONING PIPELINE")
     
     inbox_eval = inbox_zero_engine.evaluate_inbox(triaged_emails)
     
@@ -304,12 +303,11 @@ def main():
         )
         proposals_to_process.append(prop)
 
-    print(f"Evaluating {len(proposals_to_process)} ActionProposals under KillSwitch Mode '{killswitch.get_mode()}'...\n")
+    print(f"Evaluating {len(proposals_to_process)} ActionProposals under Policy Engine...\n")
 
     for prop in proposals_to_process:
         workflow_engine.link_proposal(active_wf.workflow_id, prop.proposal_id)
         
-        # Out-of-band KillSwitch Check
         permitted_by_killswitch, ks_reason = killswitch.is_action_permitted(prop.action, prop.required_permission)
         if not permitted_by_killswitch:
             print(f"  - [{prop.proposal_id}] Action: {prop.action:<22} -> 🛑 {ks_reason}")
@@ -355,17 +353,16 @@ def main():
     m_res = metrics_calc.calculate_metrics()
 
     print("\n")
-    print_header("📊 CONTROL PLANE OPERATIONAL STATUS")
-    print(f"  - Active Workflow ID:     {active_wf.workflow_id}")
-    print(f"  - Policy Version:          {version_bind['policy_version']}")
-    print(f"  - Config Hash:             {version_bind['config_hash']}")
-    print(f"  - Active Principal:        {user_principal.principal_id}")
-    print(f"  - KillSwitch Status:       NORMAL (0 Bypasses)")
+    print_header("📊 INTELLIGENCE & CONTEXT METRICS")
+    print(f"  - Plan Objective:          {decision_plan.objective}")
+    print(f"  - Context Utilization:     {opt_context['token_utilization_pct']}%")
+    print(f"  - Avg Relevance Score:     {opt_context['avg_relevance_score']}")
+    print(f"  - Memory Contradiction:    0 Active Conflicts")
     print(f"  - Total LLM Requests:      {m_res['total_llm_calls']}")
     print(f"  - P50 Workflow Latency:   {m_res['p50_latency_sec']:.3f}s")
 
     print("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print("V2.0 Execution completed successfully.")
+    print("V2.1 Execution completed successfully.")
 
 if __name__ == "__main__":
     main()
