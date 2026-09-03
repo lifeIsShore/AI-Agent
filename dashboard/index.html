@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal AI Agent OS — Operational Control Plane (V6.5)</title>
+    <title>Personal AI Agent OS — Operational Control Plane (V6.5 / V6.6.1)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -21,6 +21,7 @@
                         <span class="version-chip font-cyan">Runtime V6.0</span>
                         <span class="version-chip font-purple">World Model V6.1</span>
                         <span class="version-chip font-amber">Safety Governor V4.1+</span>
+                        <span class="version-chip font-emerald">Model Router V6.6.1</span>
                     </div>
                 </div>
             </div>
@@ -30,7 +31,7 @@
                     <span id="os-status-text">SYSTEM RUNNING (BOUNDED_AUTO)</span>
                 </div>
                 <div class="badge tests-badge">
-                    <span>🧪 1,352 Unit Tests Passing</span>
+                    <span>🧪 1,397 Unit Tests Passing</span>
                 </div>
             </div>
         </header>
@@ -57,20 +58,20 @@
 
             <div class="kpi-card glass">
                 <div class="kpi-header">
-                    <span class="kpi-title">Safety Violations</span>
-                    <span class="kpi-icon">🛡️</span>
+                    <span class="kpi-title">LLM Calls Avoided</span>
+                    <span class="kpi-icon">🧠</span>
                 </div>
-                <div class="kpi-value text-gradient-amber">0.0%</div>
-                <div class="kpi-footer positive">Zero-tolerance safety gate active</div>
+                <div class="kpi-value text-gradient-emerald">42.1%</div>
+                <div class="kpi-footer positive">Deterministic Rule Engine active</div>
             </div>
 
             <div class="kpi-card glass">
                 <div class="kpi-header">
-                    <span class="kpi-title">Accuracy Baseline</span>
-                    <span class="kpi-icon">🎯</span>
+                    <span class="kpi-title">Safety Violations</span>
+                    <span class="kpi-icon">🛡️</span>
                 </div>
-                <div class="kpi-value text-gradient-purple">94.2%</div>
-                <div class="kpi-footer positive">Verified across 32 milestones</div>
+                <div class="kpi-value text-gradient-amber">0.0%</div>
+                <div class="kpi-footer positive">Zero-tolerance governor active</div>
             </div>
         </section>
 
@@ -140,7 +141,92 @@
         <!-- Main Dashboard Content Grid -->
         <main class="dashboard-grid">
 
-            <!-- Column 1: Collaboration Mesh Stream & Attention Queue -->
+            <!-- Column 1: LLM Orchestration Center (V6.6.1) -->
+            <div class="grid-column">
+
+                <!-- 🧠 LLM Orchestration Panel -->
+                <div class="card glass">
+                    <div class="card-header">
+                        <h2>🧠 LLM Orchestration (V6.6.1)</h2>
+                        <span class="pill-badge primary">3 Ready / 4 Models</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="model-orchestration-list" id="model-orchestration-list">
+                            <div class="model-item clickable" data-model-id="rule_engine">
+                                <div class="m-item-top">
+                                    <span class="m-name font-emerald">● Deterministic Rule Engine</span>
+                                    <span class="m-status-pill green">READY</span>
+                                </div>
+                                <div class="m-item-details font-muted font-mono">
+                                    <span>Latency: &lt;10ms | Cost: €0.00</span>
+                                    <span>Task: Idle (42.1% calls avoided)</span>
+                                </div>
+                            </div>
+
+                            <div class="model-item clickable in-use" data-model-id="qwen2.5_1.5b">
+                                <div class="m-item-top">
+                                    <span class="m-name font-cyan">● Qwen 2.5 1.5B (Ollama)</span>
+                                    <span class="m-status-pill blue pulse-blue">IN USE</span>
+                                </div>
+                                <div class="m-item-details font-muted font-mono">
+                                    <span>Provider: Ollama (LOCAL) | Context: 32K</span>
+                                    <span>CPU: 68% | Task: Email & Planning Triage</span>
+                                </div>
+                            </div>
+
+                            <div class="model-item clickable blocked" data-model-id="strong_local_14b">
+                                <div class="m-item-top">
+                                    <span class="m-name font-rose">● Strong Local LLM (14B)</span>
+                                    <span class="m-status-pill red">BLOCKED</span>
+                                </div>
+                                <div class="m-item-details font-muted font-mono">
+                                    <span>Reason: RAM footprint limit exceeded</span>
+                                </div>
+                            </div>
+
+                            <div class="model-item clickable" data-model-id="strong_cloud">
+                                <div class="m-item-top">
+                                    <span class="m-name font-purple">● Strong Cloud LLM</span>
+                                    <span class="m-status-pill purple">READY</span>
+                                </div>
+                                <div class="m-item-details font-muted font-mono">
+                                    <span>Provider: Cloud API | Latency: 8.4s</span>
+                                    <span>Task: Standby (Complex Research)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Explainable Model Routing Inspector -->
+                <div class="card glass">
+                    <div class="card-header">
+                        <h2>🧭 Model Routing Inspector</h2>
+                        <span class="pill-badge emerald">Explainable Tiering</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="routing-trace-box glass-nested font-inter">
+                            <div class="trace-task font-outfit"><strong>Task:</strong> University Email Classification & Schedule Triage</div>
+                            <div class="trace-meta font-muted font-mono">
+                                <span>Complexity: <strong class="font-emerald">LOW</strong></span> |
+                                <span>Preference: <strong class="font-cyan">LOCAL_ONLY</strong></span>
+                            </div>
+                            <div class="trace-reasons font-muted font-mono" style="margin-top: 6px;">
+                                <div style="color: var(--accent-emerald);">✓ Local model (privacy compatible)</div>
+                                <div style="color: var(--accent-emerald);">✓ Sufficient capability for email classification</div>
+                                <div style="color: var(--accent-emerald);">✓ Lowest latency (&lt;1.2s)</div>
+                                <div style="color: var(--accent-emerald);">✓ Historical accuracy 94.8%</div>
+                            </div>
+                            <div class="trace-gov font-emerald font-mono" style="margin-top: 6px;">
+                                Governor Authorization: <strong>AUTHORIZED</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Column 2: Collaboration Stream & Decision Center -->
             <div class="grid-column">
 
                 <!-- Agent Collaboration Mesh Stream (V6.2) -->
@@ -171,64 +257,6 @@
                     </div>
                 </div>
 
-                <!-- Persistent Autonomous Research Monitor (V6.6) -->
-                <div class="card glass">
-                    <div class="card-header">
-                        <h2>🔬 Persistent Autonomous Research (V6.6)</h2>
-                        <span class="pill-badge purple">Continuous Scan</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="research-status-box glass-nested">
-                            <div class="r-topic font-outfit"><strong>Domain:</strong> Autonomous Agent Governance</div>
-                            <div class="r-stats font-muted">
-                                <span>Candidates: <strong>17</strong></span> |
-                                <span>Verified: <strong class="font-emerald">8</strong></span> |
-                                <span>Novel: <strong class="font-cyan">3</strong></span> |
-                                <span>Contradictions: <strong class="font-amber">1</strong></span>
-                            </div>
-                            <div class="r-alert font-amber">⚠️ Paper <em>arXiv:2401.9912</em> flags contradiction with fixed drift window limits. Review recommended.</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Agent Attention Economy Queue (V6.3) -->
-                <div class="card glass">
-                    <div class="card-header">
-                        <h2>🧠 Attention Economy Queue (V6.3)</h2>
-                        <span class="pill-badge amber">Interruption Budget Optimized</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="attention-list">
-                            <div class="attention-item high">
-                                <div class="att-header">
-                                    <span class="att-title font-rose">HIGH — Thesis Deadline Risk Alert</span>
-                                    <span class="att-score">Score: 2.45</span>
-                                </div>
-                                <div class="att-desc font-muted">Completion prob dropped to 50%. Replanning recommended.</div>
-                            </div>
-                            <div class="attention-item medium">
-                                <div class="att-header">
-                                    <span class="att-title font-amber">MEDIUM — Professor Email Response</span>
-                                    <span class="att-score">Score: 1.12</span>
-                                </div>
-                                <div class="att-desc font-muted">Prof. Davis requested thesis proposal schedule update.</div>
-                            </div>
-                            <div class="attention-item low">
-                                <div class="att-header">
-                                    <span class="att-title font-muted">LOW (DEFERRED) — Minor Calendar Optimization</span>
-                                    <span class="att-score">Score: 0.35</span>
-                                </div>
-                                <div class="att-desc font-muted">Deferred automatically to daily summary digest.</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Column 2: Interactive Decision Center & Subsystem Health -->
-            <div class="grid-column">
-
                 <!-- Personal Decision Intelligence Center (V6.4 Interactive) -->
                 <div class="card glass">
                     <div class="card-header">
@@ -238,7 +266,6 @@
                     <div class="card-body">
                         <p class="section-desc">Problem: <em>Thesis research taking longer than estimated (+2.4x duration overrun).</em></p>
                         
-                        <!-- Interactive Option Cards -->
                         <div class="decision-options" id="decision-options-container">
                             <div class="decision-card" data-option-id="opt_a">
                                 <div class="dec-header">
@@ -265,7 +292,6 @@
                             </div>
                         </div>
 
-                        <!-- Decision Save Controls & Confirmation -->
                         <div class="decision-controls">
                             <button class="btn btn-save-decision" id="btn-save-decision">Save & Apply Selected Decision</button>
                             <span class="decision-save-toast font-emerald" id="decision-save-toast">✓ Option B Saved & Applied to Governor</span>
@@ -273,38 +299,12 @@
                     </div>
                 </div>
 
-                <!-- Granular Subsystem Health Tree (V4.1) -->
-                <div class="card glass">
-                    <div class="card-header">
-                        <h2>⚙️ Subsystem Health Tree (V4.1)</h2>
-                        <span class="pill-badge emerald">27 / 27 Healthy</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="subsystem-health-grid">
-                            <div class="health-item"><span class="h-dot green"></span> <span>RuntimeSupervisor</span></div>
-                            <div class="health-item"><span class="h-dot green"></span> <span>AutonomyGovernor</span></div>
-                            <div class="health-item"><span class="h-dot green"></span> <span>GmailConnector</span></div>
-                            <div class="health-item"><span class="h-dot green"></span> <span>CalendarConnector</span></div>
-                            <div class="health-item"><span class="h-dot green"></span> <span>TasksConnector</span></div>
-                            <div class="health-item"><span class="h-dot green"></span> <span>DriveConnector</span></div>
-                            <div class="health-item"><span class="h-dot green"></span> <span>MemoryConsolidator</span></div>
-                            <div class="health-item"><span class="h-dot green"></span> <span>WorldModelGraph</span></div>
-                            <div class="health-item"><span class="h-dot green"></span> <span>EventBusStore</span></div>
-                            <div class="health-item"><span class="h-dot green"></span> <span>PersistentResearch</span></div>
-                            <div class="health-item"><span class="h-dot green"></span> <span>BrowserSpecialist</span></div>
-                            <div class="health-item"><span class="h-dot green"></span> <span>ContinuousPlanner</span></div>
-                            <div class="health-item"><span class="h-dot green"></span> <span>DLPContextSanitizer</span></div>
-                            <div class="health-item"><span class="h-dot green"></span> <span>AttentionEconomy</span></div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
 
-            <!-- Column 3: Specialist Agent Inspector & Console -->
+            <!-- Column 3: Specialist Roster & Enriched Structured Console -->
             <div class="grid-column">
 
-                <!-- Interactive Specialist Agent Mesh (Click card to Inspect) -->
+                <!-- Interactive Specialist Agent Mesh -->
                 <div class="card glass">
                     <div class="card-header">
                         <h2>🤖 Specialist Mesh & Authority Grants</h2>
@@ -333,22 +333,11 @@
                                     <span>Current Grant: <code>search_rag</code>, <code>web_search</code></span>
                                 </div>
                             </div>
-
-                            <div class="authority-card clickable" data-agent-id="PlanningSpecialist">
-                                <div class="auth-header">
-                                    <span class="agent-name">📝 PlanningSpecialist</span>
-                                    <span class="auth-badge allowed">AUTHORITY: ALLOWED</span>
-                                </div>
-                                <div class="auth-tools font-muted">
-                                    <span>Capabilities: <code>create_task</code>, <code>continuous_plan</code>, <code>arbitrate</code></span>
-                                    <span>Current Grant: <code>create_task</code>, <code>continuous_plan</code></span>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Structured Log Terminal with Filters -->
+                <!-- Structured Event Console with 🧠 LLM Filter Tab -->
                 <div class="card glass console-card">
                     <div class="card-header">
                         <h2>📟 Structured Event Console</h2>
@@ -357,22 +346,22 @@
                             <button class="btn-clear" id="btn-clear-console">Clear</button>
                         </div>
                     </div>
-                    <!-- Structured Filter Tags -->
+                    <!-- Structured Filter Tags including 🧠 LLM -->
                     <div class="log-filter-bar font-mono">
                         <button class="filter-btn active" data-filter="all">All</button>
                         <button class="filter-btn" data-filter="DECISION">Decisions</button>
                         <button class="filter-btn" data-filter="ACTION">Actions</button>
                         <button class="filter-btn" data-filter="SECURITY">Security</button>
-                        <button class="filter-btn" data-filter="ERROR">Errors</button>
+                        <button class="filter-btn" data-filter="LLM">🧠 LLM</button>
                         <button class="filter-btn" data-filter="RESEARCH">Research</button>
                     </div>
                     <div class="card-body">
                         <div class="console-terminal font-mono" id="console-terminal">
-                            <div class="log-line info" data-category="SECURITY">[18:19:00] [AutonomyGovernor] RISK: LOW | Autonomy: BOUNDED_AUTO -> Action 'list_messages' PERMITTED (Provenance: fact_7908912f)</div>
-                            <div class="log-line success" data-category="ACTION">[18:18:55] [EmailSpecialist] Executed tool 'list_messages' -> 2 unread inbox messages found.</div>
-                            <div class="log-line highlight" data-category="RESEARCH">[18:18:50] [PersistentResearchEngine] Continuous scan: Paper 'arXiv:2401.9912' ingested into knowledge graph.</div>
-                            <div class="log-line warning" data-category="DECISION">[18:18:45] [DecisionIntelligenceEngine] User selected Option B. Saved to data/runtime/saved_decisions.json.</div>
-                            <div class="log-line info" data-category="ACTION">[18:18:40] [LongHorizonMissionControl] Mission '🎓 Master Thesis' progress updated to 76% (Predicted completion: Nov 24).</div>
+                            <div class="log-line info" data-category="SECURITY">[18:23:00] [AutonomyGovernor] RISK: LOW | Autonomy: BOUNDED_AUTO -> Action 'list_messages' PERMITTED (Provenance: fact_7908912f)</div>
+                            <div class="log-line highlight" data-category="LLM">[18:22:55] [EmailSpecialist] [MODEL:qwen2.5:1.5b] [ROUTER:SMALL_LOCAL_LLM] [TOKENS:412] [1.2s] Executed tool 'list_messages' -> 2 unread messages found.</div>
+                            <div class="log-line success" data-category="LLM">[18:22:50] [PlanningSpecialist] [MODEL:DETERMINISTIC_RULES] [ROUTER:RULE_ENGINE] [4ms] Evaluated schedule rules -> LLM CALL AVOIDED</div>
+                            <div class="log-line highlight" data-category="RESEARCH">[18:22:45] [PersistentResearchEngine] Continuous scan: Paper 'arXiv:2401.9912' ingested into knowledge graph.</div>
+                            <div class="log-line warning" data-category="DECISION">[18:22:40] [DecisionIntelligenceEngine] User selected Option B. Saved to data/runtime/saved_decisions.json.</div>
                         </div>
                     </div>
                 </div>
@@ -382,7 +371,41 @@
         </main>
     </div>
 
-    <!-- Specialist Inspector Modal Dialog -->
+    <!-- Model Details Inspector Modal Dialog -->
+    <div class="modal-overlay hidden" id="model-modal-overlay">
+        <div class="modal-card glass">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <span class="modal-icon">🧠</span>
+                    <h3 class="modal-title font-outfit" id="modal-model-name">Qwen 2.5 1.5B Inspector</h3>
+                </div>
+                <button class="modal-close-btn" id="model-modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body font-inter">
+                <div class="modal-stat-grid font-mono">
+                    <div class="m-stat"><span class="m-label">Status:</span> <span class="m-val font-emerald" id="modal-model-status">IN_USE</span></div>
+                    <div class="m-stat"><span class="m-label">Tier:</span> <span class="m-val font-cyan" id="modal-model-tier">SMALL_LOCAL_LLM</span></div>
+                    <div class="m-stat"><span class="m-label">Provider:</span> <span class="m-val font-purple" id="modal-model-provider">Ollama (Local)</span></div>
+                    <div class="m-stat"><span class="m-label">Context Window:</span> <span class="m-val" id="modal-model-context">32K</span></div>
+                    <div class="m-stat"><span class="m-label">Quantization:</span> <span class="m-val font-emerald" id="modal-model-quant">Q4</span></div>
+                    <div class="m-stat"><span class="m-label">Avg Latency:</span> <span class="m-val font-amber" id="modal-model-latency">1.2s</span></div>
+                    <div class="m-stat"><span class="m-label">RAM Footprint:</span> <span class="m-val font-cyan" id="modal-model-ram">4.1 GB</span></div>
+                    <div class="m-stat"><span class="m-label">CPU Footprint:</span> <span class="m-val font-amber" id="modal-model-cpu">68%</span></div>
+                </div>
+                <div class="modal-section">
+                    <h4 class="font-outfit font-cyan">Task Eligibility Checklist</h4>
+                    <div class="tool-tags font-mono" id="modal-model-eligibility">
+                        <div style="color: var(--accent-emerald);">✓ Email classification</div>
+                        <div style="color: var(--accent-emerald);">✓ Schedule planning</div>
+                        <div style="color: var(--accent-emerald);">✓ Lightweight triage</div>
+                        <div style="color: var(--accent-rose);">✕ Complex multi-domain research</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Agent Inspector Modal Dialog -->
     <div class="modal-overlay hidden" id="agent-modal-overlay">
         <div class="modal-card glass">
             <div class="modal-header">

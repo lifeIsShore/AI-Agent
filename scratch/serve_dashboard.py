@@ -4,6 +4,7 @@ import webbrowser
 import os
 import sys
 import json
+import time
 from typing import Dict, Any, List
 
 PORT = 8085
@@ -22,10 +23,11 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
                 "status": "RUNNING",
                 "mode": "BOUNDED_AUTO",
                 "version": "v6.5",
-                "unit_tests_passing": 1352,
+                "unit_tests_passing": 1397,
                 "mission_completion_rate": 0.894,
                 "user_intervention_rate": 0.042,
                 "safety_violations": 0.0,
+                "llm_calls_avoided_rate": 0.421,
                 "active_subsystems": 27
             })
         elif self.path == '/api/proposals':
@@ -46,6 +48,12 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
             })
         elif self.path == '/api/agents/inspect':
             self.send_json_response(self._get_agent_inspection_profiles())
+        elif self.path == '/api/models':
+            self.send_json_response(self._get_registered_models())
+        elif self.path == '/api/models/routing_trace':
+            self.send_json_response(self._get_model_routing_trace())
+        elif self.path == '/api/models/inspect':
+            self.send_json_response(self._get_model_inspection_profiles())
         else:
             super().do_GET()
 
@@ -116,6 +124,72 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
             except Exception:
                 pass
         return {"selected_option": "opt_b"}
+
+    def _get_registered_models(self) -> List[Dict[str, Any]]:
+        return [
+            {
+                "model_id": "rule_engine",
+                "name": "Deterministic Rule Engine",
+                "tier": "DETERMINISTIC_RULES",
+                "provider": "RuleEngine",
+                "location": "LOCAL",
+                "latency": "<10ms",
+                "cost": "€0.00",
+                "status": "READY",
+                "current_task": "Idle"
+            },
+            {
+                "model_id": "qwen2.5_1.5b",
+                "name": "Qwen 2.5 1.5B",
+                "tier": "SMALL_LOCAL_LLM",
+                "provider": "Ollama",
+                "location": "LOCAL",
+                "latency": "1.2s",
+                "cost": "€0.00",
+                "status": "IN_USE",
+                "current_task": "Email & Planning Triage"
+            },
+            {
+                "model_id": "strong_local_14b",
+                "name": "Strong Local LLM (14B)",
+                "tier": "STRONG_LOCAL_LLM",
+                "provider": "Ollama",
+                "location": "LOCAL",
+                "latency": "3.8s",
+                "cost": "€0.00",
+                "status": "BLOCKED",
+                "current_task": "Resource limit (RAM)"
+            },
+            {
+                "model_id": "strong_cloud",
+                "name": "Strong Cloud LLM",
+                "tier": "STRONG_CLOUD_LLM",
+                "provider": "Cloud API",
+                "location": "CLOUD",
+                "latency": "8.4s",
+                "cost": "€0.03/1k",
+                "status": "READY",
+                "current_task": "Idle (Complex Research)"
+            }
+        ]
+
+    def _get_model_routing_trace(self) -> Dict[str, Any]:
+        return {
+            "task": "University Email Classification & Schedule Triage",
+            "complexity": "LOW",
+            "domain": "Email",
+            "user_preference": "LOCAL_ONLY",
+            "resource_state": "CPU: 68% | RAM: 9.2 GB / 16.0 GB",
+            "selected_model": "Qwen 2.5 1.5B (Ollama)",
+            "selected_tier": "SMALL_LOCAL_LLM",
+            "reasons": [
+                "✓ Local model (privacy compatible)",
+                "✓ Sufficient capability for email classification",
+                "✓ Lowest latency (<1.2s)",
+                "✓ Historical accuracy 94.8%"
+            ],
+            "governor_authorization": "AUTHORIZED (Bounded Autonomy Level)"
+        }
 
     def _get_agent_inspection_profiles(self) -> List[Dict[str, Any]]:
         return [
@@ -208,47 +282,86 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
                 "capabilities": ["read_file", "write_file", "parse_pdf"],
                 "current_authority": ["read_file"],
                 "active_step": "Idle"
-            },
-            {
-                "agent_id": "CriticAgent",
-                "name": "Critic Agent",
-                "role": "CRITIC",
-                "icon": "🔍",
-                "status": "HEALTHY",
-                "accuracy": "99.5%",
-                "tasks_executed": 35,
-                "success_rate": "99.0%",
-                "avg_latency": "0.5s",
-                "interventions": 0,
-                "capabilities": ["evaluate_plan_quality", "assess_diversity"],
-                "current_authority": ["evaluate_plan_quality"],
-                "active_step": "Auditing Strategy B Diversity"
-            },
-            {
-                "agent_id": "VerificationAgent",
-                "name": "Verification Agent",
-                "role": "VERIFIER",
-                "icon": "🛡️",
-                "status": "HEALTHY",
-                "accuracy": "100.0%",
-                "tasks_executed": 35,
-                "success_rate": "100.0%",
-                "avg_latency": "0.4s",
-                "interventions": 0,
-                "capabilities": ["verify_evidence_threshold", "audit_policy"],
-                "current_authority": ["verify_evidence_threshold"],
-                "active_step": "Verifying Evidence Threshold"
             }
         ]
 
-import time
+    def _get_model_inspection_profiles(self) -> List[Dict[str, Any]]:
+        return [
+            {
+                "model_id": "qwen2.5_1.5b",
+                "name": "Qwen 2.5 1.5B",
+                "provider": "Ollama",
+                "location": "Local Machine",
+                "status": "IN_USE",
+                "tier": "SMALL_LOCAL_LLM",
+                "context_window": "32K",
+                "quantization": "Q4",
+                "tasks": ["Email Classification", "Schedule Planning", "Triage"],
+                "accuracy": "94.2%",
+                "avg_latency": "1.2s",
+                "avg_tokens": "612",
+                "cpu_percent": "68%",
+                "ram_footprint": "4.1 GB",
+                "eligibility": [
+                    "✓ Email classification",
+                    "✓ Schedule planning",
+                    "✓ Lightweight triage",
+                    "✕ Complex multi-domain research",
+                    "✕ High reasoning math"
+                ]
+            },
+            {
+                "model_id": "rule_engine",
+                "name": "Deterministic Rule Engine",
+                "provider": "RuleEngine",
+                "location": "Local Memory",
+                "status": "READY",
+                "tier": "DETERMINISTIC_RULES",
+                "context_window": "N/A",
+                "quantization": "N/A",
+                "tasks": ["Pattern Matching", "Regex Policy", "Header Extraction"],
+                "accuracy": "99.9%",
+                "avg_latency": "<4ms",
+                "avg_tokens": "0 (LLM Call Avoided)",
+                "cpu_percent": "<1%",
+                "ram_footprint": "12 MB",
+                "eligibility": [
+                    "✓ Pattern matching",
+                    "✓ Exact policy checking",
+                    "✓ Regex filter",
+                    "✕ Ambiguous natural language reasoning"
+                ]
+            },
+            {
+                "model_id": "strong_cloud",
+                "name": "Strong Cloud LLM",
+                "provider": "Cloud API",
+                "location": "Remote Cloud",
+                "status": "READY",
+                "tier": "STRONG_CLOUD_LLM",
+                "context_window": "128K",
+                "quantization": "FP16",
+                "tasks": ["Complex Research", "Thesis Contradiction Detection"],
+                "accuracy": "98.7%",
+                "avg_latency": "8.4s",
+                "avg_tokens": "2,841",
+                "cpu_percent": "0%",
+                "ram_footprint": "0 MB",
+                "eligibility": [
+                    "✓ Complex research synthesis",
+                    "✓ Cross-domain reasoning",
+                    "✓ Literature contradiction detection",
+                    "✕ Real-time sub-second tasks"
+                ]
+            }
+        ]
 
 def main():
     print(f"======================================================================")
     print(f"   [AI AGENT OS] OPERATIONAL CONTROL PLANE REST API SERVER")
     print(f"======================================================================")
     print(f"  --> Serving dashboard from: '{DASHBOARD_DIR}'")
-    print(f"  --> Live REST API Endpoints: http://localhost:{PORT}/api/status, /api/decisions, /api/agents/inspect")
+    print(f"  --> Live REST API Endpoints: http://localhost:{PORT}/api/status, /api/models, /api/models/routing_trace")
     print(f"  --> Opening URL: http://localhost:{PORT}")
     print(f"  --> Press Ctrl+C in terminal to stop server.")
     print(f"======================================================================\n")

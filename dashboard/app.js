@@ -1,6 +1,6 @@
-// Personal AI Agent Dashboard Operational Control Plane (V6.5 Interactive)
+// Personal AI Agent Dashboard Operational Control Plane (V6.5 / V6.6.1)
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("⚡ Personal AI Agent OS Operational Control Plane (V6.5) initialized.");
+    console.log("⚡ Personal AI Agent OS Operational Control Plane (V6.6.1 Model Orchestration) initialized.");
 
     const consoleTerminal = document.getElementById('console-terminal');
     const btnApprove = document.getElementById('btn-approve');
@@ -16,13 +16,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnSaveDecision = document.getElementById('btn-save-decision');
     const decisionSaveToast = document.getElementById('decision-save-toast');
 
-    // Agent Inspector Modal Elements
+    // Agent & Model Inspector Modal Elements
     const agentModalOverlay = document.getElementById('agent-modal-overlay');
     const modalCloseBtn = document.getElementById('modal-close-btn');
     const authorityCards = document.querySelectorAll('.authority-card.clickable');
 
+    const modelModalOverlay = document.getElementById('model-modal-overlay');
+    const modelModalCloseBtn = document.getElementById('model-modal-close-btn');
+    const modelCards = document.querySelectorAll('.model-item.clickable');
+
     let currentSelectedOption = 'opt_b';
     let agentInspectionProfiles = [];
+    let modelInspectionProfiles = [];
 
     // Utility function to append timestamped structured log line
     function appendLog(message, category = 'ACTION', type = 'info') {
@@ -76,23 +81,75 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Fetch Agent Inspection Profiles from REST API
-    async function fetchAgentInspectionProfiles() {
+    // Fetch Inspection Profiles from REST API
+    async function fetchInspectionProfiles() {
         try {
-            const res = await fetch('/api/agents/inspect');
-            if (res.ok) {
-                agentInspectionProfiles = await res.json();
-            }
+            const resA = await fetch('/api/agents/inspect');
+            if (resA.ok) agentInspectionProfiles = await resA.json();
+
+            const resM = await fetch('/api/models/inspect');
+            if (resM.ok) modelInspectionProfiles = await resM.json();
         } catch (e) {
             console.log("Using default inspection profile data.");
         }
+    }
+
+    // Model Inspector Modal Click Handler
+    modelCards.forEach(card => {
+        card.addEventListener('click', async () => {
+            const modelId = card.getAttribute('data-model-id');
+            if (modelInspectionProfiles.length === 0) await fetchInspectionProfiles();
+
+            const profile = modelInspectionProfiles.find(p => p.model_id === modelId) || {
+                name: modelId,
+                provider: "Local/Cloud",
+                location: "Local",
+                status: "READY",
+                tier: "SMALL_LOCAL_LLM",
+                context_window: "32K",
+                quantization: "Q4",
+                accuracy: "94.0%",
+                avg_latency: "1.2s",
+                cpu_percent: "68%",
+                ram_footprint: "4.1 GB",
+                eligibility: ["✓ Email triage", "✓ Planning"]
+            };
+
+            // Populate Model Modal Fields
+            document.getElementById('modal-model-name').textContent = `${profile.name} Inspector`;
+            document.getElementById('modal-model-status').textContent = profile.status;
+            document.getElementById('modal-model-tier').textContent = profile.tier;
+            document.getElementById('modal-model-provider').textContent = `${profile.provider} (${profile.location})`;
+            document.getElementById('modal-model-context').textContent = profile.context_window;
+            document.getElementById('modal-model-quant').textContent = profile.quantization;
+            document.getElementById('modal-model-latency').textContent = profile.avg_latency;
+            document.getElementById('modal-model-ram').textContent = profile.ram_footprint;
+            document.getElementById('modal-model-cpu').textContent = profile.cpu_percent;
+            document.getElementById('modal-model-eligibility').innerHTML = profile.eligibility.map(e => `<div>${e}</div>`).join('');
+
+            if (modelModalOverlay) modelModalOverlay.classList.remove('hidden');
+            appendLog(`[ModelInspector] Opened inspection view for model '${profile.name}'.`, 'LLM', 'info');
+        });
+    });
+
+    // Close Model Modal Handler
+    if (modelModalCloseBtn) {
+        modelModalCloseBtn.addEventListener('click', () => {
+            if (modelModalOverlay) modelModalOverlay.classList.add('hidden');
+        });
+    }
+
+    if (modelModalOverlay) {
+        modelModalOverlay.addEventListener('click', (e) => {
+            if (e.target === modelModalOverlay) modelModalOverlay.classList.add('hidden');
+        });
     }
 
     // Agent Inspector Modal Click Handler
     authorityCards.forEach(card => {
         card.addEventListener('click', async () => {
             const agentId = card.getAttribute('data-agent-id');
-            if (agentInspectionProfiles.length === 0) await fetchAgentInspectionProfiles();
+            if (agentInspectionProfiles.length === 0) await fetchInspectionProfiles();
 
             const profile = agentInspectionProfiles.find(p => p.agent_id === agentId) || {
                 name: agentId,
@@ -108,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 active_step: "Idle"
             };
 
-            // Populate Modal Fields
+            // Populate Agent Modal Fields
             document.getElementById('modal-agent-icon').textContent = profile.icon;
             document.getElementById('modal-agent-name').textContent = `${profile.name} Inspector`;
             document.getElementById('modal-agent-status').textContent = profile.status;
@@ -126,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Close Modal Handler
+    // Close Agent Modal Handler
     if (modalCloseBtn) {
         modalCloseBtn.addEventListener('click', () => {
             if (agentModalOverlay) agentModalOverlay.classList.add('hidden');
@@ -204,5 +261,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    fetchAgentInspectionProfiles();
+    fetchInspectionProfiles();
 });
