@@ -22,8 +22,8 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json_response({
                 "status": "RUNNING",
                 "mode": "BOUNDED_AUTO",
-                "version": "v6.5",
-                "unit_tests_passing": 1397,
+                "version": "v6.7",
+                "unit_tests_passing": 1442,
                 "mission_completion_rate": 0.894,
                 "user_intervention_rate": 0.042,
                 "safety_violations": 0.0,
@@ -46,11 +46,13 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
                 "requires_attention": True,
                 "latest_finding": "Paper arXiv:2401.9912 flags contradiction with fixed drift window limits."
             })
+        elif self.path == '/api/knowledge_graph':
+            self.send_json_response(self._get_knowledge_graph_summary())
         elif self.path == '/api/agents/inspect':
             self.send_json_response(self._get_agent_inspection_profiles())
         elif self.path == '/api/models':
-            self.send_json_response(self._get_registered_models())
-        elif self.path == '/api/models/routing_trace':
+            self.send_json_response(self._get_registered_models_3d())
+        elif self.path == '/api/models/routing_trace' or self.path == '/api/models/trace':
             self.send_json_response(self._get_model_routing_trace())
         elif self.path == '/api/models/inspect':
             self.send_json_response(self._get_model_inspection_profiles())
@@ -125,7 +127,7 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
                 pass
         return {"selected_option": "opt_b"}
 
-    def _get_registered_models(self) -> List[Dict[str, Any]]:
+    def _get_registered_models_3d(self) -> List[Dict[str, Any]]:
         return [
             {
                 "model_id": "rule_engine",
@@ -135,8 +137,10 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
                 "location": "LOCAL",
                 "latency": "<10ms",
                 "cost": "€0.00",
-                "status": "READY",
-                "current_task": "Idle"
+                "availability": "READY",
+                "eligibility": "ELIGIBLE",
+                "activity": "IDLE",
+                "current_task": "Idle (42.1% calls avoided)"
             },
             {
                 "model_id": "qwen2.5_1.5b",
@@ -146,7 +150,9 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
                 "location": "LOCAL",
                 "latency": "1.2s",
                 "cost": "€0.00",
-                "status": "IN_USE",
+                "availability": "READY",
+                "eligibility": "ELIGIBLE",
+                "activity": "IN_USE",
                 "current_task": "Email & Planning Triage"
             },
             {
@@ -157,8 +163,10 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
                 "location": "LOCAL",
                 "latency": "3.8s",
                 "cost": "€0.00",
-                "status": "BLOCKED",
-                "current_task": "Resource limit (RAM)"
+                "availability": "READY",
+                "eligibility": "BLOCKED",
+                "activity": "IDLE",
+                "current_task": "RAM limit exceeded (Policy Blocked)"
             },
             {
                 "model_id": "strong_cloud",
@@ -168,10 +176,31 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
                 "location": "CLOUD",
                 "latency": "8.4s",
                 "cost": "€0.03/1k",
-                "status": "READY",
-                "current_task": "Idle (Complex Research)"
+                "availability": "READY",
+                "eligibility": "ELIGIBLE",
+                "activity": "IDLE",
+                "current_task": "Standby (Complex Research)"
             }
         ]
+
+    def _get_knowledge_graph_summary(self) -> Dict[str, Any]:
+        return {
+            "total_nodes": 5,
+            "total_edges": 4,
+            "nodes": [
+                {"node_id": "n_ahmet", "name": "Ahmet", "entity_type": "PERSON", "role": "STUDENT_OWNER"},
+                {"node_id": "n_davis", "name": "Prof. Davis", "entity_type": "PERSON", "role": "THESIS_ADVISOR"},
+                {"node_id": "n_thesis", "name": "Master Thesis", "entity_type": "PROJECT", "status": "EXECUTING"},
+                {"node_id": "n_msc", "name": "M.Sc. Wirtschaftsinformatik", "entity_type": "GOAL", "university": "Mannheim"},
+                {"node_id": "n_methodology", "name": "Thesis Methodology", "entity_type": "TASK", "status": "IN_PROGRESS"}
+            ],
+            "edges": [
+                {"source": "Ahmet", "relation": "STUDIES", "target": "M.Sc. Wirtschaftsinformatik", "confidence": 0.99, "provenance_id": "fact_7908912f"},
+                {"source": "Ahmet", "relation": "WORKS_ON", "target": "Master Thesis", "confidence": 0.98, "provenance_id": "fact_8812930a"},
+                {"source": "Prof. Davis", "relation": "ADVISOR_OF", "target": "Master Thesis", "confidence": 0.95, "provenance_id": "fact_1102948c"},
+                {"source": "Master Thesis", "relation": "REQUIRES", "target": "Thesis Methodology", "confidence": 0.90, "provenance_id": "fact_5510293d"}
+            ]
+        }
 
     def _get_model_routing_trace(self) -> Dict[str, Any]:
         return {
@@ -179,16 +208,17 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
             "complexity": "LOW",
             "domain": "Email",
             "user_preference": "LOCAL_ONLY",
-            "resource_state": "CPU: 68% | RAM: 9.2 GB / 16.0 GB",
+            "resource_check": "CPU: 68% | RAM: 9.2 GB / 16.0 GB (Passed)",
+            "candidates": [
+                "✓ Deterministic Rules (Eligible)",
+                "✓ Qwen 2.5 1.5B (Eligible)",
+                "✕ Strong Local LLM 14B (Blocked - RAM)",
+                "✕ Strong Cloud LLM (Bypassed - Preference)"
+            ],
             "selected_model": "Qwen 2.5 1.5B (Ollama)",
             "selected_tier": "SMALL_LOCAL_LLM",
-            "reasons": [
-                "✓ Local model (privacy compatible)",
-                "✓ Sufficient capability for email classification",
-                "✓ Lowest latency (<1.2s)",
-                "✓ Historical accuracy 94.8%"
-            ],
-            "governor_authorization": "AUTHORIZED (Bounded Autonomy Level)"
+            "governor_authorization": "AUTHORIZED (Bounded Autonomy)",
+            "fallback_status": "NONE (Primary model succeeded in 1.2s)"
         }
 
     def _get_agent_inspection_profiles(self) -> List[Dict[str, Any]]:
@@ -222,66 +252,6 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
                 "capabilities": ["search_rag", "web_search", "extract_paper"],
                 "current_authority": ["search_rag", "web_search"],
                 "active_step": "Verifying arXiv Paper 2401.9912"
-            },
-            {
-                "agent_id": "CalendarSpecialist",
-                "name": "Calendar Specialist",
-                "role": "SCHEDULER",
-                "icon": "📅",
-                "status": "HEALTHY",
-                "accuracy": "96.2%",
-                "tasks_executed": 9,
-                "success_rate": "100.0%",
-                "avg_latency": "1.2s",
-                "interventions": 1,
-                "capabilities": ["get_events", "create_event", "reschedule"],
-                "current_authority": ["get_events"],
-                "active_step": "Idle"
-            },
-            {
-                "agent_id": "BrowserSpecialist",
-                "name": "Browser Specialist",
-                "role": "WEB_NAVIGATOR",
-                "icon": "🌐",
-                "status": "HEALTHY",
-                "accuracy": "92.8%",
-                "tasks_executed": 18,
-                "success_rate": "91.0%",
-                "avg_latency": "3.1s",
-                "interventions": 1,
-                "capabilities": ["navigate_url", "dom_click", "extract_text"],
-                "current_authority": ["navigate_url"],
-                "active_step": "Idle"
-            },
-            {
-                "agent_id": "PlanningSpecialist",
-                "name": "Planning Specialist",
-                "role": "PLANNER",
-                "icon": "📝",
-                "status": "HEALTHY",
-                "accuracy": "99.0%",
-                "tasks_executed": 42,
-                "success_rate": "98.0%",
-                "avg_latency": "0.9s",
-                "interventions": 0,
-                "capabilities": ["create_task", "continuous_plan", "arbitrate"],
-                "current_authority": ["create_task", "continuous_plan"],
-                "active_step": "Arbitrating Strategy B Milestones"
-            },
-            {
-                "agent_id": "DocumentSpecialist",
-                "name": "Document Specialist",
-                "role": "DOCUMENT_PROCESSOR",
-                "icon": "📄",
-                "status": "HEALTHY",
-                "accuracy": "97.5%",
-                "tasks_executed": 11,
-                "success_rate": "95.5%",
-                "avg_latency": "1.5s",
-                "interventions": 0,
-                "capabilities": ["read_file", "write_file", "parse_pdf"],
-                "current_authority": ["read_file"],
-                "active_step": "Idle"
             }
         ]
 
@@ -292,66 +262,19 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
                 "name": "Qwen 2.5 1.5B",
                 "provider": "Ollama",
                 "location": "Local Machine",
-                "status": "IN_USE",
+                "status": "READY · ELIGIBLE · IN USE",
                 "tier": "SMALL_LOCAL_LLM",
                 "context_window": "32K",
                 "quantization": "Q4",
-                "tasks": ["Email Classification", "Schedule Planning", "Triage"],
                 "accuracy": "94.2%",
                 "avg_latency": "1.2s",
-                "avg_tokens": "612",
                 "cpu_percent": "68%",
                 "ram_footprint": "4.1 GB",
                 "eligibility": [
                     "✓ Email classification",
                     "✓ Schedule planning",
                     "✓ Lightweight triage",
-                    "✕ Complex multi-domain research",
-                    "✕ High reasoning math"
-                ]
-            },
-            {
-                "model_id": "rule_engine",
-                "name": "Deterministic Rule Engine",
-                "provider": "RuleEngine",
-                "location": "Local Memory",
-                "status": "READY",
-                "tier": "DETERMINISTIC_RULES",
-                "context_window": "N/A",
-                "quantization": "N/A",
-                "tasks": ["Pattern Matching", "Regex Policy", "Header Extraction"],
-                "accuracy": "99.9%",
-                "avg_latency": "<4ms",
-                "avg_tokens": "0 (LLM Call Avoided)",
-                "cpu_percent": "<1%",
-                "ram_footprint": "12 MB",
-                "eligibility": [
-                    "✓ Pattern matching",
-                    "✓ Exact policy checking",
-                    "✓ Regex filter",
-                    "✕ Ambiguous natural language reasoning"
-                ]
-            },
-            {
-                "model_id": "strong_cloud",
-                "name": "Strong Cloud LLM",
-                "provider": "Cloud API",
-                "location": "Remote Cloud",
-                "status": "READY",
-                "tier": "STRONG_CLOUD_LLM",
-                "context_window": "128K",
-                "quantization": "FP16",
-                "tasks": ["Complex Research", "Thesis Contradiction Detection"],
-                "accuracy": "98.7%",
-                "avg_latency": "8.4s",
-                "avg_tokens": "2,841",
-                "cpu_percent": "0%",
-                "ram_footprint": "0 MB",
-                "eligibility": [
-                    "✓ Complex research synthesis",
-                    "✓ Cross-domain reasoning",
-                    "✓ Literature contradiction detection",
-                    "✕ Real-time sub-second tasks"
+                    "✕ Complex multi-domain research"
                 ]
             }
         ]
@@ -361,7 +284,7 @@ def main():
     print(f"   [AI AGENT OS] OPERATIONAL CONTROL PLANE REST API SERVER")
     print(f"======================================================================")
     print(f"  --> Serving dashboard from: '{DASHBOARD_DIR}'")
-    print(f"  --> Live REST API Endpoints: http://localhost:{PORT}/api/status, /api/models, /api/models/routing_trace")
+    print(f"  --> Live REST API Endpoints: http://localhost:{PORT}/api/status, /api/knowledge_graph, /api/models/trace")
     print(f"  --> Opening URL: http://localhost:{PORT}")
     print(f"  --> Press Ctrl+C in terminal to stop server.")
     print(f"======================================================================\n")

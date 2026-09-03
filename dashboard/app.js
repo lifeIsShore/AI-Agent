@@ -1,6 +1,6 @@
-// Personal AI Agent Dashboard Operational Control Plane (V6.5 / V6.6.1)
+// Personal AI Agent Dashboard Operational Control Plane (V6.7)
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("⚡ Personal AI Agent OS Operational Control Plane (V6.6.1 Model Orchestration) initialized.");
+    console.log("⚡ Personal AI Agent OS Operational Control Plane (V6.7 Knowledge Graph & 3D Telemetry) initialized.");
 
     const consoleTerminal = document.getElementById('console-terminal');
     const btnApprove = document.getElementById('btn-approve');
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnSaveDecision = document.getElementById('btn-save-decision');
     const decisionSaveToast = document.getElementById('decision-save-toast');
 
-    // Agent & Model Inspector Modal Elements
+    // Inspector Modal Elements
     const agentModalOverlay = document.getElementById('agent-modal-overlay');
     const modalCloseBtn = document.getElementById('modal-close-btn');
     const authorityCards = document.querySelectorAll('.authority-card.clickable');
@@ -24,6 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const modelModalOverlay = document.getElementById('model-modal-overlay');
     const modelModalCloseBtn = document.getElementById('model-modal-close-btn');
     const modelCards = document.querySelectorAll('.model-item.clickable');
+
+    const traceModalOverlay = document.getElementById('trace-modal-overlay');
+    const traceModalCloseBtn = document.getElementById('trace-modal-close-btn');
+    const routingTraceTrigger = document.getElementById('routing-trace-trigger');
 
     let currentSelectedOption = 'opt_b';
     let agentInspectionProfiles = [];
@@ -40,6 +44,26 @@ document.addEventListener('DOMContentLoaded', () => {
         logLine.textContent = `[${timestamp}] ${message}`;
         consoleTerminal.appendChild(logLine);
         consoleTerminal.scrollTop = consoleTerminal.scrollHeight;
+    }
+
+    // Routing Trace Modal Handler
+    if (routingTraceTrigger) {
+        routingTraceTrigger.addEventListener('click', () => {
+            if (traceModalOverlay) traceModalOverlay.classList.remove('hidden');
+            appendLog('[ModelRouterTrace] Opened interactive routing trace trace_88192a.', 'LLM', 'info');
+        });
+    }
+
+    if (traceModalCloseBtn) {
+        traceModalCloseBtn.addEventListener('click', () => {
+            if (traceModalOverlay) traceModalOverlay.classList.add('hidden');
+        });
+    }
+
+    if (traceModalOverlay) {
+        traceModalOverlay.addEventListener('click', (e) => {
+            if (e.target === traceModalOverlay) traceModalOverlay.classList.add('hidden');
+        });
     }
 
     // Interactive Decision Option Click Handler
@@ -102,46 +126,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const profile = modelInspectionProfiles.find(p => p.model_id === modelId) || {
                 name: modelId,
-                provider: "Local/Cloud",
-                location: "Local",
-                status: "READY",
+                status: "READY · ELIGIBLE · IN USE",
                 tier: "SMALL_LOCAL_LLM",
                 context_window: "32K",
                 quantization: "Q4",
-                accuracy: "94.0%",
                 avg_latency: "1.2s",
                 cpu_percent: "68%",
-                ram_footprint: "4.1 GB",
-                eligibility: ["✓ Email triage", "✓ Planning"]
+                ram_footprint: "4.1 GB"
             };
 
-            // Populate Model Modal Fields
             document.getElementById('modal-model-name').textContent = `${profile.name} Inspector`;
-            document.getElementById('modal-model-status').textContent = profile.status;
-            document.getElementById('modal-model-tier').textContent = profile.tier;
-            document.getElementById('modal-model-provider').textContent = `${profile.provider} (${profile.location})`;
-            document.getElementById('modal-model-context').textContent = profile.context_window;
-            document.getElementById('modal-model-quant').textContent = profile.quantization;
-            document.getElementById('modal-model-latency').textContent = profile.avg_latency;
-            document.getElementById('modal-model-ram').textContent = profile.ram_footprint;
-            document.getElementById('modal-model-cpu').textContent = profile.cpu_percent;
-            document.getElementById('modal-model-eligibility').innerHTML = profile.eligibility.map(e => `<div>${e}</div>`).join('');
-
             if (modelModalOverlay) modelModalOverlay.classList.remove('hidden');
             appendLog(`[ModelInspector] Opened inspection view for model '${profile.name}'.`, 'LLM', 'info');
         });
     });
 
-    // Close Model Modal Handler
     if (modelModalCloseBtn) {
         modelModalCloseBtn.addEventListener('click', () => {
             if (modelModalOverlay) modelModalOverlay.classList.add('hidden');
-        });
-    }
-
-    if (modelModalOverlay) {
-        modelModalOverlay.addEventListener('click', (e) => {
-            if (e.target === modelModalOverlay) modelModalOverlay.classList.add('hidden');
         });
     }
 
@@ -153,46 +155,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const profile = agentInspectionProfiles.find(p => p.agent_id === agentId) || {
                 name: agentId,
-                role: "SPECIALIST",
-                icon: "🤖",
-                status: "HEALTHY",
-                accuracy: "98.0%",
-                tasks_executed: 15,
-                success_rate: "96.0%",
-                avg_latency: "1.5s",
-                capabilities: ["list_messages", "send_email"],
-                current_authority: ["read_email"],
-                active_step: "Idle"
+                role: "COMMUNICATOR",
+                icon: "📧",
+                status: "HEALTHY"
             };
 
-            // Populate Agent Modal Fields
-            document.getElementById('modal-agent-icon').textContent = profile.icon;
             document.getElementById('modal-agent-name').textContent = `${profile.name} Inspector`;
-            document.getElementById('modal-agent-status').textContent = profile.status;
-            document.getElementById('modal-agent-role').textContent = profile.role;
-            document.getElementById('modal-agent-accuracy').textContent = profile.accuracy;
-            document.getElementById('modal-agent-tasks').textContent = profile.tasks_executed;
-            document.getElementById('modal-agent-success').textContent = profile.success_rate;
-            document.getElementById('modal-agent-latency').textContent = profile.avg_latency;
-            document.getElementById('modal-agent-capabilities').innerHTML = profile.capabilities.map(c => `<code>${c}</code>`).join(', ');
-            document.getElementById('modal-agent-authority').innerHTML = profile.current_authority.map(a => `<code>${a}</code>`).join(', ');
-            document.getElementById('modal-agent-active-step').textContent = profile.active_step;
-
             if (agentModalOverlay) agentModalOverlay.classList.remove('hidden');
             appendLog(`[AgentInspector] Opened inspection view for agent '${profile.name}'.`, 'ACTION', 'info');
         });
     });
 
-    // Close Agent Modal Handler
     if (modalCloseBtn) {
         modalCloseBtn.addEventListener('click', () => {
             if (agentModalOverlay) agentModalOverlay.classList.add('hidden');
-        });
-    }
-
-    if (agentModalOverlay) {
-        agentModalOverlay.addEventListener('click', (e) => {
-            if (e.target === agentModalOverlay) agentModalOverlay.classList.add('hidden');
         });
     }
 
@@ -215,39 +191,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // HITL Approve Button Handler
+    // HITL Approve Handler
     if (btnApprove) {
         btnApprove.addEventListener('click', () => {
             const userText = hitlInput ? hitlInput.value.trim() : '';
             const guidance = userText ? ` Guidance: '${userText}'` : '';
             
             appendLog(`[HumanFeedbackLoop] APPROVED: Action 'send_email' for EmailSpecialist authorized by user.${guidance}`, 'SECURITY', 'success');
-            appendLog(`[AutonomyGovernor] Risk: MEDIUM -> Action PERMITTED via Human-In-The-Loop explicit approval.`, 'SECURITY', 'highlight');
-
-            if (hitlActionDesc) {
-                hitlActionDesc.innerHTML = `<span style="color: var(--accent-emerald); font-weight: 600;">✓ Action Approved & Dispatched to EmailSpecialist!</span>`;
-            }
-            setTimeout(() => {
-                if (hitlBanner) hitlBanner.style.opacity = '0.5';
-            }, 1000);
+            if (hitlActionDesc) hitlActionDesc.innerHTML = `<span style="color: var(--accent-emerald); font-weight: 600;">✓ Action Approved & Dispatched to EmailSpecialist!</span>`;
+            setTimeout(() => { if (hitlBanner) hitlBanner.style.opacity = '0.5'; }, 1000);
         });
     }
 
-    // HITL Reject Button Handler
+    // HITL Reject Handler
     if (btnReject) {
         btnReject.addEventListener('click', () => {
             const userText = hitlInput ? hitlInput.value.trim() : '';
             const guidance = userText ? ` Reason: '${userText}'` : '';
             
             appendLog(`[HumanFeedbackLoop] REJECTED: Action 'send_email' for EmailSpecialist rejected by user.${guidance}`, 'SECURITY', 'warning');
-            appendLog(`[AutonomyGovernor] Action BLOCKED by explicit human rejection. Memory rule updated.`, 'SECURITY', 'warning');
-
-            if (hitlActionDesc) {
-                hitlActionDesc.innerHTML = `<span style="color: var(--accent-rose); font-weight: 600;">❌ Action Rejected & Canceled by User.</span>`;
-            }
-            setTimeout(() => {
-                if (hitlBanner) hitlBanner.style.opacity = '0.5';
-            }, 1000);
+            if (hitlActionDesc) hitlActionDesc.innerHTML = `<span style="color: var(--accent-rose); font-weight: 600;">❌ Action Rejected & Canceled by User.</span>`;
+            setTimeout(() => { if (hitlBanner) hitlBanner.style.opacity = '0.5'; }, 1000);
         });
     }
 

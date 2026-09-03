@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal AI Agent OS — Operational Control Plane (V6.5 / V6.6.1)</title>
+    <title>Personal AI Agent OS — Operational Control Plane (V6.7)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -11,15 +11,15 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Streamlined Control Plane Navbar Header -->
+        <!-- Control Plane Navbar Header -->
         <header class="navbar glass">
             <div class="logo-group">
                 <div class="logo-icon">🤖</div>
                 <div class="logo-text">
-                    <h1>PERSONAL AI AGENT OS — CONTROL PLANE V6.5</h1>
+                    <h1>PERSONAL AI AGENT OS — CONTROL PLANE V6.7</h1>
                     <div class="arch-breadcrumbs">
                         <span class="version-chip font-cyan">Runtime V6.0</span>
-                        <span class="version-chip font-purple">World Model V6.1</span>
+                        <span class="version-chip font-purple">Knowledge Graph V6.7</span>
                         <span class="version-chip font-amber">Safety Governor V4.1+</span>
                         <span class="version-chip font-emerald">Model Router V6.6.1</span>
                     </div>
@@ -31,7 +31,7 @@
                     <span id="os-status-text">SYSTEM RUNNING (BOUNDED_AUTO)</span>
                 </div>
                 <div class="badge tests-badge">
-                    <span>🧪 1,397 Unit Tests Passing</span>
+                    <span>🧪 1,442 Unit Tests Passing</span>
                 </div>
             </div>
         </header>
@@ -141,21 +141,25 @@
         <!-- Main Dashboard Content Grid -->
         <main class="dashboard-grid">
 
-            <!-- Column 1: LLM Orchestration Center (V6.6.1) -->
+            <!-- Column 1: LLM Orchestration Center (3-Dimension Telemetry) -->
             <div class="grid-column">
 
-                <!-- 🧠 LLM Orchestration Panel -->
+                <!-- 🧠 LLM Orchestration Panel (3-Dimension States) -->
                 <div class="card glass">
                     <div class="card-header">
-                        <h2>🧠 LLM Orchestration (V6.6.1)</h2>
+                        <h2>🧠 LLM Orchestration (3D Telemetry)</h2>
                         <span class="pill-badge primary">3 Ready / 4 Models</span>
                     </div>
                     <div class="card-body">
                         <div class="model-orchestration-list" id="model-orchestration-list">
                             <div class="model-item clickable" data-model-id="rule_engine">
                                 <div class="m-item-top">
-                                    <span class="m-name font-emerald">● Deterministic Rule Engine</span>
-                                    <span class="m-status-pill green">READY</span>
+                                    <span class="m-name font-emerald">Deterministic Rule Engine</span>
+                                    <div class="m-3d-badges">
+                                        <span class="badge-3d green">READY</span>
+                                        <span class="badge-3d green">ELIGIBLE</span>
+                                        <span class="badge-3d gray">IDLE</span>
+                                    </div>
                                 </div>
                                 <div class="m-item-details font-muted font-mono">
                                     <span>Latency: &lt;10ms | Cost: €0.00</span>
@@ -165,8 +169,12 @@
 
                             <div class="model-item clickable in-use" data-model-id="qwen2.5_1.5b">
                                 <div class="m-item-top">
-                                    <span class="m-name font-cyan">● Qwen 2.5 1.5B (Ollama)</span>
-                                    <span class="m-status-pill blue pulse-blue">IN USE</span>
+                                    <span class="m-name font-cyan">Qwen 2.5 1.5B (Ollama)</span>
+                                    <div class="m-3d-badges">
+                                        <span class="badge-3d green">READY</span>
+                                        <span class="badge-3d green">ELIGIBLE</span>
+                                        <span class="badge-3d blue pulse-blue">IN USE</span>
+                                    </div>
                                 </div>
                                 <div class="m-item-details font-muted font-mono">
                                     <span>Provider: Ollama (LOCAL) | Context: 32K</span>
@@ -176,8 +184,12 @@
 
                             <div class="model-item clickable blocked" data-model-id="strong_local_14b">
                                 <div class="m-item-top">
-                                    <span class="m-name font-rose">● Strong Local LLM (14B)</span>
-                                    <span class="m-status-pill red">BLOCKED</span>
+                                    <span class="m-name font-rose">Strong Local LLM (14B)</span>
+                                    <div class="m-3d-badges">
+                                        <span class="badge-3d green">READY</span>
+                                        <span class="badge-3d red">BLOCKED</span>
+                                        <span class="badge-3d gray">IDLE</span>
+                                    </div>
                                 </div>
                                 <div class="m-item-details font-muted font-mono">
                                     <span>Reason: RAM footprint limit exceeded</span>
@@ -186,8 +198,12 @@
 
                             <div class="model-item clickable" data-model-id="strong_cloud">
                                 <div class="m-item-top">
-                                    <span class="m-name font-purple">● Strong Cloud LLM</span>
-                                    <span class="m-status-pill purple">READY</span>
+                                    <span class="m-name font-purple">Strong Cloud LLM</span>
+                                    <div class="m-3d-badges">
+                                        <span class="badge-3d green">READY</span>
+                                        <span class="badge-3d green">ELIGIBLE</span>
+                                        <span class="badge-3d gray">IDLE</span>
+                                    </div>
                                 </div>
                                 <div class="m-item-details font-muted font-mono">
                                     <span>Provider: Cloud API | Latency: 8.4s</span>
@@ -198,14 +214,14 @@
                     </div>
                 </div>
 
-                <!-- Explainable Model Routing Inspector -->
+                <!-- Explainable Model Routing Inspector (Clickable to open Trace Modal) -->
                 <div class="card glass">
                     <div class="card-header">
                         <h2>🧭 Model Routing Inspector</h2>
-                        <span class="pill-badge emerald">Explainable Tiering</span>
+                        <span class="pill-badge emerald">Click to View Trace</span>
                     </div>
                     <div class="card-body">
-                        <div class="routing-trace-box glass-nested font-inter">
+                        <div class="routing-trace-box glass-nested font-inter clickable" id="routing-trace-trigger">
                             <div class="trace-task font-outfit"><strong>Task:</strong> University Email Classification & Schedule Triage</div>
                             <div class="trace-meta font-muted font-mono">
                                 <span>Complexity: <strong class="font-emerald">LOW</strong></span> |
@@ -215,7 +231,6 @@
                                 <div style="color: var(--accent-emerald);">✓ Local model (privacy compatible)</div>
                                 <div style="color: var(--accent-emerald);">✓ Sufficient capability for email classification</div>
                                 <div style="color: var(--accent-emerald);">✓ Lowest latency (&lt;1.2s)</div>
-                                <div style="color: var(--accent-emerald);">✓ Historical accuracy 94.8%</div>
                             </div>
                             <div class="trace-gov font-emerald font-mono" style="margin-top: 6px;">
                                 Governor Authorization: <strong>AUTHORIZED</strong>
@@ -226,32 +241,36 @@
 
             </div>
 
-            <!-- Column 2: Collaboration Stream & Decision Center -->
+            <!-- Column 2: Personal Knowledge Graph 2.0 & Decision Center -->
             <div class="grid-column">
 
-                <!-- Agent Collaboration Mesh Stream (V6.2) -->
+                <!-- Personal Knowledge Graph 2.0 Panel (V6.7) -->
                 <div class="card glass">
                     <div class="card-header">
-                        <h2>🤖 Agent Collaboration Mesh (V6.2)</h2>
-                        <span class="pill-badge primary">Inter-Agent Stream</span>
+                        <h2>🌐 Personal Knowledge Graph 2.0 (V6.7)</h2>
+                        <span class="pill-badge purple">Multi-Hop Temporal Graph</span>
                     </div>
                     <div class="card-body">
-                        <div class="collab-stream font-mono" id="collab-stream">
-                            <div class="collab-msg">
-                                <span class="c-agent font-purple">ResearchSpecialist</span> → <span class="c-agent font-cyan">PlanningSpecialist</span>:
-                                <div class="c-content">"Found 4 verified thesis sources on arXiv (92% conf)."</div>
+                        <div class="kg-container font-mono">
+                            <div class="kg-node-row">
+                                <span class="kg-node person font-cyan">Ahmet</span>
+                                <span class="kg-arrow">──[STUDIES (0.99)]──►</span>
+                                <span class="kg-node goal font-purple">M.Sc. Wirtschaftsinformatik</span>
                             </div>
-                            <div class="collab-msg">
-                                <span class="c-agent font-cyan">PlanningSpecialist</span> → <span class="c-agent font-amber">CriticAgent</span>:
-                                <div class="c-content">"Updated research milestone in thesis roadmap."</div>
+                            <div class="kg-node-row">
+                                <span class="kg-node person font-cyan">Ahmet</span>
+                                <span class="kg-arrow">──[WORKS_ON (0.98)]──►</span>
+                                <span class="kg-node project font-emerald">Master Thesis</span>
                             </div>
-                            <div class="collab-msg">
-                                <span class="c-agent font-amber">CriticAgent</span> → <span class="c-agent font-purple">ResearchSpecialist</span>:
-                                <div class="c-content">"Strategy lacks sufficient literature diversity. Requesting extra sources."</div>
+                            <div class="kg-node-row">
+                                <span class="kg-node person font-amber">Prof. Davis</span>
+                                <span class="kg-arrow">──[ADVISOR_OF (0.95)]──►</span>
+                                <span class="kg-node project font-emerald">Master Thesis</span>
                             </div>
-                            <div class="collab-msg">
-                                <span class="c-agent font-emerald">VerificationAgent</span> → <span class="c-agent font-emerald">AutonomyGovernor</span>:
-                                <div class="c-content">"Evidence threshold satisfied (2 valid sources). Verified."</div>
+                            <div class="kg-node-row">
+                                <span class="kg-node project font-emerald">Master Thesis</span>
+                                <span class="kg-arrow">──[REQUIRES (0.90)]──►</span>
+                                <span class="kg-node task font-rose">Thesis Methodology</span>
                             </div>
                         </div>
                     </div>
@@ -301,7 +320,7 @@
 
             </div>
 
-            <!-- Column 3: Specialist Roster & Enriched Structured Console -->
+            <!-- Column 3: Specialist Roster & Console -->
             <div class="grid-column">
 
                 <!-- Interactive Specialist Agent Mesh -->
@@ -337,7 +356,7 @@
                     </div>
                 </div>
 
-                <!-- Structured Event Console with 🧠 LLM Filter Tab -->
+                <!-- Structured Event Console -->
                 <div class="card glass console-card">
                     <div class="card-header">
                         <h2>📟 Structured Event Console</h2>
@@ -346,7 +365,6 @@
                             <button class="btn-clear" id="btn-clear-console">Clear</button>
                         </div>
                     </div>
-                    <!-- Structured Filter Tags including 🧠 LLM -->
                     <div class="log-filter-bar font-mono">
                         <button class="filter-btn active" data-filter="all">All</button>
                         <button class="filter-btn" data-filter="DECISION">Decisions</button>
@@ -357,11 +375,10 @@
                     </div>
                     <div class="card-body">
                         <div class="console-terminal font-mono" id="console-terminal">
-                            <div class="log-line info" data-category="SECURITY">[18:23:00] [AutonomyGovernor] RISK: LOW | Autonomy: BOUNDED_AUTO -> Action 'list_messages' PERMITTED (Provenance: fact_7908912f)</div>
-                            <div class="log-line highlight" data-category="LLM">[18:22:55] [EmailSpecialist] [MODEL:qwen2.5:1.5b] [ROUTER:SMALL_LOCAL_LLM] [TOKENS:412] [1.2s] Executed tool 'list_messages' -> 2 unread messages found.</div>
-                            <div class="log-line success" data-category="LLM">[18:22:50] [PlanningSpecialist] [MODEL:DETERMINISTIC_RULES] [ROUTER:RULE_ENGINE] [4ms] Evaluated schedule rules -> LLM CALL AVOIDED</div>
-                            <div class="log-line highlight" data-category="RESEARCH">[18:22:45] [PersistentResearchEngine] Continuous scan: Paper 'arXiv:2401.9912' ingested into knowledge graph.</div>
-                            <div class="log-line warning" data-category="DECISION">[18:22:40] [DecisionIntelligenceEngine] User selected Option B. Saved to data/runtime/saved_decisions.json.</div>
+                            <div class="log-line info" data-category="SECURITY">[18:26:00] [AutonomyGovernor] RISK: LOW | Autonomy: BOUNDED_AUTO -> Action 'list_messages' PERMITTED (Provenance: fact_7908912f)</div>
+                            <div class="log-line highlight" data-category="LLM">[18:25:55] [EmailSpecialist] [MODEL:qwen2.5:1.5b] [ROUTER:SMALL_LOCAL_LLM] [TOKENS:412] [1.2s] Executed tool 'list_messages' -> 2 unread messages found.</div>
+                            <div class="log-line success" data-category="LLM">[18:25:50] [PlanningSpecialist] [MODEL:DETERMINISTIC_RULES] [ROUTER:RULE_ENGINE] [4ms] Evaluated schedule rules -> LLM CALL AVOIDED</div>
+                            <div class="log-line highlight" data-category="RESEARCH">[18:25:45] [PersonalKnowledgeGraph2] Traversed multi-hop entity graph for 'n_thesis' -> Provenance fact_7908912f verified.</div>
                         </div>
                     </div>
                 </div>
@@ -369,6 +386,46 @@
             </div>
 
         </main>
+    </div>
+
+    <!-- Model Routing Trace Modal Dialog -->
+    <div class="modal-overlay hidden" id="trace-modal-overlay">
+        <div class="modal-card glass" style="width: 600px;">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <span class="modal-icon">🔀</span>
+                    <h3 class="modal-title font-outfit">Model Routing Trace</h3>
+                </div>
+                <button class="modal-close-btn" id="trace-modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body font-inter">
+                <div class="trace-flow-step font-mono">
+                    <div class="t-step-title font-cyan">1. TASK & COMPLEXITY</div>
+                    <div class="t-step-desc font-muted">Task: University Email Classification | Complexity: LOW | Domain: Email</div>
+                </div>
+                <div class="trace-flow-step font-mono">
+                    <div class="t-step-title font-cyan">2. USER PREFERENCE & RESOURCES</div>
+                    <div class="t-step-desc font-muted">Preference: LOCAL_ONLY | CPU: 68% | RAM: 9.2 GB / 16.0 GB</div>
+                </div>
+                <div class="trace-flow-step font-mono">
+                    <div class="t-step-title font-amber">3. CANDIDATE EVALUATION</div>
+                    <div class="t-step-desc font-muted">
+                        <div>✓ Deterministic Rules (Eligible - pattern match)</div>
+                        <div>✓ Qwen 2.5 1.5B (Eligible - small local LLM)</div>
+                        <div>✕ Strong Local LLM 14B (Blocked - RAM limit)</div>
+                        <div>✕ Strong Cloud LLM (Bypassed - Local preference)</div>
+                    </div>
+                </div>
+                <div class="trace-flow-step font-mono">
+                    <div class="t-step-title font-emerald">4. SELECTED MODEL & GOVERNOR</div>
+                    <div class="t-step-desc font-muted">Selected: Qwen 2.5 1.5B (Ollama) | Governor: AUTHORIZED (Bounded Autonomy)</div>
+                </div>
+                <div class="trace-flow-step font-mono">
+                    <div class="t-step-title font-emerald">5. FALLBACK TELEMETRY</div>
+                    <div class="t-step-desc font-emerald">Fallback Status: NONE (Primary model completed cleanly in 1.2s)</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Model Details Inspector Modal Dialog -->
@@ -383,23 +440,12 @@
             </div>
             <div class="modal-body font-inter">
                 <div class="modal-stat-grid font-mono">
-                    <div class="m-stat"><span class="m-label">Status:</span> <span class="m-val font-emerald" id="modal-model-status">IN_USE</span></div>
-                    <div class="m-stat"><span class="m-label">Tier:</span> <span class="m-val font-cyan" id="modal-model-tier">SMALL_LOCAL_LLM</span></div>
-                    <div class="m-stat"><span class="m-label">Provider:</span> <span class="m-val font-purple" id="modal-model-provider">Ollama (Local)</span></div>
-                    <div class="m-stat"><span class="m-label">Context Window:</span> <span class="m-val" id="modal-model-context">32K</span></div>
-                    <div class="m-stat"><span class="m-label">Quantization:</span> <span class="m-val font-emerald" id="modal-model-quant">Q4</span></div>
-                    <div class="m-stat"><span class="m-label">Avg Latency:</span> <span class="m-val font-amber" id="modal-model-latency">1.2s</span></div>
-                    <div class="m-stat"><span class="m-label">RAM Footprint:</span> <span class="m-val font-cyan" id="modal-model-ram">4.1 GB</span></div>
-                    <div class="m-stat"><span class="m-label">CPU Footprint:</span> <span class="m-val font-amber" id="modal-model-cpu">68%</span></div>
-                </div>
-                <div class="modal-section">
-                    <h4 class="font-outfit font-cyan">Task Eligibility Checklist</h4>
-                    <div class="tool-tags font-mono" id="modal-model-eligibility">
-                        <div style="color: var(--accent-emerald);">✓ Email classification</div>
-                        <div style="color: var(--accent-emerald);">✓ Schedule planning</div>
-                        <div style="color: var(--accent-emerald);">✓ Lightweight triage</div>
-                        <div style="color: var(--accent-rose);">✕ Complex multi-domain research</div>
-                    </div>
+                    <div class="m-stat"><span class="m-label">Availability:</span> <span class="m-val font-emerald">READY</span></div>
+                    <div class="m-stat"><span class="m-label">Eligibility:</span> <span class="m-val font-emerald">ELIGIBLE</span></div>
+                    <div class="m-stat"><span class="m-label">Activity:</span> <span class="m-val font-cyan">IN USE</span></div>
+                    <div class="m-stat"><span class="m-label">Context Window:</span> <span class="m-val">32K</span></div>
+                    <div class="m-stat"><span class="m-label">Quantization:</span> <span class="m-val font-emerald">Q4</span></div>
+                    <div class="m-stat"><span class="m-label">Avg Latency:</span> <span class="m-val font-amber">1.2s</span></div>
                 </div>
             </div>
         </div>
@@ -419,22 +465,6 @@
                 <div class="modal-stat-grid font-mono">
                     <div class="m-stat"><span class="m-label">Status:</span> <span class="m-val font-emerald" id="modal-agent-status">HEALTHY</span></div>
                     <div class="m-stat"><span class="m-label">Role:</span> <span class="m-val font-cyan" id="modal-agent-role">COMMUNICATOR</span></div>
-                    <div class="m-stat"><span class="m-label">Accuracy:</span> <span class="m-val font-purple" id="modal-agent-accuracy">98.5%</span></div>
-                    <div class="m-stat"><span class="m-label">Tasks Executed:</span> <span class="m-val" id="modal-agent-tasks">14</span></div>
-                    <div class="m-stat"><span class="m-label">Success Rate:</span> <span class="m-val font-emerald" id="modal-agent-success">96.2%</span></div>
-                    <div class="m-stat"><span class="m-label">Avg Latency:</span> <span class="m-val font-amber" id="modal-agent-latency">1.8s</span></div>
-                </div>
-                <div class="modal-section">
-                    <h4 class="font-outfit font-cyan">Technical Capabilities (Tools)</h4>
-                    <div class="tool-tags font-mono" id="modal-agent-capabilities"><code>list_messages</code>, <code>send_email</code>, <code>mark_read</code></div>
-                </div>
-                <div class="modal-section">
-                    <h4 class="font-outfit font-emerald">Current Mission Authority Grants</h4>
-                    <div class="tool-tags font-mono" id="modal-agent-authority"><code>read_email</code>, <code>draft_email</code></div>
-                </div>
-                <div class="modal-section">
-                    <h4 class="font-outfit font-amber">Active Step</h4>
-                    <p class="font-muted" id="modal-agent-active-step">Waiting for User Approval on Draft Email</p>
                 </div>
             </div>
         </div>
