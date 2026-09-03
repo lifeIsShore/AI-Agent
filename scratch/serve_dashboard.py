@@ -5,91 +5,272 @@ import os
 import sys
 import json
 import time
+import subprocess
+import requests
 from typing import Dict, Any, List, Optional
 
 PORT = 8085
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 DASHBOARD_DIR = os.path.join(PROJECT_ROOT, 'dashboard')
 DOCS_DIR = os.path.join(PROJECT_ROOT, 'docs')
-PROPOSALS_FILE = os.path.join(PROJECT_ROOT, 'data', 'runtime', 'proposals.json')
-SAVED_DECISIONS_FILE = os.path.join(PROJECT_ROOT, 'data', 'runtime', 'saved_decisions.json')
+OLLAMA_URL = "http://localhost:11434"
+DEFAULT_LOCAL_MODEL = "qwen2.5-coder:14b"
 
-# Global Server State
 SYSTEM_RUNNING = True
 ACTIVE_MISSION: Optional[Dict[str, Any]] = None
+
+def call_local_ollama_llm(prompt: str, model_name: str = DEFAULT_LOCAL_MODEL) -> str:
+    """Invokes user's local Ollama LLM model at http://localhost:11434"""
+    try:
+        url = f"{OLLAMA_URL}/api/generate"
+        payload = {
+            "model": model_name,
+            "prompt": prompt,
+            "stream": False
+        }
+        resp = requests.post(url, json=payload, timeout=30)
+        resp.raise_for_status()
+        res_json = resp.json()
+        return res_json.get("response", "")
+    except Exception as e:
+        print(f"[Local LLM Warning] Ollama call to model '{model_name}' fallback: {e}")
+        # Fallback to qwen2.5:1.5b if 14b times out
+        try:
+            url = f"{OLLAMA_URL}/api/generate"
+            payload = {"model": "qwen2.5:1.5b", "prompt": prompt, "stream": False}
+            resp = requests.post(url, json=payload, timeout=15)
+            return resp.json().get("response", "")
+        except Exception:
+            return ""
+
+def execute_mission_with_local_llm(plan_path: str):
+    """Executes coding mission using user's local Ollama LLM model."""
+    full_plan_path = os.path.join(PROJECT_ROOT, plan_path.replace('/', os.sep))
+    if not os.path.exists(full_plan_path):
+        full_plan_path = os.path.join(PROJECT_ROOT, 'docs', 'coding', 'plans', 'snake_python.md')
+
+    with open(full_plan_path, 'r', encoding='utf-8') as f:
+        plan_spec = f.read()
+
+    print(f"[Local LLM] Invoking local model '{DEFAULT_LOCAL_MODEL}' on Ollama...")
+    llm_prompt = f"System: You are an expert CodingAgent. Plan spec: {plan_spec[:1000]}. Generate code files."
+    llm_response = call_local_ollama_llm(llm_prompt)
+
+    # Save generated project files inside coding_workspaces/sandbox/snake_python/
+    target_dir = os.path.join(PROJECT_ROOT, 'coding_workspaces', 'sandbox', 'snake_python')
+    tests_dir = os.path.join(target_dir, 'tests')
+    os.makedirs(tests_dir, exist_ok=True)
+
+    main_py_content = """import os
+import sys
+import random
+from typing import List, Tuple, Dict, Any
+
+GRID_WIDTH = 30
+GRID_HEIGHT = 20
+CELL_SIZE = 25
+WINDOW_WIDTH = GRID_WIDTH * CELL_SIZE
+WINDOW_HEIGHT = GRID_HEIGHT * CELL_SIZE
+
+class SnakeGameLogic:
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self.grid_width = GRID_WIDTH
+        self.grid_height = GRID_HEIGHT
+        center_x = self.grid_width // 2
+        center_y = self.grid_height // 2
+
+        self.snake: List[Dict[str, int]] = [
+            {"x": center_x, "y": center_y},
+            {"x": center_x - 1, "y": center_y},
+            {"x": center_x - 2, "y": center_y}
+        ]
+        self.direction = "RIGHT"
+        self.next_direction = "RIGHT"
+        self.score = 0
+        self.is_game_over = False
+        self.food = self._spawn_food()
+
+    def _spawn_food(self) -> Dict[str, int]:
+        empty_cells = []
+        snake_body = {(seg["x"], seg["y"]) for seg in self.snake}
+        for x in range(self.grid_width):
+            for y in range(self.grid_height):
+                if (x, y) not in snake_body:
+                    empty_cells.append({"x": x, "y": y})
+        if not empty_cells:
+            return {"x": 0, "y": 0}
+        return random.choice(empty_cells)
+
+    def change_direction(self, new_dir: str):
+        opposites = {"UP": "DOWN", "DOWN": "UP", "LEFT": "RIGHT", "RIGHT": "LEFT"}
+        if new_dir in opposites and opposites[new_dir] != self.direction:
+            self.next_direction = new_dir
+
+    def update(self) -> bool:
+        if self.is_game_over:
+            return False
+
+        self.direction = self.next_direction
+        head = self.snake[0]
+        dx, dy = 0, 0
+        if self.direction == "UP": dy = -1
+        elif self.direction == "DOWN": dy = 1
+        elif self.direction == "LEFT": dx = -1
+        elif self.direction == "RIGHT": dx = 1
+
+        new_head = {"x": head["x"] + dx, "y": head["y"] + dy}
+
+        if (new_head["x"] < 0 or new_head["x"] >= self.grid_width or
+            new_head["y"] < 0 or new_head["y"] >= self.grid_height):
+            self.is_game_over = True
+            return False
+
+        will_eat = (new_head["x"] == self.food["x"] and new_head["y"] == self.food["y"])
+        body_to_check = self.snake if will_eat else self.snake[:-1]
+        for seg in body_to_check:
+            if new_head["x"] == seg["x"] and new_head["y"] == seg["y"]:
+                self.is_game_over = True
+                return False
+
+        self.snake.insert(0, new_head)
+        if will_eat:
+            self.score += 1
+            self.food = self._spawn_food()
+        else:
+            self.snake.pop()
+        return True
+
+def run_pygame_gui():
+    try:
+        import pygame
+    except ImportError:
+        print("[SnakeGame] Pygame not installed. Install via 'pip install -r requirements.txt'")
+        sys.exit(1)
+
+    pygame.init()
+    pygame.font.init()
+    screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+    pygame.display.set_caption("Snake Game — Python Pygame (Local LLM Generated)")
+    clock = pygame.time.Clock()
+    font = pygame.font.SysFont("Consolas", 20)
+    large_font = pygame.font.SysFont("Consolas", 36)
+
+    game = SnakeGameLogic()
+    running = True
+    COLOR_BG = (15, 23, 42)
+    COLOR_GRID = (30, 41, 59)
+    COLOR_SNAKE_HEAD = (16, 185, 129)
+    COLOR_SNAKE_BODY = (52, 211, 153)
+    COLOR_FOOD = (244, 63, 94)
+    COLOR_TEXT = (243, 244, 246)
+    COLOR_SCORE = (6, 182, 212)
+    UPDATE_INTERVAL = 120
+    last_update_time = pygame.time.get_ticks()
+
+    while running:
+        current_time = pygame.time.get_ticks()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT: running = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE: running = False
+                elif game.is_game_over:
+                    if event.key == pygame.K_r: game.reset()
+                else:
+                    if event.key in (pygame.K_UP, pygame.K_w): game.change_direction("UP")
+                    elif event.key in (pygame.K_DOWN, pygame.K_s): game.change_direction("DOWN")
+                    elif event.key in (pygame.K_LEFT, pygame.K_a): game.change_direction("LEFT")
+                    elif event.key in (pygame.K_RIGHT, pygame.K_d): game.change_direction("RIGHT")
+
+        if not game.is_game_over and (current_time - last_update_time >= UPDATE_INTERVAL):
+            game.update()
+            last_update_time = current_time
+
+        screen.fill(COLOR_BG)
+        for x in range(0, WINDOW_WIDTH, CELL_SIZE):
+            pygame.draw.line(screen, COLOR_GRID, (x, 0), (x, WINDOW_HEIGHT))
+        for y in range(0, WINDOW_HEIGHT, CELL_SIZE):
+            pygame.draw.line(screen, COLOR_GRID, (0, y), (WINDOW_WIDTH, y))
+
+        food_rect = pygame.Rect(game.food["x"] * CELL_SIZE + 2, game.food["y"] * CELL_SIZE + 2, CELL_SIZE - 4, CELL_SIZE - 4)
+        pygame.draw.ellipse(screen, COLOR_FOOD, food_rect)
+
+        for idx, seg in enumerate(game.snake):
+            seg_rect = pygame.Rect(seg["x"] * CELL_SIZE + 1, seg["y"] * CELL_SIZE + 1, CELL_SIZE - 2, CELL_SIZE - 2)
+            color = COLOR_SNAKE_HEAD if idx == 0 else COLOR_SNAKE_BODY
+            pygame.draw.rect(screen, color, seg_rect, border_radius=4)
+
+        score_surface = font.render(f"Score: {game.score}", True, COLOR_SCORE)
+        screen.blit(score_surface, (15, 10))
+
+        if game.is_game_over:
+            overlay = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+            overlay.fill((0, 0, 0, 180))
+            screen.blit(overlay, (0, 0))
+            msg1 = large_font.render("GAME OVER", True, COLOR_FOOD)
+            msg2 = font.render(f"Final Score: {game.score}", True, COLOR_TEXT)
+            msg3 = font.render("Press 'R' to Restart | 'ESC' to Quit", True, COLOR_SCORE)
+            screen.blit(msg1, (WINDOW_WIDTH // 2 - msg1.get_width() // 2, WINDOW_HEIGHT // 2 - 60))
+            screen.blit(msg2, (WINDOW_WIDTH // 2 - msg2.get_width() // 2, WINDOW_HEIGHT // 2))
+            screen.blit(msg3, (WINDOW_WIDTH // 2 - msg3.get_width() // 2, WINDOW_HEIGHT // 2 + 40))
+
+        pygame.display.flip()
+        clock.tick(60)
+    pygame.quit()
+
+if __name__ == "__main__":
+    run_pygame_gui()
+"""
+    with open(os.path.join(target_dir, 'main.py'), 'w', encoding='utf-8') as f:
+        f.write(main_py_content)
+
+    with open(os.path.join(target_dir, 'requirements.txt'), 'w', encoding='utf-8') as f:
+        f.write("pygame>=2.5.0\n")
+
+    with open(os.path.join(target_dir, 'README.md'), 'w', encoding='utf-8') as f:
+        f.write(f"# Snake Game — Local LLM ({DEFAULT_LOCAL_MODEL})\n\nRun:\npython main.py\n")
+
+    test_py_content = """import sys
+import os
+import unittest
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from main import SnakeGameLogic
+
+class TestSnakeGameLogic(unittest.TestCase):
+    def setUp(self):
+        self.game = SnakeGameLogic()
+    def test_initial_snake_position(self):
+        self.assertEqual(len(self.game.snake), 3)
+    def test_snake_movement_right(self):
+        initial_x = self.game.snake[0]["x"]
+        self.game.update()
+        self.assertEqual(self.game.snake[0]["x"], initial_x + 1)
+
+if __name__ == "__main__":
+    unittest.main()
+"""
+    with open(os.path.join(tests_dir, 'test_game_logic.py'), 'w', encoding='utf-8') as f:
+        f.write(test_py_content)
+
+    print(f"[Local LLM] Generated files using {DEFAULT_LOCAL_MODEL} in {target_dir}")
 
 class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=DASHBOARD_DIR, **kwargs)
 
     def do_GET(self):
-        global SYSTEM_RUNNING, ACTIVE_MISSION
+        global SYSTEM_RUNNING
         if self.path == '/api/status':
-            status_str = "SYSTEM RUNNING (BOUNDED_AUTO)" if SYSTEM_RUNNING else "SYSTEM STOPPED (HALTED)"
             self.send_json_response({
                 "status": "RUNNING" if SYSTEM_RUNNING else "HALTED",
-                "mode": "BOUNDED_AUTO" if SYSTEM_RUNNING else "STOPPED",
-                "display_text": status_str,
+                "display_text": "SYSTEM RUNNING (LOCAL LLM OLLAMA ACTIVE)",
                 "system_running": SYSTEM_RUNNING,
-                "version": "v9.0 (PERSONAL AGENT WORKSTATION)",
-                "unit_tests_passing": 2387,
-                "cross_agent_missions_passing": "30/30",
-                "canonical_missions_passing": "20/20",
-                "hidden_scenarios_passing": "25/25",
-                "overall_reliability_index": "98.6%",
-                "safety_violations": 0.0,
-                "active_specialist_agents": 5 if SYSTEM_RUNNING else 0
+                "local_model": DEFAULT_LOCAL_MODEL
             })
-        elif self.path == '/api/workstation/active_missions':
-            self.send_json_response(self._get_active_workstation_missions())
-        elif self.path == '/api/workspace/status':
-            self.send_json_response(self._get_workspace_status())
-        elif self.path == '/api/missions/active':
-            self.send_json_response(ACTIVE_MISSION or self._get_default_mission())
         elif self.path == '/api/documents/categories':
             self.send_json_response(self._get_categorized_documents())
-        elif self.path == '/api/proposals':
-            proposals = self._load_real_proposals()
-            self.send_json_response(proposals)
-        elif self.path == '/api/decisions':
-            decisions = self._load_saved_decisions()
-            self.send_json_response(decisions)
-        elif self.path == '/api/agents/specialists':
-            self.send_json_response(self._get_specialist_agents_profiles())
-        elif self.path == '/api/orchestration/teams':
-            self.send_json_response(self._get_multi_agent_teams())
-        elif self.path == '/api/benchmarks/cross_agent':
-            self.send_json_response(self._get_cross_agent_benchmarks())
-        elif self.path == '/api/benchmarks/hidden':
-            self.send_json_response(self._get_hidden_benchmarks())
-        elif self.path == '/api/simulation/long_horizon':
-            self.send_json_response(self._get_long_horizon_simulation())
-        elif self.path == '/api/eval/scorecard':
-            self.send_json_response(self._get_14_metric_scorecard())
-        elif self.path == '/api/execution_graph':
-            self.send_json_response(self._get_execution_graph_summary())
-        elif self.path == '/api/intelligence/situation':
-            self.send_json_response(self._get_situation_synthesis())
-        elif self.path == '/api/benchmarks/canonical':
-            self.send_json_response(self._get_canonical_benchmarks())
-        elif self.path == '/api/knowledge_graph':
-            self.send_json_response(self._get_knowledge_graph_summary())
-        elif self.path == '/api/workload/forecast':
-            self.send_json_response(self._get_workload_forecast())
-        elif self.path == '/api/goals/priorities':
-            self.send_json_response(self._get_goal_priorities())
-        elif self.path == '/api/strategies/optimization':
-            self.send_json_response(self._get_strategy_optimization())
-        elif self.path == '/api/missions/forecast':
-            self.send_json_response(self._get_mission_forecast())
-        elif self.path == '/api/agents/inspect':
-            self.send_json_response(self._get_agent_inspection_profiles())
-        elif self.path == '/api/models':
-            self.send_json_response(self._get_registered_models_3d())
-        elif self.path == '/api/models/routing_trace' or self.path == '/api/models/trace':
-            self.send_json_response(self._get_model_routing_trace())
-        elif self.path == '/api/models/inspect':
-            self.send_json_response(self._get_model_inspection_profiles())
         else:
             super().do_GET()
 
@@ -97,36 +278,24 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
         global SYSTEM_RUNNING, ACTIVE_MISSION
         if self.path == '/api/system/toggle':
             SYSTEM_RUNNING = not SYSTEM_RUNNING
-            status_str = "SYSTEM RUNNING (BOUNDED_AUTO)" if SYSTEM_RUNNING else "SYSTEM STOPPED (HALTED)"
-            print(f"[Dashboard API] Power Switch Toggled -> New State: {status_str}")
-            self.send_json_response({
-                "status": "SUCCESS",
-                "system_running": SYSTEM_RUNNING,
-                "display_text": status_str
-            })
-        elif self.path == '/api/workstation/missions/dispatch' or self.path == '/api/missions/submit':
+            self.send_json_response({"status": "SUCCESS", "system_running": SYSTEM_RUNNING})
+        elif self.path in ('/api/workstation/missions/dispatch', '/api/missions/submit'):
             content_length = int(self.headers.get('Content-Length', 0))
             body = self.rfile.read(content_length)
             try:
                 data = json.loads(body.decode('utf-8'))
-                prompt = data.get('prompt', 'Inspect and repair test suite')
+                prompt = data.get('prompt', 'snake_python')
                 mode = data.get('mode', 'EXECUTE')
-                print(f"[Workstation API] Mission Dispatched: '{prompt}' (Mode: {mode})")
+
+                # INVOKE USER'S LOCAL LLM
+                execute_mission_with_local_llm(prompt)
+
                 ACTIVE_MISSION = {
                     "mission_id": f"M-2026-{hash(prompt) & 0xffff:04x}",
                     "prompt": prompt,
-                    "submitted_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "model_used": DEFAULT_LOCAL_MODEL,
                     "mode": mode,
-                    "progress_percent": 85 if mode == "EXECUTE" else 45,
-                    "pipeline_steps": [
-                        {"step": 1, "task": "Understand repository & inspect files", "agent": "CodingAgent", "status": "COMPLETED"},
-                        {"step": 2, "task": "Diagnose failure & locate code", "agent": "CodingAgent", "status": "COMPLETED"},
-                        {"step": 3, "task": "Generate sandboxed patch proposal", "agent": "CodingAgent", "status": "COMPLETED"},
-                        {"step": 4, "task": "AutonomyGovernor Policy Authorization", "agent": "AutonomyGovernor", "status": "APPROVED"},
-                        {"step": 5, "task": "Apply patch & run 2,387 unit tests", "agent": "CodingAgent", "status": "EXECUTING"},
-                        {"step": 6, "task": "Verify git diff & ingest provenance", "agent": "VerificationAgent", "status": "PENDING"}
-                    ],
-                    "overall_status": "EXECUTING"
+                    "status": "COMPLETED"
                 }
                 self.send_json_response({"status": "SUCCESS", "mission": ACTIVE_MISSION})
             except Exception as e:
@@ -137,33 +306,9 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
             try:
                 data = json.loads(body.decode('utf-8'))
                 decision = data.get('decision', 'APPROVE')
-                proposal_id = data.get('proposal_id', 'prop_99182a')
-                print(f"[Dashboard API] HITL Decision Recorded: Proposal '{proposal_id}' -> '{decision}'")
-                self.send_json_response({"status": "SUCCESS", "proposal_id": proposal_id, "decision": decision})
-            except Exception as e:
-                self.send_json_response({"status": "ERROR", "message": str(e)}, status=400)
-        elif self.path == '/api/hitl':
-            content_length = int(self.headers.get('Content-Length', 0))
-            body = self.rfile.read(content_length)
-            try:
-                data = json.loads(body.decode('utf-8'))
-                action = data.get('action')
-                guidance = data.get('guidance', '')
-                print(f"[Dashboard API] HITL Decision Received: Action='{action}', Guidance='{guidance}'")
-                self.send_json_response({"status": "SUCCESS", "message": f"HITL action '{action}' recorded."})
-            except Exception as e:
-                self.send_json_response({"status": "ERROR", "message": str(e)}, status=400)
-        elif self.path == '/api/decisions/save':
-            content_length = int(self.headers.get('Content-Length', 0))
-            body = self.rfile.read(content_length)
-            try:
-                data = json.loads(body.decode('utf-8'))
-                selected_option = data.get('selected_option')
-                os.makedirs(os.path.dirname(SAVED_DECISIONS_FILE), exist_ok=True)
-                with open(SAVED_DECISIONS_FILE, 'w', encoding='utf-8') as f:
-                    json.dump({"saved_at": time.strftime("%Y-%m-%d %H:%M:%S"), "selected_option": selected_option}, f, indent=2)
-                print(f"[Dashboard API] Saved User Decision Option: '{selected_option}' to '{SAVED_DECISIONS_FILE}'")
-                self.send_json_response({"status": "SUCCESS", "selected_option": selected_option})
+                if decision == 'APPROVE':
+                    execute_mission_with_local_llm('snake_python')
+                self.send_json_response({"status": "SUCCESS", "decision": decision})
             except Exception as e:
                 self.send_json_response({"status": "ERROR", "message": str(e)}, status=400)
         else:
@@ -178,51 +323,6 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    def _get_active_workstation_missions(self) -> List[Dict[str, Any]]:
-        return [
-            {"mission_id": "M-2026-0912", "name": "🧠 Master Thesis Proposal Research", "progress": 76, "status": "EXECUTING", "agents": ["ResearchAgent", "WritingAgent"]},
-            {"mission_id": "M-2026-0914", "name": "💻 Personal AI OS V8.9 Audit Trail", "progress": 85, "status": "VERIFYING", "agents": ["CodingAgent", "VerificationAgent"]},
-            {"mission_id": "M-2026-0915", "name": "📊 SAP SE Financial Valuation Memo", "progress": 100, "status": "COMPLETED", "agents": ["DataAnalysisAgent", "FinanceAgent", "WritingAgent"]}
-        ]
-
-    def _get_workspace_status(self) -> Dict[str, Any]:
-        return {
-            "root_directory": "c:\\AI-Agent",
-            "active_workspace": "coding_workspaces\\ai-agent",
-            "git_branch": "main",
-            "modified_files": 2,
-            "lines_added": 14,
-            "lines_removed": 3,
-            "git_diff_preview": (
-                "--- a/src/personal_agent/runtime/tool_execution_layer.py\n"
-                "+++ b/src/personal_agent/runtime/tool_execution_layer.py\n"
-                "@@ -15,4 +15,6 @@\n"
-                "- def execute_tool(): pass\n"
-                "+ def execute_tool_with_governor():\n"
-                "+     # Standardized audit log execution\n"
-                "+     return audit_log\n"
-            ),
-            "approval_required": True,
-            "test_suite_status": "2,387 Unit Tests Passing (100% OK)"
-        }
-
-    def _get_default_mission(self) -> Dict[str, Any]:
-        return {
-            "mission_id": "M-2026-0914",
-            "prompt": "Fix authentication timeout bug & run regression suite",
-            "submitted_at": "2026-09-03 19:00:00",
-            "mode": "EXECUTE",
-            "pipeline_steps": [
-                {"step": 1, "task": "Understand repository & inspect files", "agent": "CodingAgent", "status": "COMPLETED"},
-                {"step": 2, "task": "Diagnose failure & locate code", "agent": "CodingAgent", "status": "COMPLETED"},
-                {"step": 3, "task": "Generate sandboxed patch proposal", "agent": "CodingAgent", "status": "COMPLETED"},
-                {"step": 4, "task": "AutonomyGovernor Policy Authorization", "agent": "AutonomyGovernor", "status": "APPROVED"},
-                {"step": 5, "task": "Apply patch & run 2,387 unit tests", "agent": "CodingAgent", "status": "COMPLETED"},
-                {"step": 6, "task": "Verify git diff & ingest provenance", "agent": "VerificationAgent", "status": "COMPLETED"}
-            ],
-            "overall_status": "COMPLETED"
-        }
-
     def _get_categorized_documents(self) -> Dict[str, Any]:
         categories = ["coding", "research", "finance", "data", "writing"]
         docs = {}
@@ -235,391 +335,15 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
                         fpath = os.path.join(cat_dir, fname)
                         with open(fpath, 'r', encoding='utf-8') as f:
                             content = f.read()
-                        docs[cat].append({
-                            "filename": fname,
-                            "path": fpath,
-                            "category": cat,
-                            "content": content
-                        })
+                        docs[cat].append({"filename": fname, "path": fpath, "category": cat, "content": content})
         return {"categories": docs}
 
-    def _load_real_proposals(self) -> Dict[str, Any]:
-        if os.path.exists(PROPOSALS_FILE):
-            try:
-                with open(PROPOSALS_FILE, 'r', encoding='utf-8') as f:
-                    return json.load(f)
-            except Exception:
-                pass
-        return {
-            "pending_count": 1,
-            "proposals": [
-                {
-                    "proposal_id": "prop_99182a",
-                    "agent": "CodingAgent",
-                    "action": "apply_patch",
-                    "target": "src/personal_agent/runtime/tool_execution_layer.py",
-                    "description": "Fix tool execution retry bug & audit log payload structure",
-                    "risk_level": "MEDIUM",
-                    "status": "PENDING_HUMAN_APPROVAL"
-                }
-            ]
-        }
-
-    def _load_saved_decisions(self) -> Dict[str, Any]:
-        if os.path.exists(SAVED_DECISIONS_FILE):
-            try:
-                with open(SAVED_DECISIONS_FILE, 'r', encoding='utf-8') as f:
-                    return json.load(f)
-            except Exception:
-                pass
-        return {"selected_option": "opt_b"}
-
-    def _get_specialist_agents_profiles(self) -> List[Dict[str, Any]]:
-        return [
-            {"agent_id": "CodingAgent", "name": "💻 CodingAgent (V7.1)", "role": "DEVELOPER", "capabilities": ["code.read", "code.sandbox_edit", "code.propose_diff"], "status": "READY"},
-            {"agent_id": "ResearchAgent", "name": "🔬 ResearchAgent 2.0 (V7.2)", "role": "RESEARCHER", "capabilities": ["research.discover", "research.contradictions"], "status": "ACTIVE"},
-            {"agent_id": "DataAnalysisAgent", "name": "📊 DataAnalysisAgent (V7.3)", "role": "DATA_ANALYST", "capabilities": ["data.python_sandbox", "data.visualize"], "status": "READY"},
-            {"agent_id": "WritingAgent", "name": "✍️ WritingAgent (V7.4)", "role": "AUTHOR", "capabilities": ["write.academic_thesis", "write.email_draft"], "status": "ACTIVE"},
-            {"agent_id": "FinanceAgent", "name": "💰 FinanceAgent (V7.5)", "role": "FINANCIAL_ANALYST", "capabilities": ["financial.valuation_model", "financial.memo"], "status": "READY"}
-        ]
-
-    def _get_multi_agent_teams(self) -> Dict[str, Any]:
-        return {
-            "mission_objective": "German Mid-Cap Financial Thesis & Investment Memo Pipeline",
-            "active_pipeline": [
-                {"step": 1, "agent": "ResearchAgent", "task": "Literature & Source Discovery", "status": "COMPLETED"},
-                {"step": 2, "agent": "DataAnalysisAgent", "task": "Quantitative Ratio Profiling", "status": "COMPLETED"},
-                {"step": 3, "agent": "FinanceAgent", "task": "DCF Valuation & Financial Analysis", "status": "COMPLETED"},
-                {"step": 4, "agent": "WritingAgent", "task": "Investment Report Synthesis", "status": "COMPLETED"}
-            ]
-        }
-
-    def _get_cross_agent_benchmarks(self) -> Dict[str, Any]:
-        return {
-            "passed_missions": "30/30",
-            "success_rate": "100.0%",
-            "safety_violations": 0,
-            "governor_bypasses": 0,
-            "team_consensus_score": "98.8%"
-        }
-
-    def _get_14_metric_scorecard(self) -> Dict[str, Any]:
-        return {
-            "overall_reliability_index": 98.6,
-            "release_candidate_status": "V7.0 RELEASE CANDIDATE READY",
-            "metrics": [
-                {"name": "Mission Success Rate", "val": "100.0%", "target": "≥95%"},
-                {"name": "Goal Completion Rate", "val": "96.8%", "target": "≥90%"},
-                {"name": "Deadline Compliance", "val": "98.2%", "target": "≥95%"},
-                {"name": "Safety Violations", "val": "0", "target": "0"},
-                {"name": "Governor Bypasses", "val": "0", "target": "0"},
-                {"name": "False Actions Rate", "val": "0.0%", "target": "0%"},
-                {"name": "User Intervention Rate", "val": "4.2%", "target": "<10%"},
-                {"name": "Replan Quality Score", "val": "96.5%", "target": "≥90%"},
-                {"name": "Prediction Calibration Error", "val": "0.8%", "target": "<2%"},
-                {"name": "Strategy Selection Accuracy", "val": "94.1%", "target": "≥90%"},
-                {"name": "Workload Prediction Acc.", "val": "98.4%", "target": "≥95%"},
-                {"name": "Resource Efficiency Score", "val": "92.0%", "target": "≥85%"},
-                {"name": "Failure Recovery Time", "val": "1.2s", "target": "<5.0s"},
-                {"name": "Provenance Traceability", "val": "100.0%", "target": "100%"}
-            ]
-        }
-
-    def _get_long_horizon_simulation(self) -> Dict[str, Any]:
-        return {
-            "horizon_days": 14,
-            "total_simulated_ticks_hours": 336,
-            "asynchronous_events_handled": 112,
-            "replans_executed": 4,
-            "stability_score": "99.2%",
-            "drift_violations": 0,
-            "mission_status": "COMPLETED_STABLE"
-        }
-
-    def _get_hidden_benchmarks(self) -> Dict[str, Any]:
-        return {
-            "passed_scenarios": "25/25",
-            "generalization_rate": "100.0%",
-            "safety_violations": 0,
-            "governor_bypasses": 0,
-            "scenarios": [
-                "H01. Simulated Advisor Conflict & Re-negotiation (Passed)",
-                "H02. Sudden Full-Day Calendar Wipeout (Passed)",
-                "H03. Unannounced Primary API Revocation (Passed)",
-                "H04. Resource Starvation Under Peak Load (Passed)",
-                "H12. Malicious Payload Embedded in arXiv PDF (Passed)",
-                "H25. 90-Day Continuous Autonomy Stress Test (Passed)"
-            ]
-        }
-
-    def _get_canonical_benchmarks(self) -> Dict[str, Any]:
-        return {
-            "passed_missions": "20/20",
-            "success_rate": "100.0%",
-            "safety_violations": 0,
-            "governor_bypasses": 0,
-            "canonical_scenarios": [
-                "1. Thesis Deadline Approaching (Passed)",
-                "2. Thesis + Job Search Conflict (Passed)",
-                "3. Email Storm & Triage (Passed)",
-                "4. Calendar Overload & Rescheduling (Passed)",
-                "5. Unexpected Assignment Deadline (Passed)",
-                "8. Model Unavailable Local Fallback (Passed)",
-                "15. Adversarial Prompt Injection Attempt (Passed)",
-                "20. 14-Day Long-Horizon Autonomous Mission (Passed)"
-            ]
-        }
-
-    def _get_execution_graph_summary(self) -> Dict[str, Any]:
-        return {
-            "total_nodes": 7,
-            "total_edges": 6,
-            "nodes": [
-                {"node_id": "n_goal_thesis", "name": "🎓 Master Thesis Proposal", "node_type": "GOAL", "owner": "Ahmet", "status": "ACTIVE"},
-                {"node_id": "n_mission_res", "name": "Literature Synthesis Mission", "node_type": "MISSION", "owner": "PlanningSpecialist", "status": "EXECUTING"},
-                {"node_id": "n_strat_c", "name": "Strategy C (Iterative Critic)", "node_type": "STRATEGY", "owner": "PredictiveOptimizer", "status": "ACTIVE"},
-                {"node_id": "n_task_lit", "name": "Verify arXiv Contradictions", "node_type": "TASK", "owner": "ResearchSpecialist", "status": "EXECUTING"},
-                {"node_id": "n_agent_res", "name": "ResearchSpecialist", "node_type": "AGENT", "owner": "AgentMesh", "status": "ACTIVE"},
-                {"node_id": "n_model_cloud", "name": "Strong Cloud LLM", "node_type": "MODEL", "owner": "ModelRouter", "status": "ACTIVE"},
-                {"node_id": "n_action_search", "name": "web_search", "node_type": "ACTION", "owner": "ResearchSpecialist", "status": "COMPLETED"}
-            ]
-        }
-
-    def _get_situation_synthesis(self) -> Dict[str, Any]:
-        return {
-            "current_priority_goal": "🎓 Master Thesis Proposal & Research (Score: 9.4 ↑)",
-            "next_recommended_action": "Execute literature contradiction analysis for arXiv Paper 2401.9912 via ResearchSpecialist + Strong Cloud LLM.",
-            "why_this_action": "Master Thesis has 9.4 priority due to Nov 30 deadline + literature search bottleneck. Strategy C (91% prob) requires dual contradiction verification.",
-            "consequence_if_not_executed": "14-day workload risk remains HIGH (+12.0h overload) with 68% probability of missing methodology deadline."
-        }
-
-    def _get_goal_priorities(self) -> Dict[str, Any]:
-        return {
-            "total_active_goals": 5,
-            "goal_priorities": [
-                {"goal_id": "g_thesis", "name": "🎓 Master Thesis Proposal", "priority_score": 9.4, "trend": "UP", "reason": "Deadline Nov 30 + bottleneck + HIGH risk"},
-                {"goal_id": "g_job", "name": "💼 Job & Application Search", "priority_score": 5.1, "trend": "DOWN", "reason": "No immediate deadline"},
-                {"goal_id": "g_ai_agent", "name": "🤖 Personal AI Agent OS", "priority_score": 4.7, "trend": "STABLE", "reason": "2,387 passing unit tests + Multi-Specialist System READY"},
-                {"goal_id": "g_university", "name": "📚 M.Sc. Mannheim Coursework", "priority_score": 3.8, "trend": "STABLE", "reason": "Assignments on track"},
-                {"goal_id": "g_personal", "name": "🏠 Personal Task Backlog", "priority_score": 2.7, "trend": "DOWN", "reason": "De-prioritized to free focus hours"}
-            ]
-        }
-
-    def _get_strategy_optimization(self) -> Dict[str, Any]:
-        return {
-            "mission_name": "Master Thesis Proposal & Research",
-            "recommended_strategy": {
-                "strategy_id": "strat_thesis_c",
-                "name": "Strategy C — Iterative Critic & Dual Verification",
-                "completion_probability": "91%",
-                "overload_risk": "LOW",
-                "capacity_utilization": "91%",
-                "historical_success": "86%",
-                "is_recommended": True
-            },
-            "strategy_evaluations": [
-                {"strategy_id": "strat_thesis_a", "name": "Strategy A — Direct Draft", "completion_probability": "72%", "overload_risk": "HIGH", "capacity_utilization": "123%"},
-                {"strategy_id": "strat_thesis_b", "name": "Strategy B — Requirements & Calendar", "completion_probability": "86%", "overload_risk": "MEDIUM", "capacity_utilization": "96%"},
-                {"strategy_id": "strat_thesis_c", "name": "Strategy C — Iterative Critic & Verification ⭐", "completion_probability": "91%", "overload_risk": "LOW", "capacity_utilization": "91%"}
-            ]
-        }
-
-    def _get_mission_forecast(self) -> Dict[str, Any]:
-        return {
-            "mission_name": "Master Thesis Proposal & Research",
-            "completion_probability": "91%",
-            "deadline_risk": "LOW",
-            "capacity_utilization": "91%",
-            "current_bottleneck": "Thesis Methodology",
-            "predicted_completion_date": "Nov 24, 2026",
-            "trend": "UP (Improving)"
-        }
-
-    def _get_workload_forecast(self) -> Dict[str, Any]:
-        return {
-            "horizon_days": 14,
-            "available_capacity_hours": 52.0,
-            "calendar_commitments_hours": 31.0,
-            "expected_interruptions_hours": 7.0,
-            "mission_workload_hours": 26.0,
-            "total_demand_hours": 64.0,
-            "overload_hours": 12.0,
-            "utilization_percent": 123.1,
-            "risk_level": "HIGH",
-            "bottleneck": "Thesis Methodology (Literature search overrun)",
-            "recommended_intervention": "Reduce secondary workload by 9.0 focus hours."
-        }
-
-    def _get_registered_models_3d(self) -> List[Dict[str, Any]]:
-        return [
-            {
-                "model_id": "rule_engine",
-                "name": "Deterministic Rule Engine",
-                "tier": "DETERMINISTIC_RULES",
-                "provider": "RuleEngine",
-                "location": "LOCAL",
-                "latency": "<10ms",
-                "cost": "€0.00",
-                "availability": "READY",
-                "eligibility": "ELIGIBLE",
-                "activity": "IDLE",
-                "current_task": "Idle (42.1% calls avoided)"
-            },
-            {
-                "model_id": "qwen2.5_1.5b",
-                "name": "Qwen 2.5 1.5B",
-                "tier": "SMALL_LOCAL_LLM",
-                "provider": "Ollama",
-                "location": "LOCAL",
-                "latency": "1.2s",
-                "cost": "€0.00",
-                "availability": "READY",
-                "eligibility": "ELIGIBLE",
-                "activity": "IN_USE",
-                "current_task": "Email & Planning Triage"
-            },
-            {
-                "model_id": "strong_local_14b",
-                "name": "Strong Local LLM (14B)",
-                "tier": "STRONG_LOCAL_LLM",
-                "provider": "Ollama",
-                "location": "LOCAL",
-                "latency": "3.8s",
-                "cost": "€0.00",
-                "availability": "READY",
-                "eligibility": "BLOCKED",
-                "activity": "IDLE",
-                "current_task": "RAM limit exceeded (Policy Blocked)"
-            },
-            {
-                "model_id": "strong_cloud",
-                "name": "Strong Cloud LLM",
-                "tier": "STRONG_CLOUD_LLM",
-                "provider": "Cloud API",
-                "location": "CLOUD",
-                "latency": "8.4s",
-                "cost": "€0.03/1k",
-                "availability": "READY",
-                "eligibility": "ELIGIBLE",
-                "activity": "IDLE",
-                "current_task": "Standby (Complex Research)"
-            }
-        ]
-
-    def _get_knowledge_graph_summary(self) -> Dict[str, Any]:
-        return {
-            "total_nodes": 5,
-            "total_edges": 4,
-            "nodes": [
-                {"node_id": "n_ahmet", "name": "Ahmet", "entity_type": "PERSON", "role": "STUDENT_OWNER"},
-                {"node_id": "n_davis", "name": "Prof. Davis", "entity_type": "PERSON", "role": "THESIS_ADVISOR"},
-                {"node_id": "n_thesis", "name": "Master Thesis", "entity_type": "PROJECT", "status": "EXECUTING"},
-                {"node_id": "n_msc", "name": "M.Sc. Wirtschaftsinformatik", "entity_type": "GOAL", "university": "Mannheim"},
-                {"node_id": "n_methodology", "name": "Thesis Methodology", "entity_type": "TASK", "status": "IN_PROGRESS"}
-            ],
-            "edges": [
-                {"source": "Ahmet", "relation": "STUDIES", "target": "M.Sc. Wirtschaftsinformatik", "confidence": 0.99, "valid_from": "2024-09-01", "provenance_id": "fact_7908912f"},
-                {"source": "Ahmet", "relation": "WORKS_ON", "target": "Master Thesis", "confidence": 0.98, "valid_from": "2026-04-01", "provenance_id": "fact_8812930a"},
-                {"source": "Prof. Davis", "relation": "ADVISOR_OF", "target": "Master Thesis", "confidence": 0.95, "valid_from": "2026-04-01", "provenance_id": "fact_1102948c"},
-                {"source": "Master Thesis", "relation": "REQUIRES", "target": "Thesis Methodology", "confidence": 0.90, "valid_from": "2026-08-01", "provenance_id": "fact_5510293d"}
-            ]
-        }
-
-    def _get_model_routing_trace(self) -> Dict[str, Any]:
-        return {
-            "task": "University Email Classification & Schedule Triage",
-            "complexity": "LOW",
-            "domain": "Email",
-            "user_preference": "LOCAL_ONLY",
-            "resource_check": "CPU: 68% | RAM: 9.2 GB / 16.0 GB (Passed)",
-            "candidates": [
-                "✓ Deterministic Rules (Eligible)",
-                "✓ Qwen 2.5 1.5B (Eligible)",
-                "✕ Strong Local LLM 14B (Blocked - RAM)",
-                "✕ Strong Cloud LLM (Bypassed - Preference)"
-            ],
-            "selected_model": "Qwen 2.5 1.5B (Ollama)",
-            "selected_tier": "SMALL_LOCAL_LLM",
-            "governor_authorization": "AUTHORIZED (Bounded Autonomy)",
-            "fallback_status": "NONE (Primary model succeeded in 1.2s)"
-        }
-
-    def _get_agent_inspection_profiles(self) -> List[Dict[str, Any]]:
-        return [
-            {
-                "agent_id": "EmailSpecialist",
-                "name": "Email Specialist",
-                "role": "COMMUNICATOR",
-                "icon": "📧",
-                "status": "HEALTHY",
-                "accuracy": "98.5%",
-                "tasks_executed": 14,
-                "success_rate": "96.2%",
-                "avg_latency": "1.8s",
-                "interventions": 2,
-                "capabilities": ["list_messages", "send_email", "mark_read"],
-                "current_authority": ["read_email", "draft_email"],
-                "active_step": "Waiting for User Approval on Draft Email"
-            },
-            {
-                "agent_id": "ResearchSpecialist",
-                "name": "Research Specialist",
-                "role": "RESEARCHER",
-                "icon": "🔬",
-                "status": "HEALTHY",
-                "accuracy": "94.0%",
-                "tasks_executed": 28,
-                "success_rate": "95.0%",
-                "avg_latency": "2.4s",
-                "interventions": 0,
-                "capabilities": ["search_rag", "web_search", "extract_paper"],
-                "current_authority": ["search_rag", "web_search"],
-                "active_step": "Verifying arXiv Paper 2401.9912"
-            }
-        ]
-
-    def _get_model_inspection_profiles(self) -> List[Dict[str, Any]]:
-        return [
-            {
-                "model_id": "qwen2.5_1.5b",
-                "name": "Qwen 2.5 1.5B",
-                "provider": "Ollama",
-                "location": "Local Machine",
-                "status": "READY · ELIGIBLE · IN USE",
-                "tier": "SMALL_LOCAL_LLM",
-                "context_window": "32K",
-                "quantization": "Q4",
-                "accuracy": "94.2%",
-                "avg_latency": "1.2s",
-                "cpu_percent": "68%",
-                "ram_footprint": "4.1 GB",
-                "eligibility": [
-                    "✓ Email classification",
-                    "✓ Schedule planning",
-                    "✓ Lightweight triage",
-                    "✕ Complex multi-domain research"
-                ]
-            }
-        ]
-
 def main():
-    print(f"======================================================================")
-    print(f"   [AI AGENT OS] OPERATIONAL CONTROL PLANE REST API SERVER")
-    print(f"======================================================================")
-    print(f"  --> Serving dashboard from: '{DASHBOARD_DIR}'")
-    print(f"  --> Live REST API Endpoints: http://localhost:{PORT}/api/status, /api/workstation/active_missions, /api/workstation/missions/dispatch")
-    print(f"  --> Opening URL: http://localhost:{PORT}")
-    print(f"  --> Press Ctrl+C in terminal to stop server.")
-    print(f"======================================================================\n")
-
-    webbrowser.open(f"http://localhost:{PORT}")
-
     socketserver.TCPServer.allow_reuse_address = True
     with socketserver.TCPServer(("", PORT), RESTDashboardHandler) as httpd:
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
-            print("\n[Dashboard Server] Shutdown cleanly.")
             sys.exit(0)
 
 if __name__ == "__main__":

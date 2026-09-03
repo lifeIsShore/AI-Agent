@@ -1,23 +1,60 @@
-# Secrets & Credentials
+# Secrets, Environment Variables & API Keys
 .env
+.env.*
 *.env
+!.env.example
+!.env.template
+
+# Credentials & OAuth Tokens
 credentials.json
+credentials*.json
 token.json
+tokens.json
+token*.json
+oauth*.json
+oauth2*.json
+client_secret*.json
+client_secrets*.json
+service_account*.json
+gcp*.json
+google*.json
+aws*.json
+azure*.json
+auth*.json
+secret*.json
+secrets*.json
+secrets.yaml
+secrets.yml
+
+# Keys, Certificates & Security Credentials
+*.key
+*.pem
+*.crt
+*.cer
+*.p12
+*.pfx
+*.csr
+*.asc
+*.gpg
+*.keystore
+*.jks
+id_rsa*
+id_ed25519*
+id_ecdsa*
+id_dsa*
+credentials/
+secrets/
+config/secrets/
+config/credentials/
 
 # Personal User Data, State & Telemetry
-data/events/
-data/logs/
-data/memory/
-data/state/
-data/telemetry/
-data/learning/
-data/reliability/
-data/workflows/
+data/
 user_data/
 rag_context/
 memory_store/
 *.db
 *.sqlite
+*.sqlite3
 *.jsonl
 
 # Temporary & Recovery Files
@@ -25,10 +62,20 @@ memory_store/
 *.corrupted
 *.log
 
-# Python Cache & Coverage
+# Python Cache & Environment
 __pycache__/
 *.py[cod]
 *$py.class
 .pytest_cache/
 .coverage
 htmlcov/
+.venv/
+venv/
+env/
+ENV/
+
+# IDE & OS Files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
