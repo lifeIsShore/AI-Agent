@@ -50,17 +50,18 @@ M.Sc. student in Wirtschaftsinformatik with a background in Business Information
 
 * **Programming:** Python, Java, C#, .NET, PL/SQL
 * **Data:** MySQL, MS SQL, MongoDB, Power BI, Excel
-* **AI/ML:** Machine Learning, NLP, RAG, Local LLMs, Agentic AI
-* **Cloud & DevOps:** Azure, Docker, DevOps
+* **AI/ML:** Bounded Agentic AI, Autonomous RAG, Multi-Agent Specialist Orchestration, Local LLMs, Safety Governors
+* **Cloud & DevOps:** Azure, Docker, DevOps, Git
 * **Web:** HTML, CSS, React, Flutter
 * **Enterprise:** SAP MM, CRM, IFS CRM
 
 ## Research & Projects
 
+* **Personal AI Agent Runtime (V1.0 — V5.0):**
+  Architected and built a local-first, bounded autonomous personal AI agent environment with deterministic safety governors, event-driven reactive/proactive planning, multi-agent specialist delegation, multimodal DOM/vision browser automation, adversarial red-team benchmarks (632 passing unit tests), and a bounded self-improvement pipeline.
 * Machine Learning for Financial Crime Prevention
 * Data-driven Private Equity investment analysis
 * Financial distress prediction using ML and NLP
-* Local RAG and personal AI-agent architectures
 * Real-estate machine learning and market analysis
 
 ## Languages
