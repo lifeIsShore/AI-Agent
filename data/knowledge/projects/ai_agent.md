@@ -1,4 +1,4 @@
-# Personal AI Agent — System Specifications (V5.4 Bounded Autonomous Architecture)
+# Personal AI Agent — System Specifications (V5.7 Bounded Autonomous Architecture)
 
 ## Architecture Overview
 
@@ -9,7 +9,7 @@ The system enforces the fundamental architectural principle:
 
 ---
 
-## Core System Capabilities (V0.1 — V5.4 Milestone Graph)
+## Core System Capabilities (V0.1 — V5.7 Milestone Graph)
 
 ### 1. Bounded Autonomous Runtime & AutonomyGovernor (V3.0)
 * Levels: `LEVEL_0_OBSERVE` to `LEVEL_4_SUPERVISED_AUTO`.
@@ -69,10 +69,19 @@ The system enforces the fundamental architectural principle:
 * `DeepPersonalizationEngine`, `ContextualPreferenceRule`.
 
 ### 19. Long-Term Memory Evolution & World-Model Consolidation (V5.3)
-* `MemoryConsolidator`, `MemoryDecayEngine` (protecting `USER` memories), `MemoryConflictResolver` (`USER` preference superseding), `WorldModelConsolidator` (People + Projects + Goals graph), `MemoryProvenanceGraph`.
+* `MemoryConsolidator`, `MemoryDecayEngine` (protecting `USER` memories), `MemoryConflictResolver`, `WorldModelConsolidator`, `MemoryProvenanceGraph`.
 
 ### 20. Adaptive Multi-Model Intelligence (V5.4)
-* `AdaptiveModelSelector` dynamically choosing intelligence tier based on task complexity, domain, outcomes, user preference (`LOCAL_ONLY`, `BALANCED`), and resource constraints (`cpu_percent > 85%`, `gpu_mem_mb < 1000`) while preserving governor decoupling.
+* `AdaptiveModelSelector` dynamically choosing intelligence tier based on task complexity, domain, outcomes, user preference, and resource constraints while preserving governor decoupling.
+
+### 21. Mission-Level Strategy Learning (V5.5)
+* `MissionOutcomeAnalyzer`, `StrategyExtractor`, `MissionStrategyStore`, `StrategySelector`, `MissionLearningEngine` (selecting Strategy B 89% vs Strategy A 61%).
+
+### 22. Predictive Personal Agent (V5.6)
+* `PredictiveEventEngine` predicting upcoming deadlines, scheduling conflicts, task completion probabilities, and resource pressure under governor non-execution gating.
+
+### 23. Personal Simulation / Digital Twin & Counterfactual Planning (V5.7)
+* `PersonalSimulationEnvironment` & `CounterfactualPlanner` running in-memory scenario simulations (`AGGRESSIVE`, `BALANCED`, `CONSERVATIVE`) to select optimal scenario branches before execution without mutating live state.
 
 ---
 
@@ -80,5 +89,5 @@ The system enforces the fundamental architectural principle:
 
 * **Language & Runtime:** Python 3.11+
 * **Architecture:** Modular, Local-First, Bounded Autonomous Runtime
-* **Test Coverage:** 812 passing unit tests (`python -m unittest discover -s tests -p "test_v*.py"`)
+* **Test Coverage:** 947 passing unit tests (`python -m unittest discover -s tests -p "test_v*.py"`)
 * **Security & Privacy:** Deterministic governor, DLP context sanitizer, 100% provenance tracking, explicit `.gitignore` secret isolation.

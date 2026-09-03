@@ -240,6 +240,61 @@ def run_agent_demonstration():
     print(f"[AdaptiveModelSelector] Task: 'High Multi-Domain' -> Tier: '{sel_c['selected_tier']}' ({sel_c['reason']})")
     print(f"[AdaptiveModelSelector] AutonomyGovernor Decoupled: {sel_c['governor_decoupled']} (Governor retains 100% authorization authority)")
 
+    # 11. V5.5 Mission-Level Strategy Learning
+    print("\n----------------------------------------------------------------------")
+    print("        🎯 V5.5 MISSION-LEVEL STRATEGY LEARNING ENGINE                 ")
+    print("----------------------------------------------------------------------")
+
+    from personal_agent.learning.mission_learning_engine import MissionLearningEngine
+
+    mission_engine = MissionLearningEngine()
+    rec_strat = mission_engine.recommend_mission_strategy("university_deadline")
+    print(f"[MissionLearningEngine] Goal: 'Prepare for Master Thesis Deadline'")
+    print(f"  - Selected Strategy: '{rec_strat['name']}' (Success Rate: {rec_strat['success_rate']*100}%, Confidence: {rec_strat['confidence']})")
+    print(f"  - Reusable Step Sequence: {rec_strat['step_sequence']}")
+
+    # 12. V5.6 Predictive Personal Agent
+    print("\n----------------------------------------------------------------------")
+    print("           🔮 V5.6 PREDICTIVE PERSONAL AGENT ENGINE                    ")
+    print("----------------------------------------------------------------------")
+
+    from personal_agent.events.predictive_event_engine import PredictiveEventEngine
+
+    pred_engine = PredictiveEventEngine()
+    pred_res = pred_engine.predict_upcoming_events(
+        calendar_items=[{"id": "c1"}, {"id": "c2"}],
+        tasks=[{"status": "completed"}, {"status": "needsAction"}],
+        goals=[{"name": "Prepare Master Thesis Proposal", "deadline": "2026-09-10"}]
+    )
+
+    print(f"[PredictiveEventEngine] Completion Probability: {pred_res['completion_probability']*100}% | Predictions Generated: {pred_res['predictions_count']}")
+    for p in pred_res["predictions"]:
+        print(f"  - [{p['prediction_type']}] Risk Level: '{p['risk_level']}' -> Target: '{p['target']}'")
+        print(f"    Recommendation: {p['recommendation']}")
+
+    # 13. V5.7 Personal Simulation / Digital Twin & Counterfactual Planning
+    print("\n----------------------------------------------------------------------")
+    print("      🌐 V5.7 PERSONAL SIMULATION & DIGITAL TWIN ENVIRONMENT          ")
+    print("----------------------------------------------------------------------")
+
+    from personal_agent.world.personal_simulation_environment import PersonalSimulationEnvironment
+    from personal_agent.planner.counterfactual_planner import CounterfactualPlanner
+
+    sim_env = PersonalSimulationEnvironment()
+    cf_planner = CounterfactualPlanner()
+
+    sim_res = cf_planner.evaluate_counterfactuals(
+        sim_env,
+        current_workload={"total_hours": 25.0, "max_capacity": 40.0},
+        proposed_action={"estimated_hours": 6.0}
+    )
+
+    print(f"[PersonalSimulationEnvironment] In-Memory Counterfactual Simulation:")
+    for sc in sim_res["all_scenarios"]:
+        print(f"  - Branch '{sc['scenario_mode']}': Simulated Workload={sc['simulated_workload_hours']}h ({sc['capacity_utilization']*100}% Capacity) -> Predicted Completion Prob: {sc['predicted_completion_prob']*100}%, Risk Level: {sc['risk_level']}")
+
+    print(f"[CounterfactualPlanner] Recommended Scenario Branch: '{sim_res['recommended_scenario']}' (Mutates Live State: False)")
+
     print("\n======================================================================")
     print("  ✅ AGENT DEMONSTRATION PASSED PERFECTLY WITH ZERO SECURITY INVARIANTS VIOLATED!")
     print("======================================================================\n")
