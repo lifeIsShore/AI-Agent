@@ -19,9 +19,14 @@ class AutonomyGovernor:
         action: str,
         target: str,
         risk: str,
-        autonomy_level: str
+        autonomy_level: str,
+        supervisor_state: str = None
     ) -> Tuple[bool, str]:
         """Final deterministic security gate authorizing or blocking autonomous actions."""
+        # 0. Supervisor State check (Hard Security Invariant: Non-RUNNING state blocks execution)
+        if supervisor_state and supervisor_state != "RUNNING":
+            return False, f"Autonomy Governor Denied: Supervisor state is '{supervisor_state}' (must be RUNNING)."
+
         # 1. KillSwitch check
         ks_ok, ks_msg = self.killswitch.is_action_permitted(action, "system.read")
         if not ks_ok:
