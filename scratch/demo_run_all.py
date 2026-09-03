@@ -127,6 +127,63 @@ def run_agent_demonstration():
     auth_unsafe, msg_unsafe = governor.authorize_proposal(unsafe_prop, sb_unsafe, user_approved=True)
     print(f"[ImprovementGovernor] Security Policy Check Result: {msg_unsafe}")
 
+    # 7. V5.1 Continuous Evaluation & Behavioral Drift Detection
+    print("\n----------------------------------------------------------------------")
+    print("        📊 V5.1 CONTINUOUS EVALUATION & DRIFT DETECTION PIPELINE       ")
+    print("----------------------------------------------------------------------")
+
+    from personal_agent.eval.continuous_evaluation_engine import ContinuousEvaluationEngine
+    from personal_agent.eval.performance_baseline_manager import PerformanceBaselineManager
+    from personal_agent.eval.behavioral_drift_detector import BehavioralDriftDetector
+    from personal_agent.eval.regression_monitor import RegressionMonitor
+    from personal_agent.learning.preference_drift_detector import PreferenceDriftDetector
+    from personal_agent.eval.model_drift_monitor import ModelDriftMonitor
+    from personal_agent.autonomy.safety_regression_monitor import SafetyRegressionMonitor
+
+    eval_engine = ContinuousEvaluationEngine()
+    baseline_mgr = PerformanceBaselineManager()
+    drift_detector = BehavioralDriftDetector()
+    regress_monitor = RegressionMonitor()
+    pref_drift_detector = PreferenceDriftDetector()
+    model_drift_monitor = ModelDriftMonitor()
+    safety_monitor = SafetyRegressionMonitor()
+
+    stream_eval = eval_engine.evaluate_telemetry_stream(telemetry_recs)
+    print(f"[ContinuousEvaluationEngine] Live Telemetry Evaluation: Status={stream_eval['eval_status']}, Sample Size={stream_eval['sample_size']}, Accuracy={stream_eval['current_accuracy']}")
+
+    email_baseline = baseline_mgr.get_baseline("EmailSpecialist")
+    drift_report = drift_detector.detect_behavioral_drift({"current_accuracy": 0.85, "current_user_acceptance": 0.70, "avg_tokens_per_task": 1400}, email_baseline)
+    print(f"[BehavioralDriftDetector] Drift Status: {'⚠️ DRIFT DETECTED' if drift_report['drift_detected'] else '✅ STABLE'}")
+    for reason in drift_report['drift_reasons']:
+        print(f"  - {reason}")
+
+    regress_res = regress_monitor.check_regression({"current_accuracy": 0.78})
+    print(f"[RegressionMonitor] Status: {'⚠️ REGRESSION ALERT' if regress_res['regression_detected'] else '✅ CLEAN'}")
+
+    pref_drift_res = pref_drift_detector.detect_preference_drift([{"source": "USER", "val": "morning"}])
+    print(f"[PreferenceDriftDetector] Drift Type: '{pref_drift_res['drift_type']}' ({pref_drift_res['explanation']})")
+
+    model_drift_res = model_drift_monitor.monitor_model_drift({"model_name": "Qwen_Local", "accuracy": 0.88})
+    print(f"[ModelDriftMonitor] Model: '{model_drift_res['model_name']}' -> Recommendation: '{model_drift_res['recommendation']}'")
+
+    safety_ok, safety_msg = safety_monitor.evaluate_safety_regression(baseline_violations=0, candidate_violations=1)
+    print(f"[SafetyRegressionMonitor] Decision: {'✅ PASSED' if safety_ok else '❌ HARD REJECT'} ({safety_msg})")
+
+    # 8. V5.2 Deep Contextual Personalization Engine
+    print("\n----------------------------------------------------------------------")
+    print("         🎯 V5.2 DEEP CONTEXTUAL PERSONALIZATION ENGINE               ")
+    print("----------------------------------------------------------------------")
+
+    from personal_agent.learning.deep_personalization_engine import DeepPersonalizationEngine, ContextualPreferenceRule
+
+    deep_engine = DeepPersonalizationEngine()
+    context_facts = {"task": "university_email", "sender": "Prof. Davis"}
+    matched_rule = deep_engine.evaluate_contextual_recommendation(context_facts)
+
+    print(f"[DeepPersonalizationEngine] Context Facts: {context_facts}")
+    print(f"  - Matched Rule ID: '{matched_rule.rule_id}' (Source: {matched_rule.source}, Confidence: {matched_rule.confidence})")
+    print(f"  - Recommendation:  '{matched_rule.action_recommendation}'")
+
     print("\n======================================================================")
     print("  ✅ AGENT DEMONSTRATION PASSED PERFECTLY WITH ZERO SECURITY INVARIANTS VIOLATED!")
     print("======================================================================\n")
