@@ -24,6 +24,11 @@ EVENT_ACTION_FAILED = "ACTION_FAILED"
 
 EVENT_MEMORY_UPDATED = "MEMORY_UPDATED"
 
+EVENT_GOAL_CHANGED = "GOAL_CHANGED"
+EVENT_DEADLINE_APPROACHING = "DEADLINE_APPROACHING"
+EVENT_SYSTEM_RESOURCE_WARNING = "SYSTEM_RESOURCE_WARNING"
+EVENT_RUNTIME_RECOVERED = "RUNTIME_RECOVERED"
+
 @dataclass
 class AgentEvent:
     event_type: str
@@ -33,6 +38,9 @@ class AgentEvent:
     event_id: str = field(default_factory=lambda: f"evt_{uuid.uuid4().hex[:12]}")
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     processed: bool = False
+    correlation_id: Optional[str] = None
+    priority: str = "NORMAL"
+    idempotency_key: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -46,5 +54,8 @@ class AgentEvent:
             entity_id=data.get("entity_id", "none"),
             payload=data.get("payload", {}),
             timestamp=data.get("timestamp", datetime.now(timezone.utc).isoformat()),
-            processed=data.get("processed", False)
+            processed=data.get("processed", False),
+            correlation_id=data.get("correlation_id"),
+            priority=data.get("priority", "NORMAL"),
+            idempotency_key=data.get("idempotency_key")
         )

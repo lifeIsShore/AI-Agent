@@ -4,8 +4,8 @@ from typing import List, Optional
 from personal_agent.events.event import AgentEvent
 
 class EventStore:
-    def __init__(self, events_dir: str = "data/events", log_filename: str = "events.jsonl"):
-        self.events_dir = events_dir
+    def __init__(self, events_dir: str = "data/events", log_filename: str = "events.jsonl", storage_dir: Optional[str] = None):
+        self.events_dir = storage_dir or events_dir
         os.makedirs(self.events_dir, exist_ok=True)
         self.events_file = os.path.join(self.events_dir, log_filename)
 
@@ -37,6 +37,9 @@ class EventStore:
             print(f"[EventStore] Error loading events: {e}")
 
         return events
+
+    def get_all_events(self) -> List[AgentEvent]:
+        return self.load_all_events()
 
     def get_unprocessed_events(self) -> List[AgentEvent]:
         """Returns all events currently marked processed == False."""
