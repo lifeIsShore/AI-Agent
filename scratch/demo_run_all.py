@@ -184,6 +184,62 @@ def run_agent_demonstration():
     print(f"  - Matched Rule ID: '{matched_rule.rule_id}' (Source: {matched_rule.source}, Confidence: {matched_rule.confidence})")
     print(f"  - Recommendation:  '{matched_rule.action_recommendation}'")
 
+    # 9. V5.3 Long-Term Memory Evolution & World-Model Consolidation
+    print("\n----------------------------------------------------------------------")
+    print("      🧠 V5.3 LONG-TERM MEMORY EVOLUTION & WORLD-MODEL CONSOLIDATION  ")
+    print("----------------------------------------------------------------------")
+
+    from personal_agent.memory.memory_consolidator import MemoryConsolidator
+    from personal_agent.memory.memory_decay_engine import MemoryDecayEngine
+    from personal_agent.memory.memory_conflict_resolver import MemoryConflictResolver
+    from personal_agent.world.world_model_consolidator import WorldModelConsolidator
+    from personal_agent.memory.memory_provenance_graph import MemoryProvenanceGraph
+
+    mem_consolidator = MemoryConsolidator()
+    mem_decay = MemoryDecayEngine()
+    conflict_resolver = MemoryConflictResolver()
+    world_consolidator = WorldModelConsolidator()
+    provenance_graph = MemoryProvenanceGraph()
+
+    obs_sample = [{"domain": "university", "pattern": "handle_afternoon"}] * 6
+    consolidated_mems = mem_consolidator.consolidate_observations(obs_sample, threshold=5)
+    print(f"[MemoryConsolidator] Consolidated {len(obs_sample)} observations -> {len(consolidated_mems)} Durable Fact: '{consolidated_mems[0]['durable_fact']}'")
+
+    decayed_mems = mem_decay.apply_decay([{"id": "m1", "source": "USER", "confidence": 1.0}, {"id": "m2", "source": "LEARNED", "confidence": 0.90}], days_passed=15)
+    print(f"[MemoryDecayEngine] Memory Decay Applied: USER memory='{decayed_mems[0]['decay_status']}', LEARNED memory='{decayed_mems[1]['decay_status']}' (Confidence: {decayed_mems[1]['confidence']})")
+
+    conflict_res = conflict_resolver.resolve_conflict({"id": "m_old", "source": "LEARNED", "val": "morning"}, {"id": "m_new", "source": "USER", "val": "afternoon"})
+    print(f"[MemoryConflictResolver] Resolution: '{conflict_res['resolution']}' (New USER preference supersedes '{conflict_res['supersedes']}')")
+
+    world_res = world_consolidator.consolidate_world_graph([{"id": "prof_davis", "name": "Prof. Davis"}, {"id": "thesis_proj", "name": "Master Thesis"}], [{"source_id": "prof_davis", "target_id": "thesis_proj", "relation_type": "ADVISOR"}])
+    print(f"[WorldModelConsolidator] Graph Consolidation: {world_res['total_entities']} Entities, {world_res['total_relationships']} Durable Edge ('Prof. Davis' -> ADVISOR -> 'Master Thesis')")
+
+    provenance_graph.add_memory_node(consolidated_mems[0]["durable_id"], "LEARNED", ["email_1", "email_2"], observations=6)
+    lineage = provenance_graph.get_lineage(consolidated_mems[0]["durable_id"])
+    print(f"[MemoryProvenanceGraph] Memory Node '{lineage['memory_id']}': Lineage Source='{lineage['source']}', Observations={lineage['observations']}")
+
+    # 10. V5.4 Adaptive Multi-Model Intelligence
+    print("\n----------------------------------------------------------------------")
+    print("         ⚡ V5.4 ADAPTIVE MULTI-MODEL INTELLIGENCE ENGINE             ")
+    print("----------------------------------------------------------------------")
+
+    from personal_agent.orchestration.adaptive_model_selector import AdaptiveModelSelector
+
+    adaptive_selector = AdaptiveModelSelector()
+
+    # Case A: Low complexity
+    sel_a = adaptive_selector.select_adaptive_model({"complexity": "low"}, {}, {}, {})
+    print(f"[AdaptiveModelSelector] Task: 'Simple Regex/Low' -> Tier: '{sel_a['selected_tier']}' ({sel_a['reason']})")
+
+    # Case B: Resource Constrained
+    sel_b = adaptive_selector.select_adaptive_model({"complexity": "medium"}, {}, {}, {"cpu_percent": 92})
+    print(f"[AdaptiveModelSelector] Task: 'Medium/CPU 92%' -> Tier: '{sel_b['selected_tier']}' ({sel_b['reason']})")
+
+    # Case C: High Complexity Multi-Domain Task
+    sel_c = adaptive_selector.select_adaptive_model({"complexity": "high"}, {}, {}, {"cpu_percent": 20})
+    print(f"[AdaptiveModelSelector] Task: 'High Multi-Domain' -> Tier: '{sel_c['selected_tier']}' ({sel_c['reason']})")
+    print(f"[AdaptiveModelSelector] AutonomyGovernor Decoupled: {sel_c['governor_decoupled']} (Governor retains 100% authorization authority)")
+
     print("\n======================================================================")
     print("  ✅ AGENT DEMONSTRATION PASSED PERFECTLY WITH ZERO SECURITY INVARIANTS VIOLATED!")
     print("======================================================================\n")
