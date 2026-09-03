@@ -10,18 +10,26 @@ from typing import Dict, Any, List
 PORT = 8085
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 DASHBOARD_DIR = os.path.join(PROJECT_ROOT, 'dashboard')
+DOCS_DIR = os.path.join(PROJECT_ROOT, 'docs')
 PROPOSALS_FILE = os.path.join(PROJECT_ROOT, 'data', 'runtime', 'proposals.json')
 SAVED_DECISIONS_FILE = os.path.join(PROJECT_ROOT, 'data', 'runtime', 'saved_decisions.json')
+
+# Global Server State
+SYSTEM_RUNNING = True
 
 class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=DASHBOARD_DIR, **kwargs)
 
     def do_GET(self):
+        global SYSTEM_RUNNING
         if self.path == '/api/status':
+            status_str = "SYSTEM RUNNING (BOUNDED_AUTO)" if SYSTEM_RUNNING else "SYSTEM STOPPED (HALTED)"
             self.send_json_response({
-                "status": "RUNNING",
-                "mode": "BOUNDED_AUTO",
+                "status": "RUNNING" if SYSTEM_RUNNING else "HALTED",
+                "mode": "BOUNDED_AUTO" if SYSTEM_RUNNING else "STOPPED",
+                "display_text": status_str,
+                "system_running": SYSTEM_RUNNING,
                 "version": "v7.7 (MULTI-SPECIALIST SYSTEM READY)",
                 "unit_tests_passing": 2297,
                 "cross_agent_missions_passing": "30/30",
@@ -29,8 +37,10 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
                 "hidden_scenarios_passing": "25/25",
                 "overall_reliability_index": "98.6%",
                 "safety_violations": 0.0,
-                "active_specialist_agents": 7
+                "active_specialist_agents": 5 if SYSTEM_RUNNING else 0
             })
+        elif self.path == '/api/documents/categories':
+            self.send_json_response(self._get_categorized_documents())
         elif self.path == '/api/proposals':
             proposals = self._load_real_proposals()
             self.send_json_response(proposals)
@@ -77,7 +87,17 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
             super().do_GET()
 
     def do_POST(self):
-        if self.path == '/api/hitl':
+        global SYSTEM_RUNNING
+        if self.path == '/api/system/toggle':
+            SYSTEM_RUNNING = not SYSTEM_RUNNING
+            status_str = "SYSTEM RUNNING (BOUNDED_AUTO)" if SYSTEM_RUNNING else "SYSTEM STOPPED (HALTED)"
+            print(f"[Dashboard API] Power Switch Toggled -> New State: {status_str}")
+            self.send_json_response({
+                "status": "SUCCESS",
+                "system_running": SYSTEM_RUNNING,
+                "display_text": status_str
+            })
+        elif self.path == '/api/hitl':
             content_length = int(self.headers.get('Content-Length', 0))
             body = self.rfile.read(content_length)
             try:
@@ -112,6 +132,26 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()
         self.wfile.write(body)
+
+    def _get_categorized_documents(self) -> Dict[str, Any]:
+        categories = ["coding", "research", "finance", "data", "writing"]
+        docs = {}
+        for cat in categories:
+            cat_dir = os.path.join(DOCS_DIR, cat)
+            docs[cat] = []
+            if os.path.exists(cat_dir):
+                for fname in os.listdir(cat_dir):
+                    if fname.endswith('.md'):
+                        fpath = os.path.join(cat_dir, fname)
+                        with open(fpath, 'r', encoding='utf-8') as f:
+                            content = f.read()
+                        docs[cat].append({
+                            "filename": fname,
+                            "path": fpath,
+                            "category": cat,
+                            "content": content
+                        })
+        return {"categories": docs}
 
     def _load_real_proposals(self) -> Dict[str, Any]:
         if os.path.exists(PROPOSALS_FILE):
@@ -477,7 +517,7 @@ def main():
     print(f"   [AI AGENT OS] OPERATIONAL CONTROL PLANE REST API SERVER")
     print(f"======================================================================")
     print(f"  --> Serving dashboard from: '{DASHBOARD_DIR}'")
-    print(f"  --> Live REST API Endpoints: http://localhost:{PORT}/api/status, /api/agents/specialists, /api/benchmarks/cross_agent")
+    print(f"  --> Live REST API Endpoints: http://localhost:{PORT}/api/status, /api/system/toggle, /api/documents/categories")
     print(f"  --> Opening URL: http://localhost:{PORT}")
     print(f"  --> Press Ctrl+C in terminal to stop server.")
     print(f"======================================================================\n")

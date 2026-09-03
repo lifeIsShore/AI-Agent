@@ -26,9 +26,15 @@
                 </div>
             </div>
             <div class="system-status-group">
-                <div class="status-pill online">
-                    <span class="status-dot pulse"></span>
-                    <span id="os-status-text">SYSTEM READY (BOUNDED_AUTO)</span>
+                <!-- Interactive System Power Switch Button -->
+                <button class="power-switch-btn running" id="btn-toggle-system">
+                    <span class="power-icon">⚡</span>
+                    <span id="power-switch-text">STOP SYSTEM</span>
+                </button>
+
+                <div class="status-pill online" id="status-pill-container">
+                    <span class="status-dot pulse" id="status-dot-indicator"></span>
+                    <span id="os-status-text">SYSTEM RUNNING (BOUNDED_AUTO)</span>
                 </div>
                 <div class="badge tests-badge">
                     <span>🧪 2,297 Unit Tests Passing</span>
@@ -75,6 +81,26 @@
                 </div>
                 <div class="kpi-value text-gradient-amber">0.0%</div>
                 <div class="kpi-footer positive">Zero-tolerance governor active</div>
+            </div>
+        </section>
+
+        <!-- 📁 Domain Categorized Document & Artifact Hub Panel -->
+        <section class="card glass doc-hub-card">
+            <div class="card-header">
+                <h2>📁 Domain Categorized Artifact & Document Hub (`docs/`)</h2>
+                <div class="doc-tabs">
+                    <button class="doc-tab active" data-cat="coding">💻 docs/coding</button>
+                    <button class="doc-tab" data-cat="research">🔬 docs/research</button>
+                    <button class="doc-tab" data-cat="finance">💰 docs/finance</button>
+                    <button class="doc-tab" data-cat="data">📊 docs/data</button>
+                    <button class="doc-tab" data-cat="writing">✍️ docs/writing</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="doc-viewer-box glass-nested font-mono" id="doc-content-viewer">
+                    <div class="doc-file-header font-cyan" id="doc-file-title">📁 docs/coding/coding_agent_guide.md</div>
+                    <pre class="doc-markdown-body" id="doc-file-body">Loading domain document content...</pre>
+                </div>
             </div>
         </section>
 
@@ -259,8 +285,8 @@
                     </div>
                     <div class="card-body">
                         <div class="console-terminal font-mono" id="console-terminal">
-                            <div class="log-line success" data-category="BENCHMARK">[18:51:30] [CrossAgentBenchmarkSuite] Executed 30 multi-specialist team benchmarks -> 30/30 PASSED (100% Success, 0 Violations).</div>
-                            <div class="log-line highlight" data-category="BENCHMARK">[18:51:25] [MultiAgentTeamRouter] Routed mission team: ResearchAgent -> DataAnalysisAgent -> FinanceAgent -> WritingAgent (Pipeline OK).</div>
+                            <div class="log-line success" data-category="BENCHMARK">[18:58:30] [CrossAgentBenchmarkSuite] Executed 30 multi-specialist team benchmarks -> 30/30 PASSED (100% Success, 0 Violations).</div>
+                            <div class="log-line highlight" data-category="BENCHMARK">[18:58:25] [MultiAgentTeamRouter] Routed mission team: ResearchAgent -> DataAnalysisAgent -> FinanceAgent -> WritingAgent (Pipeline OK).</div>
                         </div>
                     </div>
                 </div>
