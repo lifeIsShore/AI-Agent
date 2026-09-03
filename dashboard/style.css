@@ -59,7 +59,7 @@ body {
 
 .logo-text h1 {
     font-family: var(--font-outfit);
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 700;
 }
 
@@ -72,6 +72,9 @@ body {
 .font-amber { color: var(--accent-amber); }
 .font-rose { color: var(--accent-rose); }
 .font-muted { color: var(--text-muted); }
+.font-outfit { font-family: var(--font-outfit); }
+.font-inter { font-family: var(--font-inter); }
+.font-mono { font-family: var(--font-mono); }
 
 .system-status-group { display: flex; align-items: center; gap: 16px; }
 .status-pill { display: flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--accent-emerald); }
@@ -143,10 +146,16 @@ body {
 .card-body { display: flex; flex-direction: column; gap: 12px; }
 
 /* Agent Collaboration Mesh */
-.collab-stream { background: #050811; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 12px; font-size: 11px; display: flex; flex-direction: column; gap: 10px; height: 180px; overflow-y: auto; }
+.collab-stream { background: #050811; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 12px; font-size: 11px; display: flex; flex-direction: column; gap: 10px; height: 160px; overflow-y: auto; }
 .collab-msg { display: flex; flex-direction: column; gap: 2px; }
 .c-agent { font-weight: 600; }
 .c-content { color: var(--text-main); font-style: italic; }
+
+/* Persistent Research Monitor */
+.research-status-box { display: flex; flex-direction: column; gap: 6px; font-size: 11px; }
+.r-topic { font-size: 12px; font-weight: 600; color: var(--text-main); }
+.r-stats { font-size: 11px; }
+.r-alert { font-size: 11px; font-weight: 500; margin-top: 4px; }
 
 /* Attention Economy Queue */
 .attention-list { display: flex; flex-direction: column; gap: 10px; }
@@ -157,13 +166,18 @@ body {
 .att-score { font-size: 10px; color: var(--text-muted); }
 .att-desc { font-size: 11px; }
 
-/* Decision Center */
+/* Decision Center & Interactive Cards */
 .section-desc { font-size: 12px; color: var(--text-muted); }
 .decision-options { display: flex; flex-direction: column; gap: 10px; }
-.decision-card { padding: 10px 12px; background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 8px; display: flex; flex-direction: column; gap: 4px; }
-.decision-card.selected { border-color: var(--accent-emerald); background: rgba(16, 185, 129, 0.08); }
+.decision-card { padding: 12px; background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 10px; display: flex; flex-direction: column; gap: 4px; cursor: pointer; transition: border-color 0.2s ease, background 0.2s ease; }
+.decision-card:hover { border-color: var(--accent-cyan); }
+.decision-card.selected { border-color: var(--accent-emerald); background: rgba(16, 185, 129, 0.12); box-shadow: 0 0 12px rgba(16, 185, 129, 0.2); }
 .dec-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 600; }
 .dec-prob { font-size: 11px; }
+.decision-controls { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+.btn-save-decision { background: linear-gradient(135deg, #10b981, #06b6d4); color: #000; font-size: 11px; font-weight: 700; padding: 8px 14px; border-radius: 8px; border: none; cursor: pointer; }
+.btn-save-decision:hover { filter: brightness(1.1); }
+.decision-save-toast { font-size: 11px; font-weight: 600; opacity: 1; transition: opacity 0.5s ease; }
 
 /* Subsystem Health Tree */
 .subsystem-health-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; font-size: 11px; }
@@ -171,12 +185,15 @@ body {
 .h-dot { width: 6px; height: 6px; border-radius: 50%; }
 .h-dot.green { background: var(--accent-emerald); }
 
-/* Authority Grants */
+/* Authority Grants & Clickable Inspector Cards */
 .agent-authority-list { display: flex; flex-direction: column; gap: 10px; }
 .authority-card { padding: 10px 12px; background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 8px; display: flex; flex-direction: column; gap: 4px; }
+.authority-card.clickable { cursor: pointer; transition: border-color 0.2s ease, transform 0.1s ease; }
+.authority-card.clickable:hover { border-color: var(--accent-purple); transform: translateX(2px); }
 .auth-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; }
 .auth-badge.allowed { font-size: 9px; font-weight: 700; color: var(--accent-emerald); background: rgba(16, 185, 129, 0.15); padding: 2px 6px; border-radius: 4px; }
 .auth-tools { font-size: 10px; display: flex; flex-direction: column; gap: 2px; }
+.auth-tools code { background: rgba(255, 255, 255, 0.08); padding: 1px 4px; border-radius: 3px; color: var(--accent-cyan); }
 
 /* Structured Console & Filter Bar */
 .console-card { min-height: 280px; }
@@ -192,3 +209,23 @@ body {
 .log-line.success { color: #34d399; }
 .log-line.warning { color: #fbbf24; }
 .log-line.highlight { color: #38bdf8; font-weight: 600; }
+
+/* Specialist Inspector Modal Overlay */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 1000; transition: opacity 0.2s ease; }
+.modal-overlay.hidden { display: none; }
+.modal-card { width: 540px; padding: 24px; display: flex; flex-direction: column; gap: 18px; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; }
+.modal-title-group { display: flex; align-items: center; gap: 12px; }
+.modal-icon { font-size: 28px; }
+.modal-title { font-size: 18px; font-weight: 700; color: var(--text-main); }
+.modal-close-btn { background: transparent; border: none; font-size: 24px; color: var(--text-muted); cursor: pointer; }
+.modal-close-btn:hover { color: var(--accent-rose); }
+.modal-body { display: flex; flex-direction: column; gap: 14px; }
+.modal-stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; background: rgba(0, 0, 0, 0.3); padding: 12px; border-radius: 10px; font-size: 11px; }
+.m-stat { display: flex; justify-content: space-between; }
+.m-label { color: var(--text-muted); }
+.m-val { font-weight: 600; }
+.modal-section { display: flex; flex-direction: column; gap: 6px; }
+.modal-section h4 { font-size: 12px; font-weight: 600; }
+.tool-tags { font-size: 11px; color: var(--text-main); }
+.tool-tags code { background: rgba(255, 255, 255, 0.08); padding: 2px 6px; border-radius: 4px; color: var(--accent-cyan); }

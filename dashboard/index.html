@@ -11,17 +11,16 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Multi-Version Navbar Header -->
+        <!-- Streamlined Control Plane Navbar Header -->
         <header class="navbar glass">
             <div class="logo-group">
                 <div class="logo-icon">🤖</div>
                 <div class="logo-text">
-                    <h1>Personal AI Agent OS</h1>
+                    <h1>PERSONAL AI AGENT OS — CONTROL PLANE V6.5</h1>
                     <div class="arch-breadcrumbs">
-                        <span class="version-chip font-cyan">Architecture: V6.2+</span>
-                        <span class="version-chip font-purple">Control Plane: V6.3</span>
-                        <span class="version-chip font-emerald">Runtime: V6.0</span>
-                        <span class="version-chip font-amber">Safety: Governor V4.1+</span>
+                        <span class="version-chip font-cyan">Runtime V6.0</span>
+                        <span class="version-chip font-purple">World Model V6.1</span>
+                        <span class="version-chip font-amber">Safety Governor V4.1+</span>
                     </div>
                 </div>
             </div>
@@ -31,12 +30,12 @@
                     <span id="os-status-text">SYSTEM RUNNING (BOUNDED_AUTO)</span>
                 </div>
                 <div class="badge tests-badge">
-                    <span>🧪 1,307 Unit Tests Passing</span>
+                    <span>🧪 1,352 Unit Tests Passing</span>
                 </div>
             </div>
         </header>
 
-        <!-- Primary Performance Headline Row (Mission Completion & Zero Safety Violations) -->
+        <!-- Primary Performance Headline Row -->
         <section class="kpi-row">
             <div class="kpi-card glass">
                 <div class="kpi-header">
@@ -71,7 +70,7 @@
                     <span class="kpi-icon">🎯</span>
                 </div>
                 <div class="kpi-value text-gradient-purple">94.2%</div>
-                <div class="kpi-footer positive">Verified across 31 milestones</div>
+                <div class="kpi-footer positive">Verified across 32 milestones</div>
             </div>
         </section>
 
@@ -172,6 +171,26 @@
                     </div>
                 </div>
 
+                <!-- Persistent Autonomous Research Monitor (V6.6) -->
+                <div class="card glass">
+                    <div class="card-header">
+                        <h2>🔬 Persistent Autonomous Research (V6.6)</h2>
+                        <span class="pill-badge purple">Continuous Scan</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="research-status-box glass-nested">
+                            <div class="r-topic font-outfit"><strong>Domain:</strong> Autonomous Agent Governance</div>
+                            <div class="r-stats font-muted">
+                                <span>Candidates: <strong>17</strong></span> |
+                                <span>Verified: <strong class="font-emerald">8</strong></span> |
+                                <span>Novel: <strong class="font-cyan">3</strong></span> |
+                                <span>Contradictions: <strong class="font-amber">1</strong></span>
+                            </div>
+                            <div class="r-alert font-amber">⚠️ Paper <em>arXiv:2401.9912</em> flags contradiction with fixed drift window limits. Review recommended.</div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Agent Attention Economy Queue (V6.3) -->
                 <div class="card glass">
                     <div class="card-header">
@@ -207,10 +226,10 @@
 
             </div>
 
-            <!-- Column 2: Decision Center & Subsystem Health -->
+            <!-- Column 2: Interactive Decision Center & Subsystem Health -->
             <div class="grid-column">
 
-                <!-- Personal Decision Intelligence Center (V6.4) -->
+                <!-- Personal Decision Intelligence Center (V6.4 Interactive) -->
                 <div class="card glass">
                     <div class="card-header">
                         <h2>🧭 Decision Intelligence Center (V6.4)</h2>
@@ -218,28 +237,38 @@
                     </div>
                     <div class="card-body">
                         <p class="section-desc">Problem: <em>Thesis research taking longer than estimated (+2.4x duration overrun).</em></p>
-                        <div class="decision-options">
-                            <div class="decision-card">
+                        
+                        <!-- Interactive Option Cards -->
+                        <div class="decision-options" id="decision-options-container">
+                            <div class="decision-card" data-option-id="opt_a">
                                 <div class="dec-header">
                                     <span class="dec-name">Option A — Continue Current Plan</span>
                                     <span class="risk-pill high font-rose">HIGH RISK</span>
                                 </div>
                                 <div class="dec-prob font-muted">Completion Prob: 72% | Impact: High risk of missing deadline.</div>
                             </div>
-                            <div class="decision-card selected">
+
+                            <div class="decision-card selected" data-option-id="opt_b">
                                 <div class="dec-header">
                                     <span class="dec-name">Option B — Reduce Secondary Workload ⭐</span>
                                     <span class="risk-pill low font-emerald">LOW RISK</span>
                                 </div>
                                 <div class="dec-prob font-muted">Completion Prob: 84% | Impact: Frees 6 focus hours. Recommended.</div>
                             </div>
-                            <div class="decision-card">
+
+                            <div class="decision-card" data-option-id="opt_c">
                                 <div class="dec-header">
                                     <span class="dec-name">Option C — Move Research Deadline</span>
                                     <span class="risk-pill low font-emerald">LOW RISK</span>
                                 </div>
                                 <div class="dec-prob font-muted">Completion Prob: 91% | Impact: Requires advisor notification email.</div>
                             </div>
+                        </div>
+
+                        <!-- Decision Save Controls & Confirmation -->
+                        <div class="decision-controls">
+                            <button class="btn btn-save-decision" id="btn-save-decision">Save & Apply Selected Decision</button>
+                            <span class="decision-save-toast font-emerald" id="decision-save-toast">✓ Option B Saved & Applied to Governor</span>
                         </div>
                     </div>
                 </div>
@@ -261,7 +290,7 @@
                             <div class="health-item"><span class="h-dot green"></span> <span>MemoryConsolidator</span></div>
                             <div class="health-item"><span class="h-dot green"></span> <span>WorldModelGraph</span></div>
                             <div class="health-item"><span class="h-dot green"></span> <span>EventBusStore</span></div>
-                            <div class="health-item"><span class="h-dot green"></span> <span>AutonomousResearch</span></div>
+                            <div class="health-item"><span class="h-dot green"></span> <span>PersistentResearch</span></div>
                             <div class="health-item"><span class="h-dot green"></span> <span>BrowserSpecialist</span></div>
                             <div class="health-item"><span class="h-dot green"></span> <span>ContinuousPlanner</span></div>
                             <div class="health-item"><span class="h-dot green"></span> <span>DLPContextSanitizer</span></div>
@@ -272,18 +301,18 @@
 
             </div>
 
-            <!-- Column 3: Specialist Roster (Capabilities vs Authority) & Structured Console -->
+            <!-- Column 3: Specialist Agent Inspector & Console -->
             <div class="grid-column">
 
-                <!-- Specialist Agents Mesh (Capability vs Authority UI) -->
+                <!-- Interactive Specialist Agent Mesh (Click card to Inspect) -->
                 <div class="card glass">
                     <div class="card-header">
                         <h2>🤖 Specialist Mesh & Authority Grants</h2>
-                        <span class="pill-badge blue">Decoupled Authority</span>
+                        <span class="pill-badge blue">Click Agent to Inspect</span>
                     </div>
                     <div class="card-body">
-                        <div class="agent-authority-list">
-                            <div class="authority-card">
+                        <div class="agent-authority-list" id="agent-authority-list">
+                            <div class="authority-card clickable" data-agent-id="EmailSpecialist">
                                 <div class="auth-header">
                                     <span class="agent-name">📧 EmailSpecialist</span>
                                     <span class="auth-badge allowed">AUTHORITY: ALLOWED</span>
@@ -294,7 +323,7 @@
                                 </div>
                             </div>
 
-                            <div class="authority-card">
+                            <div class="authority-card clickable" data-agent-id="ResearchSpecialist">
                                 <div class="auth-header">
                                     <span class="agent-name">🔬 ResearchSpecialist</span>
                                     <span class="auth-badge allowed">AUTHORITY: ALLOWED</span>
@@ -304,11 +333,22 @@
                                     <span>Current Grant: <code>search_rag</code>, <code>web_search</code></span>
                                 </div>
                             </div>
+
+                            <div class="authority-card clickable" data-agent-id="PlanningSpecialist">
+                                <div class="auth-header">
+                                    <span class="agent-name">📝 PlanningSpecialist</span>
+                                    <span class="auth-badge allowed">AUTHORITY: ALLOWED</span>
+                                </div>
+                                <div class="auth-tools font-muted">
+                                    <span>Capabilities: <code>create_task</code>, <code>continuous_plan</code>, <code>arbitrate</code></span>
+                                    <span>Current Grant: <code>create_task</code>, <code>continuous_plan</code></span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Structured & Chronological Log Terminal with Filters -->
+                <!-- Structured Log Terminal with Filters -->
                 <div class="card glass console-card">
                     <div class="card-header">
                         <h2>📟 Structured Event Console</h2>
@@ -328,11 +368,11 @@
                     </div>
                     <div class="card-body">
                         <div class="console-terminal font-mono" id="console-terminal">
-                            <div class="log-line info" data-category="SECURITY">[18:12:40] [AutonomyGovernor] RISK: LOW | Autonomy: BOUNDED_AUTO -> Action 'list_messages' PERMITTED (Provenance: fact_7908912f)</div>
-                            <div class="log-line success" data-category="ACTION">[18:12:35] [EmailSpecialist] Executed tool 'list_messages' -> 2 unread inbox messages found.</div>
-                            <div class="log-line highlight" data-category="RESEARCH">[18:12:30] [ResearchSpecialist] Verified arXiv paper '2401.12345' (Conf: 92%) -> Ingested into RAG index.</div>
-                            <div class="log-line warning" data-category="DECISION">[18:12:25] [DecisionIntelligenceEngine] Formulated 3 trade-off options. Recommended: Option B (84% prob).</div>
-                            <div class="log-line info" data-category="ACTION">[18:12:20] [LongHorizonMissionControl] Mission '🎓 Master Thesis' progress updated to 76% (Predicted completion: Nov 24).</div>
+                            <div class="log-line info" data-category="SECURITY">[18:19:00] [AutonomyGovernor] RISK: LOW | Autonomy: BOUNDED_AUTO -> Action 'list_messages' PERMITTED (Provenance: fact_7908912f)</div>
+                            <div class="log-line success" data-category="ACTION">[18:18:55] [EmailSpecialist] Executed tool 'list_messages' -> 2 unread inbox messages found.</div>
+                            <div class="log-line highlight" data-category="RESEARCH">[18:18:50] [PersistentResearchEngine] Continuous scan: Paper 'arXiv:2401.9912' ingested into knowledge graph.</div>
+                            <div class="log-line warning" data-category="DECISION">[18:18:45] [DecisionIntelligenceEngine] User selected Option B. Saved to data/runtime/saved_decisions.json.</div>
+                            <div class="log-line info" data-category="ACTION">[18:18:40] [LongHorizonMissionControl] Mission '🎓 Master Thesis' progress updated to 76% (Predicted completion: Nov 24).</div>
                         </div>
                     </div>
                 </div>
@@ -341,6 +381,42 @@
 
         </main>
     </div>
+
+    <!-- Specialist Inspector Modal Dialog -->
+    <div class="modal-overlay hidden" id="agent-modal-overlay">
+        <div class="modal-card glass">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <span class="modal-icon" id="modal-agent-icon">📧</span>
+                    <h3 class="modal-title font-outfit" id="modal-agent-name">EmailSpecialist Inspector</h3>
+                </div>
+                <button class="modal-close-btn" id="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body font-inter">
+                <div class="modal-stat-grid font-mono">
+                    <div class="m-stat"><span class="m-label">Status:</span> <span class="m-val font-emerald" id="modal-agent-status">HEALTHY</span></div>
+                    <div class="m-stat"><span class="m-label">Role:</span> <span class="m-val font-cyan" id="modal-agent-role">COMMUNICATOR</span></div>
+                    <div class="m-stat"><span class="m-label">Accuracy:</span> <span class="m-val font-purple" id="modal-agent-accuracy">98.5%</span></div>
+                    <div class="m-stat"><span class="m-label">Tasks Executed:</span> <span class="m-val" id="modal-agent-tasks">14</span></div>
+                    <div class="m-stat"><span class="m-label">Success Rate:</span> <span class="m-val font-emerald" id="modal-agent-success">96.2%</span></div>
+                    <div class="m-stat"><span class="m-label">Avg Latency:</span> <span class="m-val font-amber" id="modal-agent-latency">1.8s</span></div>
+                </div>
+                <div class="modal-section">
+                    <h4 class="font-outfit font-cyan">Technical Capabilities (Tools)</h4>
+                    <div class="tool-tags font-mono" id="modal-agent-capabilities"><code>list_messages</code>, <code>send_email</code>, <code>mark_read</code></div>
+                </div>
+                <div class="modal-section">
+                    <h4 class="font-outfit font-emerald">Current Mission Authority Grants</h4>
+                    <div class="tool-tags font-mono" id="modal-agent-authority"><code>read_email</code>, <code>draft_email</code></div>
+                </div>
+                <div class="modal-section">
+                    <h4 class="font-outfit font-amber">Active Step</h4>
+                    <p class="font-muted" id="modal-agent-active-step">Waiting for User Approval on Draft Email</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="app.js"></script>
 </body>
 </html>
