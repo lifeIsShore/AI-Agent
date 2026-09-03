@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal AI Agent OS — Operational Control Plane (V6.7)</title>
+    <title>Personal AI Agent OS — Operational Control Plane (V6.8)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -16,12 +16,12 @@
             <div class="logo-group">
                 <div class="logo-icon">🤖</div>
                 <div class="logo-text">
-                    <h1>PERSONAL AI AGENT OS — CONTROL PLANE V6.7</h1>
+                    <h1>PERSONAL AI AGENT OS — CONTROL PLANE V6.8</h1>
                     <div class="arch-breadcrumbs">
                         <span class="version-chip font-cyan">Runtime V6.0</span>
-                        <span class="version-chip font-purple">Knowledge Graph V6.7</span>
+                        <span class="version-chip font-purple">Knowledge Graph V6.7.1</span>
                         <span class="version-chip font-amber">Safety Governor V4.1+</span>
-                        <span class="version-chip font-emerald">Model Router V6.6.1</span>
+                        <span class="version-chip font-emerald">Workload Model V6.8</span>
                     </div>
                 </div>
             </div>
@@ -31,7 +31,7 @@
                     <span id="os-status-text">SYSTEM RUNNING (BOUNDED_AUTO)</span>
                 </div>
                 <div class="badge tests-badge">
-                    <span>🧪 1,442 Unit Tests Passing</span>
+                    <span>🧪 1,532 Unit Tests Passing</span>
                 </div>
             </div>
         </header>
@@ -72,6 +72,52 @@
                 </div>
                 <div class="kpi-value text-gradient-amber">0.0%</div>
                 <div class="kpi-footer positive">Zero-tolerance governor active</div>
+            </div>
+        </section>
+
+        <!-- 🔮 Predictive Personal Workload Forecast Panel (V6.8) -->
+        <section class="card glass workload-forecast-card">
+            <div class="card-header">
+                <h2>🔮 Predictive Personal Workload & Capacity Forecast (V6.8)</h2>
+                <div class="workload-badges">
+                    <span class="pill-badge amber">14-Day Forecast</span>
+                    <span class="risk-pill high font-rose">OVERLOAD RISK: HIGH (118%)</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="workload-grid">
+                    <div class="workload-stat-box glass-nested">
+                        <div class="w-stat-top">
+                            <span class="w-label font-muted">Available Capacity:</span>
+                            <span class="w-val font-emerald">52.0 Hours</span>
+                        </div>
+                        <div class="w-stat-top">
+                            <span class="w-label font-muted">Committed Calendar:</span>
+                            <span class="w-val font-cyan">31.0 Hours</span>
+                        </div>
+                        <div class="w-stat-top">
+                            <span class="w-label font-muted">Expected Interruptions:</span>
+                            <span class="w-val font-amber">7.0 Hours</span>
+                        </div>
+                        <div class="w-stat-top">
+                            <span class="w-label font-muted">Mission Workload:</span>
+                            <span class="w-val font-purple">26.0 Hours</span>
+                        </div>
+                        <div class="w-stat-total font-mono">
+                            <span>Projected Demand: <strong class="font-rose">64.0 Hours</strong> (Overload: +12.0h)</span>
+                        </div>
+                    </div>
+
+                    <div class="workload-insight-box glass-nested">
+                        <div class="w-insight-title font-amber">⚠️ Predicted Workload Bottleneck</div>
+                        <div class="w-insight-desc font-inter">
+                            Mission <strong>Master Thesis Methodology</strong> is projected to overrun by 2.4x duration due to literature research depth.
+                        </div>
+                        <div class="w-intervention font-emerald font-mono">
+                            Recommended Action: <em>Defer secondary low-priority tasks to free 9.0 focus hours.</em>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -141,10 +187,10 @@
         <!-- Main Dashboard Content Grid -->
         <main class="dashboard-grid">
 
-            <!-- Column 1: LLM Orchestration Center (3-Dimension Telemetry) -->
+            <!-- Column 1: LLM Orchestration Center -->
             <div class="grid-column">
 
-                <!-- 🧠 LLM Orchestration Panel (3-Dimension States) -->
+                <!-- 🧠 LLM Orchestration Panel -->
                 <div class="card glass">
                     <div class="card-header">
                         <h2>🧠 LLM Orchestration (3D Telemetry)</h2>
@@ -214,7 +260,7 @@
                     </div>
                 </div>
 
-                <!-- Explainable Model Routing Inspector (Clickable to open Trace Modal) -->
+                <!-- Explainable Model Routing Inspector -->
                 <div class="card glass">
                     <div class="card-header">
                         <h2>🧭 Model Routing Inspector</h2>
@@ -244,39 +290,39 @@
             <!-- Column 2: Personal Knowledge Graph 2.0 & Decision Center -->
             <div class="grid-column">
 
-                <!-- Personal Knowledge Graph 2.0 Panel (V6.7) -->
+                <!-- Personal Knowledge Graph 2.0 Panel (V6.7.1 Interval Temporal) -->
                 <div class="card glass">
                     <div class="card-header">
-                        <h2>🌐 Personal Knowledge Graph 2.0 (V6.7)</h2>
-                        <span class="pill-badge purple">Multi-Hop Temporal Graph</span>
+                        <h2>🌐 Personal Knowledge Graph 2.0 (V6.7.1)</h2>
+                        <span class="pill-badge purple">Interval Temporal & Provenance</span>
                     </div>
                     <div class="card-body">
                         <div class="kg-container font-mono">
                             <div class="kg-node-row">
                                 <span class="kg-node person font-cyan">Ahmet</span>
-                                <span class="kg-arrow">──[STUDIES (0.99)]──►</span>
-                                <span class="kg-node goal font-purple">M.Sc. Wirtschaftsinformatik</span>
+                                <span class="kg-arrow">──[STUDIES (valid: 2024-09)]──►</span>
+                                <span class="kg-node goal font-purple">M.Sc. Mannheim</span>
                             </div>
                             <div class="kg-node-row">
                                 <span class="kg-node person font-cyan">Ahmet</span>
-                                <span class="kg-arrow">──[WORKS_ON (0.98)]──►</span>
+                                <span class="kg-arrow">──[WORKS_ON (valid: 2026-04)]──►</span>
                                 <span class="kg-node project font-emerald">Master Thesis</span>
                             </div>
                             <div class="kg-node-row">
                                 <span class="kg-node person font-amber">Prof. Davis</span>
-                                <span class="kg-arrow">──[ADVISOR_OF (0.95)]──►</span>
+                                <span class="kg-arrow">──[ADVISOR_OF (valid: 2026-04)]──►</span>
                                 <span class="kg-node project font-emerald">Master Thesis</span>
                             </div>
                             <div class="kg-node-row">
                                 <span class="kg-node project font-emerald">Master Thesis</span>
-                                <span class="kg-arrow">──[REQUIRES (0.90)]──►</span>
+                                <span class="kg-arrow">──[REQUIRES (valid: 2026-08)]──►</span>
                                 <span class="kg-node task font-rose">Thesis Methodology</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Personal Decision Intelligence Center (V6.4 Interactive) -->
+                <!-- Personal Decision Intelligence Center -->
                 <div class="card glass">
                     <div class="card-header">
                         <h2>🧭 Decision Intelligence Center (V6.4)</h2>
@@ -299,7 +345,7 @@
                                     <span class="dec-name">Option B — Reduce Secondary Workload ⭐</span>
                                     <span class="risk-pill low font-emerald">LOW RISK</span>
                                 </div>
-                                <div class="dec-prob font-muted">Completion Prob: 84% | Impact: Frees 6 focus hours. Recommended.</div>
+                                <div class="dec-prob font-muted">Completion Prob: 84% | Impact: Frees 9 focus hours. Recommended.</div>
                             </div>
 
                             <div class="decision-card" data-option-id="opt_c">
@@ -371,14 +417,14 @@
                         <button class="filter-btn" data-filter="ACTION">Actions</button>
                         <button class="filter-btn" data-filter="SECURITY">Security</button>
                         <button class="filter-btn" data-filter="LLM">🧠 LLM</button>
-                        <button class="filter-btn" data-filter="RESEARCH">Research</button>
+                        <button class="filter-btn" data-filter="WORKLOAD">🔮 Workload</button>
                     </div>
                     <div class="card-body">
                         <div class="console-terminal font-mono" id="console-terminal">
-                            <div class="log-line info" data-category="SECURITY">[18:26:00] [AutonomyGovernor] RISK: LOW | Autonomy: BOUNDED_AUTO -> Action 'list_messages' PERMITTED (Provenance: fact_7908912f)</div>
-                            <div class="log-line highlight" data-category="LLM">[18:25:55] [EmailSpecialist] [MODEL:qwen2.5:1.5b] [ROUTER:SMALL_LOCAL_LLM] [TOKENS:412] [1.2s] Executed tool 'list_messages' -> 2 unread messages found.</div>
-                            <div class="log-line success" data-category="LLM">[18:25:50] [PlanningSpecialist] [MODEL:DETERMINISTIC_RULES] [ROUTER:RULE_ENGINE] [4ms] Evaluated schedule rules -> LLM CALL AVOIDED</div>
-                            <div class="log-line highlight" data-category="RESEARCH">[18:25:45] [PersonalKnowledgeGraph2] Traversed multi-hop entity graph for 'n_thesis' -> Provenance fact_7908912f verified.</div>
+                            <div class="log-line info" data-category="SECURITY">[18:30:00] [AutonomyGovernor] RISK: LOW | Autonomy: BOUNDED_AUTO -> Action 'list_messages' PERMITTED (Provenance: fact_7908912f)</div>
+                            <div class="log-line highlight" data-category="WORKLOAD">[18:29:55] [PredictiveWorkloadModel] 14-day forecast evaluated: Demand 64h vs Capacity 52h -> Overload Risk HIGH (118%).</div>
+                            <div class="log-line success" data-category="LLM">[18:29:50] [PlanningSpecialist] [MODEL:DETERMINISTIC_RULES] [ROUTER:RULE_ENGINE] [4ms] Evaluated schedule rules -> LLM CALL AVOIDED</div>
+                            <div class="log-line highlight" data-category="RESEARCH">[18:29:45] [PersonalKnowledgeGraph2] Validated active edge 'n_davis' -> 'ADVISOR_OF' (valid_from: 2026-04-01).</div>
                         </div>
                     </div>
                 </div>
@@ -420,10 +466,6 @@
                     <div class="t-step-title font-emerald">4. SELECTED MODEL & GOVERNOR</div>
                     <div class="t-step-desc font-muted">Selected: Qwen 2.5 1.5B (Ollama) | Governor: AUTHORIZED (Bounded Autonomy)</div>
                 </div>
-                <div class="trace-flow-step font-mono">
-                    <div class="t-step-title font-emerald">5. FALLBACK TELEMETRY</div>
-                    <div class="t-step-desc font-emerald">Fallback Status: NONE (Primary model completed cleanly in 1.2s)</div>
-                </div>
             </div>
         </div>
     </div>
@@ -443,9 +485,6 @@
                     <div class="m-stat"><span class="m-label">Availability:</span> <span class="m-val font-emerald">READY</span></div>
                     <div class="m-stat"><span class="m-label">Eligibility:</span> <span class="m-val font-emerald">ELIGIBLE</span></div>
                     <div class="m-stat"><span class="m-label">Activity:</span> <span class="m-val font-cyan">IN USE</span></div>
-                    <div class="m-stat"><span class="m-label">Context Window:</span> <span class="m-val">32K</span></div>
-                    <div class="m-stat"><span class="m-label">Quantization:</span> <span class="m-val font-emerald">Q4</span></div>
-                    <div class="m-stat"><span class="m-label">Avg Latency:</span> <span class="m-val font-amber">1.2s</span></div>
                 </div>
             </div>
         </div>
@@ -464,7 +503,6 @@
             <div class="modal-body font-inter">
                 <div class="modal-stat-grid font-mono">
                     <div class="m-stat"><span class="m-label">Status:</span> <span class="m-val font-emerald" id="modal-agent-status">HEALTHY</span></div>
-                    <div class="m-stat"><span class="m-label">Role:</span> <span class="m-val font-cyan" id="modal-agent-role">COMMUNICATOR</span></div>
                 </div>
             </div>
         </div>

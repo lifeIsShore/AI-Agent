@@ -64,9 +64,9 @@ class TestV67PersonalKnowledgeGraph2(unittest.TestCase):
         self.assertEqual(len(node.to_dict()), 4)
 
     def test_9_edge_to_dict_keys(self):
-        """Test 9: RelationshipEdge to_dict outputs 8 keys."""
+        """Test 9: RelationshipEdge to_dict outputs 14 keys in V6.7.1."""
         edge = RelationshipEdge("A", "B", "REL")
-        self.assertEqual(len(edge.to_dict()), 8)
+        self.assertEqual(len(edge.to_dict()), 14)
 
     def test_10_node_types_valid(self):
         """Test 10: Default graph contains PERSON, PROJECT, GOAL, TASK entity types."""
@@ -85,10 +85,10 @@ class TestV67PersonalKnowledgeGraph2(unittest.TestCase):
         edge = RelationshipEdge("A", "B", "REL", 0.95)
         self.assertIsInstance(edge.confidence, float)
 
-    def test_13_edge_start_time_string(self):
-        """Test 13: RelationshipEdge start_time is string."""
+    def test_13_edge_valid_from_string(self):
+        """Test 13: RelationshipEdge valid_from is string."""
         edge = RelationshipEdge("A", "B", "REL")
-        self.assertIsInstance(edge.start_time, str)
+        self.assertIsInstance(edge.valid_from, str)
 
     def test_14_node_metadata_dict(self):
         """Test 14: EntityNode metadata is dict."""
@@ -127,10 +127,10 @@ class TestV67PersonalKnowledgeGraph2(unittest.TestCase):
         self.assertIsInstance(res["explanation"], str)
 
     def test_22_provenance_chain_elements(self):
-        """Test 22: Provenance chain contains fact_ IDs."""
+        """Test 22: Provenance chain contains dicts with provenance_id starting with fact_."""
         res = self.reasoning.explain_importance("n_thesis")
-        for p in res["provenance_chain"]:
-            self.assertTrue(p.startswith("fact_"))
+        for item in res["provenance_chain"]:
+            self.assertTrue(item["provenance_id"].startswith("fact_"))
 
     def test_23_custom_provenance_id_preserved(self):
         """Test 23: Custom provenance_id preserved in edge."""
@@ -138,9 +138,9 @@ class TestV67PersonalKnowledgeGraph2(unittest.TestCase):
         self.assertEqual(e.provenance_id, "fact_custom123")
 
     def test_24_graph_summary_keys_count(self):
-        """Test 24: Graph summary dict contains 4 keys."""
+        """Test 24: Graph summary dict contains 5 keys in V6.7.1."""
         s = self.graph.get_graph_summary()
-        self.assertEqual(len(s), 4)
+        self.assertEqual(len(s), 5)
 
     def test_25_nodes_list_in_summary(self):
         """Test 25: summary nodes is list."""
@@ -207,10 +207,10 @@ class TestV67PersonalKnowledgeGraph2(unittest.TestCase):
         self.graph.add_edge(RelationshipEdge("n2", "n1", "LINK"))
         self.assertEqual(len(self.graph.edges), 6)
 
-    def test_37_edge_end_time_defaults_none(self):
-        """Test 37: edge end_time defaults to None for active relationship."""
+    def test_37_edge_valid_until_defaults_none(self):
+        """Test 37: edge valid_until defaults to None for active relationship."""
         e = RelationshipEdge("A", "B", "R")
-        self.assertIsNone(e.end_time)
+        self.assertIsNone(e.valid_until)
 
     def test_38_node_metadata_default_empty(self):
         """Test 38: EntityNode metadata defaults to empty dict."""

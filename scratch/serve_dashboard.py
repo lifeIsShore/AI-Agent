@@ -22,13 +22,13 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json_response({
                 "status": "RUNNING",
                 "mode": "BOUNDED_AUTO",
-                "version": "v6.7",
-                "unit_tests_passing": 1442,
+                "version": "v6.8",
+                "unit_tests_passing": 1532,
                 "mission_completion_rate": 0.894,
                 "user_intervention_rate": 0.042,
                 "safety_violations": 0.0,
                 "llm_calls_avoided_rate": 0.421,
-                "active_subsystems": 27
+                "active_subsystems": 29
             })
         elif self.path == '/api/proposals':
             proposals = self._load_real_proposals()
@@ -48,6 +48,10 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
             })
         elif self.path == '/api/knowledge_graph':
             self.send_json_response(self._get_knowledge_graph_summary())
+        elif self.path == '/api/workload/forecast':
+            self.send_json_response(self._get_workload_forecast())
+        elif self.path == '/api/workload/scenarios':
+            self.send_json_response(self._get_workload_scenarios())
         elif self.path == '/api/agents/inspect':
             self.send_json_response(self._get_agent_inspection_profiles())
         elif self.path == '/api/models':
@@ -127,6 +131,51 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
                 pass
         return {"selected_option": "opt_b"}
 
+    def _get_workload_forecast(self) -> Dict[str, Any]:
+        return {
+            "horizon_days": 14,
+            "available_capacity_hours": 52.0,
+            "calendar_commitments_hours": 31.0,
+            "expected_interruptions_hours": 7.0,
+            "mission_workload_hours": 26.0,
+            "total_demand_hours": 64.0,
+            "overload_hours": 12.0,
+            "utilization_percent": 123.1,
+            "risk_level": "HIGH",
+            "bottleneck": "Thesis Methodology (Literature search overrun)",
+            "recommended_intervention": "Reduce secondary workload by 9.0 focus hours."
+        }
+
+    def _get_workload_scenarios(self) -> Dict[str, Any]:
+        return {
+            "scenarios": [
+                {
+                    "scenario_id": "current_plan",
+                    "name": "Scenario A — Current Plan",
+                    "completion_probability": "72%",
+                    "overload_risk": "HIGH",
+                    "utilization": "123%",
+                    "impact": "High risk of missing thesis methodology deadline."
+                },
+                {
+                    "scenario_id": "defer_secondary",
+                    "name": "Scenario B — Defer Secondary Tasks ⭐",
+                    "completion_probability": "84%",
+                    "overload_risk": "LOW",
+                    "utilization": "96%",
+                    "impact": "Frees 9.0 focus hours. Recommended by Decision Engine."
+                },
+                {
+                    "scenario_id": "thesis_focus",
+                    "name": "Scenario C — Thesis Focus Max",
+                    "completion_probability": "91%",
+                    "overload_risk": "LOW",
+                    "utilization": "91%",
+                    "impact": "Requires notifying advisor regarding schedule shift."
+                }
+            ]
+        }
+
     def _get_registered_models_3d(self) -> List[Dict[str, Any]]:
         return [
             {
@@ -195,10 +244,10 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
                 {"node_id": "n_methodology", "name": "Thesis Methodology", "entity_type": "TASK", "status": "IN_PROGRESS"}
             ],
             "edges": [
-                {"source": "Ahmet", "relation": "STUDIES", "target": "M.Sc. Wirtschaftsinformatik", "confidence": 0.99, "provenance_id": "fact_7908912f"},
-                {"source": "Ahmet", "relation": "WORKS_ON", "target": "Master Thesis", "confidence": 0.98, "provenance_id": "fact_8812930a"},
-                {"source": "Prof. Davis", "relation": "ADVISOR_OF", "target": "Master Thesis", "confidence": 0.95, "provenance_id": "fact_1102948c"},
-                {"source": "Master Thesis", "relation": "REQUIRES", "target": "Thesis Methodology", "confidence": 0.90, "provenance_id": "fact_5510293d"}
+                {"source": "Ahmet", "relation": "STUDIES", "target": "M.Sc. Wirtschaftsinformatik", "confidence": 0.99, "valid_from": "2024-09-01", "provenance_id": "fact_7908912f"},
+                {"source": "Ahmet", "relation": "WORKS_ON", "target": "Master Thesis", "confidence": 0.98, "valid_from": "2026-04-01", "provenance_id": "fact_8812930a"},
+                {"source": "Prof. Davis", "relation": "ADVISOR_OF", "target": "Master Thesis", "confidence": 0.95, "valid_from": "2026-04-01", "provenance_id": "fact_1102948c"},
+                {"source": "Master Thesis", "relation": "REQUIRES", "target": "Thesis Methodology", "confidence": 0.90, "valid_from": "2026-08-01", "provenance_id": "fact_5510293d"}
             ]
         }
 
@@ -284,7 +333,7 @@ def main():
     print(f"   [AI AGENT OS] OPERATIONAL CONTROL PLANE REST API SERVER")
     print(f"======================================================================")
     print(f"  --> Serving dashboard from: '{DASHBOARD_DIR}'")
-    print(f"  --> Live REST API Endpoints: http://localhost:{PORT}/api/status, /api/knowledge_graph, /api/models/trace")
+    print(f"  --> Live REST API Endpoints: http://localhost:{PORT}/api/status, /api/workload/forecast, /api/workload/scenarios")
     print(f"  --> Opening URL: http://localhost:{PORT}")
     print(f"  --> Press Ctrl+C in terminal to stop server.")
     print(f"======================================================================\n")
