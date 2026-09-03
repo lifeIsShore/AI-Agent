@@ -295,6 +295,76 @@ def run_agent_demonstration():
 
     print(f"[CounterfactualPlanner] Recommended Scenario Branch: '{sim_res['recommended_scenario']}' (Mutates Live State: False)")
 
+    # 14. V5.8 Autonomous Research & Controlled Knowledge Acquisition
+    print("\n----------------------------------------------------------------------")
+    print("      🔍 V5.8 AUTONOMOUS RESEARCH & CONTROLLED KNOWLEDGE ACQUISITION  ")
+    print("----------------------------------------------------------------------")
+
+    from personal_agent.reasoning.autonomous_research_engine import AutonomousResearchEngine
+
+    research_engine = AutonomousResearchEngine()
+    research_res = research_engine.conduct_autonomous_research(
+        topic="Financial Distress ML Models",
+        initial_sources=[
+            {"url": "https://arxiv.org/abs/2401.12345", "source_type": "ARXIV_PAPER", "confidence": 0.92, "snippet": "Financial distress prediction accuracy reached 94.2%."},
+            {"url": "https://unverified-blog.com/post", "source_type": "BLOG", "confidence": 0.50, "snippet": "Unverified claim."}
+        ]
+    )
+
+    print(f"[AutonomousResearchEngine] Topic: '{research_res['topic']}' | Sources Scanned: {research_res['total_sources_scanned']}")
+    for f in research_res["extracted_facts"]:
+        print(f"  - [{f['verification_status']}] Source: '{f['source']}' (Conf: {f['confidence']}, RAG Ingestible: {f['rag_ingestible']})")
+
+    # 15. V5.9 Mission Execution Intelligence & Dynamic Replanning
+    print("\n----------------------------------------------------------------------")
+    print("    ⚡ V5.9 MISSION EXECUTION INTELLIGENCE & DYNAMIC REPLANNING        ")
+    print("----------------------------------------------------------------------")
+
+    from personal_agent.control.mission_execution_intelligence import MissionExecutionIntelligence
+
+    exec_intel = MissionExecutionIntelligence()
+    intel_res = exec_intel.adapt_mission_execution(
+        mission_id="m_thesis_research",
+        actual_duration_sec=12.0,
+        estimated_duration_sec=5.0,
+        strategy_id="strat_thesis_b"
+    )
+
+    print(f"[MissionExecutionIntelligence] Mission ID: '{intel_res['mission_id']}' -> Overrun Ratio: {intel_res['duration_ratio']}x")
+    print(f"  - Status: '{intel_res['status']}' | Recommended Scenario: '{intel_res['new_recommended_scenario']}' | Prediction Risk: '{intel_res['prediction_risk']}'")
+
+    # 16. V6.0 Persistent Personal AI Operating System Master Architecture
+    print("\n----------------------------------------------------------------------")
+    print("     ⭐ V6.0 PERSISTENT PERSONAL AI OPERATING SYSTEM (PersonalAIOS_v6) ")
+    print("----------------------------------------------------------------------")
+
+    from personal_agent.runtime.personal_ai_os_v6 import PersonalAIOS_v6
+
+    master_os = PersonalAIOS_v6()
+    os_res = master_os.run_persistent_os_cycle("Prepare Master Thesis Proposal & Replan Schedule")
+
+    print(f"[PersonalAIOS_v6] Master OS Version: '{os_res['os_version']}' | Status: '{os_res['status']}'")
+    print(f"  - Cycle Status:        '{os_res['cycle_result']['status']}' (Provenance ID: {os_res['cycle_result']['provenance_id']})")
+    print(f"  - Simulation Scenario: '{os_res['simulation_scenario']}'")
+    print(f"  - Strategy Selection:  '{os_res['recommended_strategy']}'")
+    print(f"  - Zero-Bypass Invariant: {os_res['zero_bypass_governance']}")
+
+    # 17. V6.1 Personal Operating Memory & Temporal Knowledge Graph
+    print("\n----------------------------------------------------------------------")
+    print("       🕒 V6.1 TEMPORAL KNOWLEDGE GRAPH & PERSONAL TIMELINE           ")
+    print("----------------------------------------------------------------------")
+
+    from personal_agent.world.temporal_knowledge_graph import TemporalKnowledgeGraph
+
+    tkg = TemporalKnowledgeGraph()
+    tkg_reason = tkg.reason_over_timeline()
+
+    print(f"[TemporalKnowledgeGraph] Total Timeline Nodes: {tkg_reason['timeline_length']}")
+    print(f"  - Past Milestones:  {tkg_reason['past_milestones']}")
+    print(f"  - Currently Active: {tkg_reason['currently_active']}")
+    print(f"  - Why Changed:      '{tkg_reason['why_changed']}'")
+    print(f"  - Next Likely:      '{tkg_reason['next_likely_event']}'")
+
     print("\n======================================================================")
     print("  ✅ AGENT DEMONSTRATION PASSED PERFECTLY WITH ZERO SECURITY INVARIANTS VIOLATED!")
     print("======================================================================\n")

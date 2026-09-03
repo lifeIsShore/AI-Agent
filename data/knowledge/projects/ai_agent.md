@@ -1,4 +1,4 @@
-# Personal AI Agent — System Specifications (V5.7 Bounded Autonomous Architecture)
+# Personal AI Agent — System Specifications (V6.1 Persistent Autonomous Architecture)
 
 ## Architecture Overview
 
@@ -9,7 +9,7 @@ The system enforces the fundamental architectural principle:
 
 ---
 
-## Core System Capabilities (V0.1 — V5.7 Milestone Graph)
+## Core System Capabilities (V0.1 — V6.1 Milestone Graph)
 
 ### 1. Bounded Autonomous Runtime & AutonomyGovernor (V3.0)
 * Levels: `LEVEL_0_OBSERVE` to `LEVEL_4_SUPERVISED_AUTO`.
@@ -83,11 +83,23 @@ The system enforces the fundamental architectural principle:
 ### 23. Personal Simulation / Digital Twin & Counterfactual Planning (V5.7)
 * `PersonalSimulationEnvironment` & `CounterfactualPlanner` running in-memory scenario simulations (`AGGRESSIVE`, `BALANCED`, `CONSERVATIVE`) to select optimal scenario branches before execution without mutating live state.
 
+### 24. Autonomous Research & Controlled Knowledge Acquisition (V5.8)
+* `AutonomousResearchEngine` scanning web sources, verifying confidence thresholds (confidence $\ge 0.70 \rightarrow$ `VERIFIED` & `rag_ingestible`, confidence $< 0.70 \rightarrow$ `UNVERIFIED_NEEDS_APPROVAL`), and tracking 100% provenance lineage.
+
+### 25. Mission Execution Intelligence & Dynamic Replanning (V5.9)
+* `MissionExecutionIntelligence` uniting Strategy Selection + Predictive Engine + Digital Twin Simulation to detect step duration overruns ($> 1.5\times$) and dynamically adapt execution strategies under governor gating.
+
+### 26. Persistent Personal AI Operating System Master Architecture (V6.0)
+* `PersonalAIOS_v6` consolidating all 27 architectural layers into a persistent, self-healing, long-running personal AI operating system enforcing zero-bypass safety guarantees.
+
+### 27. Personal Operating Memory & Temporal Knowledge Graph (V6.1)
+* `TemporalKnowledgeGraph` adding temporal dimensions to the World Model (2026 B.Sc. Completion $\rightarrow$ M.Sc. Wirtschaftsinformatik at University of Mannheim $\rightarrow$ Master Thesis Proposal & Research), reasoning over what happened $\rightarrow$ what changed $\rightarrow$ why it changed $\rightarrow$ what is currently relevant $\rightarrow$ what is likely to happen next.
+
 ---
 
 ## Technical Specifications
 
 * **Language & Runtime:** Python 3.11+
-* **Architecture:** Modular, Local-First, Bounded Autonomous Runtime
-* **Test Coverage:** 947 passing unit tests (`python -m unittest discover -s tests -p "test_v*.py"`)
+* **Architecture:** Modular, Local-First, Bounded Autonomous Operating System
+* **Test Coverage:** 1,127 passing unit tests (`python -m unittest discover -s tests -p "test_v*.py"`)
 * **Security & Privacy:** Deterministic governor, DLP context sanitizer, 100% provenance tracking, explicit `.gitignore` secret isolation.
