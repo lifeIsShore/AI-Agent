@@ -93,6 +93,19 @@ body {
     box-shadow: 0 0 24px rgba(16, 185, 129, 0.6);
 }
 
+/* Active Missions Progress Manager Panel (V9.0) */
+.active-missions-card { padding: 20px; }
+.missions-progress-list { display: flex; flex-direction: column; gap: 12px; }
+.mission-progress-item { display: flex; flex-direction: column; gap: 6px; }
+.mp-top { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; }
+.mp-percent { font-size: 12px; }
+.mp-bar-bg { width: 100%; height: 8px; background: rgba(0, 0, 0, 0.4); border-radius: 4px; overflow: hidden; }
+.mp-bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
+.mp-bar-fill.emerald { background: linear-gradient(90deg, var(--accent-cyan), var(--accent-emerald)); }
+.mp-bar-fill.purple { background: linear-gradient(90deg, #ec4899, var(--accent-purple)); }
+.mp-bar-fill.cyan { background: linear-gradient(90deg, #3b82f6, var(--accent-cyan)); }
+.mp-footer { font-size: 10px; }
+
 /* Mission Submission Console (V8.0) */
 .mission-console-card { padding: 20px; }
 .mission-input-group { display: flex; gap: 12px; }
@@ -230,17 +243,6 @@ body {
 .text-gradient-purple { background: linear-gradient(135deg, #a855f7, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .text-gradient-emerald { background: linear-gradient(135deg, #10b981, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .text-gradient-amber { background: linear-gradient(135deg, #f59e0b, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-/* Multi-Agent Team Pipeline Panel (V7.6) */
-.team-pipeline-card { padding: 20px; }
-.pipeline-flow { display: flex; align-items: center; gap: 12px; font-size: 12px; }
-.p-step { display: flex; flex-direction: column; gap: 4px; flex: 1; }
-.p-arrow { color: var(--accent-purple); font-weight: 700; font-size: 16px; }
-.p-badge { font-size: 8px; font-weight: 700; padding: 2px 5px; border-radius: 4px; width: max-content; }
-.p-badge.research { background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); }
-.p-badge.data { background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); }
-.p-badge.finance { background: rgba(16, 185, 129, 0.2); color: var(--accent-emerald); }
-.p-badge.writing { background: rgba(168, 85, 247, 0.2); color: var(--accent-purple); }
 
 /* Multi-Specialist Agent Ecosystem (V7.0-V7.5) */
 .specialist-grid-card { padding: 20px; }

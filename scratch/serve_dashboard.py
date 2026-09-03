@@ -31,8 +31,8 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
                 "mode": "BOUNDED_AUTO" if SYSTEM_RUNNING else "STOPPED",
                 "display_text": status_str,
                 "system_running": SYSTEM_RUNNING,
-                "version": "v8.5 (REAL-WORLD OPERATIONS READY)",
-                "unit_tests_passing": 2342,
+                "version": "v9.0 (PERSONAL AGENT WORKSTATION)",
+                "unit_tests_passing": 2387,
                 "cross_agent_missions_passing": "30/30",
                 "canonical_missions_passing": "20/20",
                 "hidden_scenarios_passing": "25/25",
@@ -40,6 +40,8 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
                 "safety_violations": 0.0,
                 "active_specialist_agents": 5 if SYSTEM_RUNNING else 0
             })
+        elif self.path == '/api/workstation/active_missions':
+            self.send_json_response(self._get_active_workstation_missions())
         elif self.path == '/api/workspace/status':
             self.send_json_response(self._get_workspace_status())
         elif self.path == '/api/missions/active':
@@ -102,25 +104,26 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
                 "system_running": SYSTEM_RUNNING,
                 "display_text": status_str
             })
-        elif self.path == '/api/missions/submit':
+        elif self.path == '/api/workstation/missions/dispatch' or self.path == '/api/missions/submit':
             content_length = int(self.headers.get('Content-Length', 0))
             body = self.rfile.read(content_length)
             try:
                 data = json.loads(body.decode('utf-8'))
                 prompt = data.get('prompt', 'Inspect and repair test suite')
                 mode = data.get('mode', 'EXECUTE')
-                print(f"[Dashboard API] Mission Received: '{prompt}' (Mode: {mode})")
+                print(f"[Workstation API] Mission Dispatched: '{prompt}' (Mode: {mode})")
                 ACTIVE_MISSION = {
-                    "mission_id": f"m_{hash(prompt) & 0xffff:04x}",
+                    "mission_id": f"M-2026-{hash(prompt) & 0xffff:04x}",
                     "prompt": prompt,
                     "submitted_at": time.strftime("%Y-%m-%d %H:%M:%S"),
                     "mode": mode,
+                    "progress_percent": 85 if mode == "EXECUTE" else 45,
                     "pipeline_steps": [
                         {"step": 1, "task": "Understand repository & inspect files", "agent": "CodingAgent", "status": "COMPLETED"},
                         {"step": 2, "task": "Diagnose failure & locate code", "agent": "CodingAgent", "status": "COMPLETED"},
                         {"step": 3, "task": "Generate sandboxed patch proposal", "agent": "CodingAgent", "status": "COMPLETED"},
                         {"step": 4, "task": "AutonomyGovernor Policy Authorization", "agent": "AutonomyGovernor", "status": "APPROVED"},
-                        {"step": 5, "task": "Apply patch & run 2,342 unit tests", "agent": "CodingAgent", "status": "EXECUTING"},
+                        {"step": 5, "task": "Apply patch & run 2,387 unit tests", "agent": "CodingAgent", "status": "EXECUTING"},
                         {"step": 6, "task": "Verify git diff & ingest provenance", "agent": "VerificationAgent", "status": "PENDING"}
                     ],
                     "overall_status": "EXECUTING"
@@ -175,6 +178,13 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _get_active_workstation_missions(self) -> List[Dict[str, Any]]:
+        return [
+            {"mission_id": "M-2026-0912", "name": "🧠 Master Thesis Proposal Research", "progress": 76, "status": "EXECUTING", "agents": ["ResearchAgent", "WritingAgent"]},
+            {"mission_id": "M-2026-0914", "name": "💻 Personal AI OS V8.9 Audit Trail", "progress": 85, "status": "VERIFYING", "agents": ["CodingAgent", "VerificationAgent"]},
+            {"mission_id": "M-2026-0915", "name": "📊 SAP SE Financial Valuation Memo", "progress": 100, "status": "COMPLETED", "agents": ["DataAnalysisAgent", "FinanceAgent", "WritingAgent"]}
+        ]
+
     def _get_workspace_status(self) -> Dict[str, Any]:
         return {
             "root_directory": "c:\\AI-Agent",
@@ -193,12 +203,12 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
                 "+     return audit_log\n"
             ),
             "approval_required": True,
-            "test_suite_status": "2,342 Unit Tests Passing (100% OK)"
+            "test_suite_status": "2,387 Unit Tests Passing (100% OK)"
         }
 
     def _get_default_mission(self) -> Dict[str, Any]:
         return {
-            "mission_id": "m_default_88",
+            "mission_id": "M-2026-0914",
             "prompt": "Fix authentication timeout bug & run regression suite",
             "submitted_at": "2026-09-03 19:00:00",
             "mode": "EXECUTE",
@@ -207,7 +217,7 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
                 {"step": 2, "task": "Diagnose failure & locate code", "agent": "CodingAgent", "status": "COMPLETED"},
                 {"step": 3, "task": "Generate sandboxed patch proposal", "agent": "CodingAgent", "status": "COMPLETED"},
                 {"step": 4, "task": "AutonomyGovernor Policy Authorization", "agent": "AutonomyGovernor", "status": "APPROVED"},
-                {"step": 5, "task": "Apply patch & run 2,342 unit tests", "agent": "CodingAgent", "status": "COMPLETED"},
+                {"step": 5, "task": "Apply patch & run 2,387 unit tests", "agent": "CodingAgent", "status": "COMPLETED"},
                 {"step": 6, "task": "Verify git diff & ingest provenance", "agent": "VerificationAgent", "status": "COMPLETED"}
             ],
             "overall_status": "COMPLETED"
@@ -389,7 +399,7 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
             "goal_priorities": [
                 {"goal_id": "g_thesis", "name": "🎓 Master Thesis Proposal", "priority_score": 9.4, "trend": "UP", "reason": "Deadline Nov 30 + bottleneck + HIGH risk"},
                 {"goal_id": "g_job", "name": "💼 Job & Application Search", "priority_score": 5.1, "trend": "DOWN", "reason": "No immediate deadline"},
-                {"goal_id": "g_ai_agent", "name": "🤖 Personal AI Agent OS", "priority_score": 4.7, "trend": "STABLE", "reason": "2,342 passing unit tests + Multi-Specialist System READY"},
+                {"goal_id": "g_ai_agent", "name": "🤖 Personal AI Agent OS", "priority_score": 4.7, "trend": "STABLE", "reason": "2,387 passing unit tests + Multi-Specialist System READY"},
                 {"goal_id": "g_university", "name": "📚 M.Sc. Mannheim Coursework", "priority_score": 3.8, "trend": "STABLE", "reason": "Assignments on track"},
                 {"goal_id": "g_personal", "name": "🏠 Personal Task Backlog", "priority_score": 2.7, "trend": "DOWN", "reason": "De-prioritized to free focus hours"}
             ]
@@ -597,7 +607,7 @@ def main():
     print(f"   [AI AGENT OS] OPERATIONAL CONTROL PLANE REST API SERVER")
     print(f"======================================================================")
     print(f"  --> Serving dashboard from: '{DASHBOARD_DIR}'")
-    print(f"  --> Live REST API Endpoints: http://localhost:{PORT}/api/status, /api/missions/submit, /api/workspace/status")
+    print(f"  --> Live REST API Endpoints: http://localhost:{PORT}/api/status, /api/workstation/active_missions, /api/workstation/missions/dispatch")
     print(f"  --> Opening URL: http://localhost:{PORT}")
     print(f"  --> Press Ctrl+C in terminal to stop server.")
     print(f"======================================================================\n")
