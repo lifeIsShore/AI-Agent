@@ -86,33 +86,28 @@ body {
 .text-gradient-emerald { background: linear-gradient(135deg, #10b981, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .text-gradient-amber { background: linear-gradient(135deg, #f59e0b, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-/* 14-Metric Scorecard Grid (V6.17) */
-.scorecard-card { padding: 20px; }
-.scorecard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 11px; background: #050811; padding: 14px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08); }
-.sc-metric { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; border-radius: 4px; background: rgba(255, 255, 255, 0.03); }
-.sc-name { color: var(--text-muted); }
-.sc-val { font-weight: 700; margin-left: 6px; }
-.sc-target { font-size: 9px; }
+/* Multi-Agent Team Pipeline Panel (V7.6) */
+.team-pipeline-card { padding: 20px; }
+.pipeline-flow { display: flex; align-items: center; gap: 12px; font-size: 12px; }
+.p-step { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.p-arrow { color: var(--accent-purple); font-weight: 700; font-size: 16px; }
+.p-badge { font-size: 8px; font-weight: 700; padding: 2px 5px; border-radius: 4px; width: max-content; }
+.p-badge.research { background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); }
+.p-badge.data { background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); }
+.p-badge.finance { background: rgba(16, 185, 129, 0.2); color: var(--accent-emerald); }
+.p-badge.writing { background: rgba(168, 85, 247, 0.2); color: var(--accent-purple); }
 
-/* Simulator Box (V6.16) */
-.sim-box { display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
-.sim-item { font-size: 12px; }
-
-/* Situation Intelligence Panel (V6.13) */
-.situation-card { padding: 20px; }
-.sit-box { display: flex; flex-direction: column; gap: 6px; font-size: 12px; }
-.sit-row { line-height: 1.5; }
-
-/* Strategy Optimizer Panel (V6.10) */
-.strategy-optimizer-list { display: flex; flex-direction: column; gap: 10px; }
-.strategy-card { display: flex; flex-direction: column; gap: 4px; }
-.strategy-card.recommended { border-color: var(--accent-emerald); background: rgba(16, 185, 129, 0.12); }
-.strat-top { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; }
-.strat-prob { font-family: var(--font-outfit); font-weight: 700; font-size: 14px; }
-
-/* Mission Forecast Panel */
-.forecast-box { display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
-.f-item { font-size: 13px; }
+/* Multi-Specialist Agent Ecosystem (V7.0-V7.5) */
+.specialist-grid-card { padding: 20px; }
+.specialist-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.spec-card { display: flex; flex-direction: column; gap: 6px; }
+.spec-top { display: flex; justify-content: space-between; align-items: center; }
+.spec-title { font-size: 12px; font-weight: 700; }
+.spec-badge { font-size: 8px; font-weight: 700; padding: 1px 5px; border-radius: 3px; }
+.spec-badge.green { background: rgba(16, 185, 129, 0.2); color: var(--accent-emerald); }
+.spec-badge.blue { background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); }
+.spec-role { font-size: 10px; }
+.spec-caps { font-size: 9px; word-break: break-all; }
 
 /* Dashboard Grid Layout */
 .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
@@ -136,15 +131,7 @@ body {
 .kg-node { font-weight: 600; padding: 2px 6px; border-radius: 4px; background: rgba(255, 255, 255, 0.05); }
 .kg-arrow { color: var(--text-muted); font-size: 10px; }
 
-/* Authority Grants & Clickable Inspector Cards */
-.agent-authority-list { display: flex; flex-direction: column; gap: 10px; }
-.authority-card { padding: 10px 12px; background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 8px; display: flex; flex-direction: column; gap: 4px; }
-.authority-card.clickable { cursor: pointer; transition: border-color 0.2s ease, transform 0.1s ease; }
-.authority-card.clickable:hover { border-color: var(--accent-purple); transform: translateX(2px); }
-.auth-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; }
-.auth-badge.allowed { font-size: 9px; font-weight: 700; color: var(--accent-emerald); background: rgba(16, 185, 129, 0.15); padding: 2px 6px; border-radius: 4px; }
-
-/* Structured Console & Filter Bar */
+/* Console */
 .console-card { min-height: 280px; }
 .console-controls { display: flex; align-items: center; gap: 10px; }
 .btn-clear { background: transparent; border: 1px solid rgba(255, 255, 255, 0.15); color: var(--text-muted); font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer; }
