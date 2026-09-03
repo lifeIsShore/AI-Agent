@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal AI Agent OS — Operational Control Plane (V6.8)</title>
+    <title>Personal AI Agent OS — Operational Control Plane (V6.11)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -16,12 +16,12 @@
             <div class="logo-group">
                 <div class="logo-icon">🤖</div>
                 <div class="logo-text">
-                    <h1>PERSONAL AI AGENT OS — CONTROL PLANE V6.8</h1>
+                    <h1>PERSONAL AI AGENT OS — CONTROL PLANE V6.11</h1>
                     <div class="arch-breadcrumbs">
                         <span class="version-chip font-cyan">Runtime V6.0</span>
-                        <span class="version-chip font-purple">Knowledge Graph V6.7.1</span>
-                        <span class="version-chip font-amber">Safety Governor V4.1+</span>
-                        <span class="version-chip font-emerald">Workload Model V6.8</span>
+                        <span class="version-chip font-purple">Strategies V6.9</span>
+                        <span class="version-chip font-amber">Optimizer V6.10</span>
+                        <span class="version-chip font-emerald">Goal Priorities V6.11</span>
                     </div>
                 </div>
             </div>
@@ -31,7 +31,7 @@
                     <span id="os-status-text">SYSTEM RUNNING (BOUNDED_AUTO)</span>
                 </div>
                 <div class="badge tests-badge">
-                    <span>🧪 1,532 Unit Tests Passing</span>
+                    <span>🧪 1,667 Unit Tests Passing</span>
                 </div>
             </div>
         </header>
@@ -75,110 +75,45 @@
             </div>
         </section>
 
-        <!-- 🔮 Predictive Personal Workload Forecast Panel (V6.8) -->
-        <section class="card glass workload-forecast-card">
+        <!-- 🎯 Goal Priority & Autonomous Priority Management Panel (V6.11) -->
+        <section class="card glass goal-priority-card">
             <div class="card-header">
-                <h2>🔮 Predictive Personal Workload & Capacity Forecast (V6.8)</h2>
-                <div class="workload-badges">
-                    <span class="pill-badge amber">14-Day Forecast</span>
-                    <span class="risk-pill high font-rose">OVERLOAD RISK: HIGH (118%)</span>
-                </div>
+                <h2>🎯 Autonomous Goal & Priority Management (V6.11)</h2>
+                <span class="pill-badge emerald">Dynamic Closed-Loop Arbitration</span>
             </div>
             <div class="card-body">
-                <div class="workload-grid">
-                    <div class="workload-stat-box glass-nested">
-                        <div class="w-stat-top">
-                            <span class="w-label font-muted">Available Capacity:</span>
-                            <span class="w-val font-emerald">52.0 Hours</span>
+                <div class="goal-priority-list">
+                    <div class="goal-item glass-nested">
+                        <div class="g-item-top">
+                            <span class="g-name font-emerald">🎓 Master Thesis Proposal & Research</span>
+                            <div class="g-score-group">
+                                <span class="g-score font-emerald">9.4</span>
+                                <span class="g-trend font-emerald">↑ UP</span>
+                            </div>
                         </div>
-                        <div class="w-stat-top">
-                            <span class="w-label font-muted">Committed Calendar:</span>
-                            <span class="w-val font-cyan">31.0 Hours</span>
-                        </div>
-                        <div class="w-stat-top">
-                            <span class="w-label font-muted">Expected Interruptions:</span>
-                            <span class="w-val font-amber">7.0 Hours</span>
-                        </div>
-                        <div class="w-stat-top">
-                            <span class="w-label font-muted">Mission Workload:</span>
-                            <span class="w-val font-purple">26.0 Hours</span>
-                        </div>
-                        <div class="w-stat-total font-mono">
-                            <span>Projected Demand: <strong class="font-rose">64.0 Hours</strong> (Overload: +12.0h)</span>
-                        </div>
+                        <div class="g-reason font-muted font-mono">Reason: Deadline Nov 30 + methodology bottleneck + workload risk HIGH (+12.0h)</div>
                     </div>
 
-                    <div class="workload-insight-box glass-nested">
-                        <div class="w-insight-title font-amber">⚠️ Predicted Workload Bottleneck</div>
-                        <div class="w-insight-desc font-inter">
-                            Mission <strong>Master Thesis Methodology</strong> is projected to overrun by 2.4x duration due to literature research depth.
+                    <div class="goal-item glass-nested">
+                        <div class="g-item-top">
+                            <span class="g-name font-cyan">💼 M.Sc. Job & Application Search</span>
+                            <div class="g-score-group">
+                                <span class="g-score font-cyan">5.1</span>
+                                <span class="g-trend font-rose">↓ DOWN</span>
+                            </div>
                         </div>
-                        <div class="w-intervention font-emerald font-mono">
-                            Recommended Action: <em>Defer secondary low-priority tasks to free 9.0 focus hours.</em>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- HITL Pending Action Banner -->
-        <section class="hitl-banner glass" id="hitl-banner">
-            <div class="hitl-info">
-                <span class="hitl-icon pulse-amber">⚡</span>
-                <div class="hitl-text">
-                    <div class="hitl-title">HUMAN-IN-THE-LOOP (HITL) APPROVAL REQUIRED</div>
-                    <div class="hitl-desc" id="hitl-action-desc">
-                        <strong>EmailSpecialist</strong> proposes action: <em>Send draft email to Prof. Davis regarding Thesis Defense Schedule</em> (Target: Prof. Davis | Risk: MEDIUM)
-                    </div>
-                </div>
-            </div>
-            <div class="hitl-controls">
-                <input type="text" id="hitl-input" placeholder="Add custom guidance or constraints..." class="hitl-input-field">
-                <button class="btn btn-approve" id="btn-approve">Approve Action</button>
-                <button class="btn btn-reject" id="btn-reject">Reject Action</button>
-            </div>
-        </section>
-
-        <!-- Active Missions Control Layer (V6.5) -->
-        <section class="card glass mission-control-card">
-            <div class="card-header">
-                <h2>🗺️ Active Mission Control & Long-Horizon Progress (V6.5)</h2>
-                <span class="pill-badge emerald">2 Active Missions</span>
-            </div>
-            <div class="card-body">
-                <div class="mission-grid">
-                    <div class="mission-item glass-nested">
-                        <div class="mission-top">
-                            <span class="mission-name">🎓 Master Thesis Proposal & Research</span>
-                            <span class="mission-prob font-emerald">89% Completion Prob</span>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar"><div class="progress-fill emerald" style="width: 76%;"></div></div>
-                            <span class="progress-percent">76%</span>
-                        </div>
-                        <div class="mission-details font-muted">
-                            <span>Step: <strong>Research → Literature Verification</strong></span>
-                            <span>Strategy: <strong>Strategy B (Requirements → Research → Calendar → Write → Review)</strong></span>
-                            <span>Predicted Completion: <strong class="font-cyan">Nov 24, 2026</strong> (Deadline: Nov 30)</span>
-                            <span>Bottleneck: <strong class="font-amber">Literature Diversity</strong></span>
-                        </div>
+                        <div class="g-reason font-muted font-mono">Reason: No immediate deadline + sufficient progress</div>
                     </div>
 
-                    <div class="mission-item glass-nested">
-                        <div class="mission-top">
-                            <span class="mission-name">📚 M.Sc. Mannheim Course Workload</span>
-                            <span class="mission-prob font-emerald">92% Completion Prob</span>
+                    <div class="goal-item glass-nested">
+                        <div class="g-item-top">
+                            <span class="g-name font-purple">🤖 Personal AI Agent OS Architecture</span>
+                            <div class="g-score-group">
+                                <span class="g-score font-purple">4.7</span>
+                                <span class="g-trend font-muted">→ STABLE</span>
+                            </div>
                         </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar"><div class="progress-fill cyan" style="width: 45%;"></div></div>
-                            <span class="progress-percent">45%</span>
-                        </div>
-                        <div class="mission-details font-muted">
-                            <span>Step: <strong>Assignment Review & Quiz Prep</strong></span>
-                            <span>Strategy: <strong>Strategy A (Balanced Allocation)</strong></span>
-                            <span>Predicted Completion: <strong class="font-cyan">Dec 15, 2026</strong> (Deadline: Dec 20)</span>
-                            <span>Bottleneck: <strong>None</strong></span>
-                        </div>
+                        <div class="g-reason font-muted font-mono">Reason: Continuous development + 1,667 passing unit tests</div>
                     </div>
                 </div>
             </div>
@@ -187,8 +122,49 @@
         <!-- Main Dashboard Content Grid -->
         <main class="dashboard-grid">
 
-            <!-- Column 1: LLM Orchestration Center -->
+            <!-- Column 1: Predictive Strategy Optimizer (V6.10) -->
             <div class="grid-column">
+
+                <!-- 🧠 Predictive Mission Strategy Optimizer Panel (V6.10) -->
+                <div class="card glass">
+                    <div class="card-header">
+                        <h2>🧠 Strategy Optimizer (V6.10)</h2>
+                        <span class="pill-badge primary">Master Thesis Mission</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="strategy-optimizer-list">
+                            <div class="strategy-card glass-nested">
+                                <div class="strat-top">
+                                    <span class="strat-name">Strategy A — Direct Research & Draft</span>
+                                    <span class="strat-prob font-amber">72%</span>
+                                </div>
+                                <div class="strat-meta font-muted font-mono">
+                                    <span>Risk: HIGH | Util: 123% | Success: 61%</span>
+                                </div>
+                            </div>
+
+                            <div class="strategy-card glass-nested">
+                                <div class="strat-top">
+                                    <span class="strat-name">Strategy B — Requirements & Calendar</span>
+                                    <span class="strat-prob font-cyan">86%</span>
+                                </div>
+                                <div class="strat-meta font-muted font-mono">
+                                    <span>Risk: MEDIUM | Util: 96% | Success: 89%</span>
+                                </div>
+                            </div>
+
+                            <div class="strategy-card glass-nested recommended">
+                                <div class="strat-top">
+                                    <span class="strat-name font-emerald">Strategy C — Iterative Critic & Verification ★</span>
+                                    <span class="strat-prob font-emerald">91%</span>
+                                </div>
+                                <div class="strat-meta font-muted font-mono">
+                                    <span class="font-emerald">RECOMMENDED: Risk: LOW | Util: 91% | Success: 86%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- 🧠 LLM Orchestration Panel -->
                 <div class="card glass">
@@ -227,70 +203,37 @@
                                     <span>CPU: 68% | Task: Email & Planning Triage</span>
                                 </div>
                             </div>
-
-                            <div class="model-item clickable blocked" data-model-id="strong_local_14b">
-                                <div class="m-item-top">
-                                    <span class="m-name font-rose">Strong Local LLM (14B)</span>
-                                    <div class="m-3d-badges">
-                                        <span class="badge-3d green">READY</span>
-                                        <span class="badge-3d red">BLOCKED</span>
-                                        <span class="badge-3d gray">IDLE</span>
-                                    </div>
-                                </div>
-                                <div class="m-item-details font-muted font-mono">
-                                    <span>Reason: RAM footprint limit exceeded</span>
-                                </div>
-                            </div>
-
-                            <div class="model-item clickable" data-model-id="strong_cloud">
-                                <div class="m-item-top">
-                                    <span class="m-name font-purple">Strong Cloud LLM</span>
-                                    <div class="m-3d-badges">
-                                        <span class="badge-3d green">READY</span>
-                                        <span class="badge-3d green">ELIGIBLE</span>
-                                        <span class="badge-3d gray">IDLE</span>
-                                    </div>
-                                </div>
-                                <div class="m-item-details font-muted font-mono">
-                                    <span>Provider: Cloud API | Latency: 8.4s</span>
-                                    <span>Task: Standby (Complex Research)</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Explainable Model Routing Inspector -->
-                <div class="card glass">
-                    <div class="card-header">
-                        <h2>🧭 Model Routing Inspector</h2>
-                        <span class="pill-badge emerald">Click to View Trace</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="routing-trace-box glass-nested font-inter clickable" id="routing-trace-trigger">
-                            <div class="trace-task font-outfit"><strong>Task:</strong> University Email Classification & Schedule Triage</div>
-                            <div class="trace-meta font-muted font-mono">
-                                <span>Complexity: <strong class="font-emerald">LOW</strong></span> |
-                                <span>Preference: <strong class="font-cyan">LOCAL_ONLY</strong></span>
-                            </div>
-                            <div class="trace-reasons font-muted font-mono" style="margin-top: 6px;">
-                                <div style="color: var(--accent-emerald);">✓ Local model (privacy compatible)</div>
-                                <div style="color: var(--accent-emerald);">✓ Sufficient capability for email classification</div>
-                                <div style="color: var(--accent-emerald);">✓ Lowest latency (&lt;1.2s)</div>
-                            </div>
-                            <div class="trace-gov font-emerald font-mono" style="margin-top: 6px;">
-                                Governor Authorization: <strong>AUTHORIZED</strong>
-                            </div>
                         </div>
                     </div>
                 </div>
 
             </div>
 
-            <!-- Column 2: Personal Knowledge Graph 2.0 & Decision Center -->
+            <!-- Column 2: Personal Knowledge Graph & Forecast -->
             <div class="grid-column">
 
-                <!-- Personal Knowledge Graph 2.0 Panel (V6.7.1 Interval Temporal) -->
+                <!-- 🔮 Mission Forecast Panel (V6.9) -->
+                <div class="card glass">
+                    <div class="card-header">
+                        <h2>🔮 Mission Forecast (V6.9)</h2>
+                        <span class="pill-badge emerald">Completion Date Prediction</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="forecast-box glass-nested font-inter">
+                            <div class="f-item font-outfit"><strong>Predicted Completion:</strong> <span class="font-cyan">Nov 24, 2026</span> (Deadline: Nov 30)</div>
+                            <div class="f-meta font-muted font-mono" style="margin-top: 6px;">
+                                <span>Completion Prob: <strong class="font-emerald">91%</strong></span> |
+                                <span>Deadline Risk: <strong class="font-emerald">LOW</strong></span> |
+                                <span>Trend: <strong class="font-emerald">↑ Improving</strong></span>
+                            </div>
+                            <div class="f-bottleneck font-amber font-mono" style="margin-top: 6px;">
+                                Bottleneck Resolved via Strategy C: Literature Contradiction Verification.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Personal Knowledge Graph 2.0 Panel -->
                 <div class="card glass">
                     <div class="card-header">
                         <h2>🌐 Personal Knowledge Graph 2.0 (V6.7.1)</h2>
@@ -313,53 +256,6 @@
                                 <span class="kg-arrow">──[ADVISOR_OF (valid: 2026-04)]──►</span>
                                 <span class="kg-node project font-emerald">Master Thesis</span>
                             </div>
-                            <div class="kg-node-row">
-                                <span class="kg-node project font-emerald">Master Thesis</span>
-                                <span class="kg-arrow">──[REQUIRES (valid: 2026-08)]──►</span>
-                                <span class="kg-node task font-rose">Thesis Methodology</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Personal Decision Intelligence Center -->
-                <div class="card glass">
-                    <div class="card-header">
-                        <h2>🧭 Decision Intelligence Center (V6.4)</h2>
-                        <span class="pill-badge purple">Recommends · User Decides</span>
-                    </div>
-                    <div class="card-body">
-                        <p class="section-desc">Problem: <em>Thesis research taking longer than estimated (+2.4x duration overrun).</em></p>
-                        
-                        <div class="decision-options" id="decision-options-container">
-                            <div class="decision-card" data-option-id="opt_a">
-                                <div class="dec-header">
-                                    <span class="dec-name">Option A — Continue Current Plan</span>
-                                    <span class="risk-pill high font-rose">HIGH RISK</span>
-                                </div>
-                                <div class="dec-prob font-muted">Completion Prob: 72% | Impact: High risk of missing deadline.</div>
-                            </div>
-
-                            <div class="decision-card selected" data-option-id="opt_b">
-                                <div class="dec-header">
-                                    <span class="dec-name">Option B — Reduce Secondary Workload ⭐</span>
-                                    <span class="risk-pill low font-emerald">LOW RISK</span>
-                                </div>
-                                <div class="dec-prob font-muted">Completion Prob: 84% | Impact: Frees 9 focus hours. Recommended.</div>
-                            </div>
-
-                            <div class="decision-card" data-option-id="opt_c">
-                                <div class="dec-header">
-                                    <span class="dec-name">Option C — Move Research Deadline</span>
-                                    <span class="risk-pill low font-emerald">LOW RISK</span>
-                                </div>
-                                <div class="dec-prob font-muted">Completion Prob: 91% | Impact: Requires advisor notification email.</div>
-                            </div>
-                        </div>
-
-                        <div class="decision-controls">
-                            <button class="btn btn-save-decision" id="btn-save-decision">Save & Apply Selected Decision</button>
-                            <span class="decision-save-toast font-emerald" id="decision-save-toast">✓ Option B Saved & Applied to Governor</span>
                         </div>
                     </div>
                 </div>
@@ -384,7 +280,6 @@
                                 </div>
                                 <div class="auth-tools font-muted">
                                     <span>Capabilities: <code>list_messages</code>, <code>send_email</code>, <code>mark_read</code></span>
-                                    <span>Current Grant: <code>read_email</code> (Governor Verified)</span>
                                 </div>
                             </div>
 
@@ -395,7 +290,6 @@
                                 </div>
                                 <div class="auth-tools font-muted">
                                     <span>Capabilities: <code>search_rag</code>, <code>web_search</code>, <code>extract_paper</code></span>
-                                    <span>Current Grant: <code>search_rag</code>, <code>web_search</code></span>
                                 </div>
                             </div>
                         </div>
@@ -413,18 +307,17 @@
                     </div>
                     <div class="log-filter-bar font-mono">
                         <button class="filter-btn active" data-filter="all">All</button>
-                        <button class="filter-btn" data-filter="DECISION">Decisions</button>
-                        <button class="filter-btn" data-filter="ACTION">Actions</button>
+                        <button class="filter-btn" data-filter="GOAL">🎯 Goal</button>
+                        <button class="filter-btn" data-filter="STRATEGY">🧠 Strategy</button>
                         <button class="filter-btn" data-filter="SECURITY">Security</button>
                         <button class="filter-btn" data-filter="LLM">🧠 LLM</button>
-                        <button class="filter-btn" data-filter="WORKLOAD">🔮 Workload</button>
                     </div>
                     <div class="card-body">
                         <div class="console-terminal font-mono" id="console-terminal">
-                            <div class="log-line info" data-category="SECURITY">[18:30:00] [AutonomyGovernor] RISK: LOW | Autonomy: BOUNDED_AUTO -> Action 'list_messages' PERMITTED (Provenance: fact_7908912f)</div>
-                            <div class="log-line highlight" data-category="WORKLOAD">[18:29:55] [PredictiveWorkloadModel] 14-day forecast evaluated: Demand 64h vs Capacity 52h -> Overload Risk HIGH (118%).</div>
-                            <div class="log-line success" data-category="LLM">[18:29:50] [PlanningSpecialist] [MODEL:DETERMINISTIC_RULES] [ROUTER:RULE_ENGINE] [4ms] Evaluated schedule rules -> LLM CALL AVOIDED</div>
-                            <div class="log-line highlight" data-category="RESEARCH">[18:29:45] [PersonalKnowledgeGraph2] Validated active edge 'n_davis' -> 'ADVISOR_OF' (valid_from: 2026-04-01).</div>
+                            <div class="log-line info" data-category="SECURITY">[18:38:00] [AutonomyGovernor] RISK: LOW | Autonomy: BOUNDED_AUTO -> Action 'list_messages' PERMITTED (Provenance: fact_7908912f)</div>
+                            <div class="log-line highlight" data-category="GOAL">[18:37:55] [AutonomousGoalPriorityManager] Evaluated goal priorities -> Master Thesis ranked #1 (Score: 9.4 ↑).</div>
+                            <div class="log-line success" data-category="STRATEGY">[18:37:50] [PredictiveMissionOptimizer] Strategy C recommended for Master Thesis (Completion prob: 91%, LOW risk).</div>
+                            <div class="log-line highlight" data-category="LLM">[18:37:45] [ResearchSpecialist] [MODEL:strong_cloud] [ROUTER:STRONG_CLOUD_LLM] [TOKENS:1,842] [2.4s] Executed literature synthesis.</div>
                         </div>
                     </div>
                 </div>
@@ -434,50 +327,11 @@
         </main>
     </div>
 
-    <!-- Model Routing Trace Modal Dialog -->
-    <div class="modal-overlay hidden" id="trace-modal-overlay">
-        <div class="modal-card glass" style="width: 600px;">
-            <div class="modal-header">
-                <div class="modal-title-group">
-                    <span class="modal-icon">🔀</span>
-                    <h3 class="modal-title font-outfit">Model Routing Trace</h3>
-                </div>
-                <button class="modal-close-btn" id="trace-modal-close-btn">&times;</button>
-            </div>
-            <div class="modal-body font-inter">
-                <div class="trace-flow-step font-mono">
-                    <div class="t-step-title font-cyan">1. TASK & COMPLEXITY</div>
-                    <div class="t-step-desc font-muted">Task: University Email Classification | Complexity: LOW | Domain: Email</div>
-                </div>
-                <div class="trace-flow-step font-mono">
-                    <div class="t-step-title font-cyan">2. USER PREFERENCE & RESOURCES</div>
-                    <div class="t-step-desc font-muted">Preference: LOCAL_ONLY | CPU: 68% | RAM: 9.2 GB / 16.0 GB</div>
-                </div>
-                <div class="trace-flow-step font-mono">
-                    <div class="t-step-title font-amber">3. CANDIDATE EVALUATION</div>
-                    <div class="t-step-desc font-muted">
-                        <div>✓ Deterministic Rules (Eligible - pattern match)</div>
-                        <div>✓ Qwen 2.5 1.5B (Eligible - small local LLM)</div>
-                        <div>✕ Strong Local LLM 14B (Blocked - RAM limit)</div>
-                        <div>✕ Strong Cloud LLM (Bypassed - Local preference)</div>
-                    </div>
-                </div>
-                <div class="trace-flow-step font-mono">
-                    <div class="t-step-title font-emerald">4. SELECTED MODEL & GOVERNOR</div>
-                    <div class="t-step-desc font-muted">Selected: Qwen 2.5 1.5B (Ollama) | Governor: AUTHORIZED (Bounded Autonomy)</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Model Details Inspector Modal Dialog -->
+    <!-- Inspector Modals -->
     <div class="modal-overlay hidden" id="model-modal-overlay">
         <div class="modal-card glass">
             <div class="modal-header">
-                <div class="modal-title-group">
-                    <span class="modal-icon">🧠</span>
-                    <h3 class="modal-title font-outfit" id="modal-model-name">Qwen 2.5 1.5B Inspector</h3>
-                </div>
+                <h3 class="modal-title font-outfit" id="modal-model-name">Qwen 2.5 1.5B Inspector</h3>
                 <button class="modal-close-btn" id="model-modal-close-btn">&times;</button>
             </div>
             <div class="modal-body font-inter">
@@ -485,24 +339,6 @@
                     <div class="m-stat"><span class="m-label">Availability:</span> <span class="m-val font-emerald">READY</span></div>
                     <div class="m-stat"><span class="m-label">Eligibility:</span> <span class="m-val font-emerald">ELIGIBLE</span></div>
                     <div class="m-stat"><span class="m-label">Activity:</span> <span class="m-val font-cyan">IN USE</span></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Agent Inspector Modal Dialog -->
-    <div class="modal-overlay hidden" id="agent-modal-overlay">
-        <div class="modal-card glass">
-            <div class="modal-header">
-                <div class="modal-title-group">
-                    <span class="modal-icon" id="modal-agent-icon">📧</span>
-                    <h3 class="modal-title font-outfit" id="modal-agent-name">EmailSpecialist Inspector</h3>
-                </div>
-                <button class="modal-close-btn" id="modal-close-btn">&times;</button>
-            </div>
-            <div class="modal-body font-inter">
-                <div class="modal-stat-grid font-mono">
-                    <div class="m-stat"><span class="m-label">Status:</span> <span class="m-val font-emerald" id="modal-agent-status">HEALTHY</span></div>
                 </div>
             </div>
         </div>

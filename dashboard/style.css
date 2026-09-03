@@ -85,45 +85,25 @@ body {
 .text-gradient-emerald { background: linear-gradient(135deg, #10b981, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .text-gradient-amber { background: linear-gradient(135deg, #f59e0b, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-/* Predictive Workload Forecast Panel (V6.8) */
-.workload-forecast-card { padding: 20px; }
-.workload-badges { display: flex; align-items: center; gap: 10px; }
-.risk-pill { font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 12px; }
-.risk-pill.high { background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.3); color: var(--accent-rose); }
-.workload-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-.workload-stat-box { display: flex; flex-direction: column; gap: 6px; font-size: 12px; }
-.w-stat-top { display: flex; justify-content: space-between; }
-.w-stat-total { margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(255, 255, 255, 0.1); font-size: 12px; }
-.workload-insight-box { display: flex; flex-direction: column; gap: 8px; }
-.w-insight-title { font-size: 13px; font-weight: 700; }
-.w-insight-desc { font-size: 12px; color: var(--text-main); }
-.w-intervention { font-size: 11px; margin-top: 4px; }
+/* Goal Priority Panel (V6.11) */
+.goal-priority-card { padding: 20px; }
+.goal-priority-list { display: flex; flex-direction: column; gap: 10px; }
+.goal-item { display: flex; flex-direction: column; gap: 4px; }
+.g-item-top { display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600; }
+.g-score-group { display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 12px; }
+.g-reason { font-size: 10px; }
 
-/* HITL Banner */
-.hitl-banner { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 14px; }
-.hitl-info { display: flex; align-items: center; gap: 14px; }
-.hitl-icon { font-size: 24px; }
-.pulse-amber { animation: pulse-amber-glow 2s infinite; }
-@keyframes pulse-amber-glow { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
-.hitl-title { font-size: 11px; font-weight: 700; color: var(--accent-amber); letter-spacing: 0.5px; }
-.hitl-desc { font-size: 13px; color: var(--text-main); }
-.hitl-controls { display: flex; align-items: center; gap: 10px; }
-.hitl-input-field { background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 8px 14px; color: var(--text-main); font-size: 12px; width: 260px; outline: none; }
-.btn { padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; border: none; cursor: pointer; }
-.btn-approve { background: var(--accent-emerald); color: #000; }
-.btn-reject { background: var(--accent-rose); color: #fff; }
+/* Strategy Optimizer Panel (V6.10) */
+.strategy-optimizer-list { display: flex; flex-direction: column; gap: 10px; }
+.strategy-card { display: flex; flex-direction: column; gap: 4px; }
+.strategy-card.recommended { border-color: var(--accent-emerald); background: rgba(16, 185, 129, 0.12); }
+.strat-top { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; }
+.strat-prob { font-family: var(--font-outfit); font-weight: 700; font-size: 14px; }
+.strat-meta { font-size: 10px; }
 
-/* Mission Control Layer */
-.mission-control-card { padding: 20px; }
-.mission-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-.mission-top { display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
-.progress-bar-container { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-.progress-bar { flex-grow: 1; height: 10px; background: rgba(255, 255, 255, 0.08); border-radius: 5px; overflow: hidden; }
-.progress-fill { height: 100%; border-radius: 5px; }
-.progress-fill.emerald { background: var(--accent-emerald); }
-.progress-fill.cyan { background: var(--accent-cyan); }
-.progress-percent { font-size: 12px; font-weight: 700; color: var(--text-main); }
-.mission-details { display: flex; flex-direction: column; gap: 4px; font-size: 11px; }
+/* Mission Forecast Panel (V6.9) */
+.forecast-box { display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
+.f-item { font-size: 13px; }
 
 /* Dashboard Grid Layout */
 .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
@@ -149,35 +129,11 @@ body {
 .badge-3d.red { background: rgba(244, 63, 94, 0.2); color: var(--accent-rose); }
 .badge-3d.gray { background: rgba(255, 255, 255, 0.08); color: var(--text-muted); }
 
-/* Knowledge Graph 2.0 Visualizer */
+/* Knowledge Graph Visualizer */
 .kg-container { background: #050811; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 12px; font-size: 11px; display: flex; flex-direction: column; gap: 10px; }
 .kg-node-row { display: flex; align-items: center; gap: 8px; }
 .kg-node { font-weight: 600; padding: 2px 6px; border-radius: 4px; background: rgba(255, 255, 255, 0.05); }
 .kg-arrow { color: var(--text-muted); font-size: 10px; }
-
-/* Model Routing Trace Steps */
-.trace-flow-step { padding: 10px; background: rgba(0, 0, 0, 0.25); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05); display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
-.t-step-title { font-size: 11px; font-weight: 700; }
-.t-step-desc { font-size: 10px; }
-
-/* Agent Collaboration Mesh */
-.collab-stream { background: #050811; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 12px; font-size: 11px; display: flex; flex-direction: column; gap: 10px; height: 160px; overflow-y: auto; }
-.collab-msg { display: flex; flex-direction: column; gap: 2px; }
-.c-agent { font-weight: 600; }
-.c-content { color: var(--text-main); font-style: italic; }
-
-/* Decision Center */
-.section-desc { font-size: 12px; color: var(--text-muted); }
-.decision-options { display: flex; flex-direction: column; gap: 10px; }
-.decision-card { padding: 12px; background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 10px; display: flex; flex-direction: column; gap: 4px; cursor: pointer; transition: border-color 0.2s ease, background 0.2s ease; }
-.decision-card:hover { border-color: var(--accent-cyan); }
-.decision-card.selected { border-color: var(--accent-emerald); background: rgba(16, 185, 129, 0.12); box-shadow: 0 0 12px rgba(16, 185, 129, 0.2); }
-.dec-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 600; }
-.dec-prob { font-size: 11px; }
-.decision-controls { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
-.btn-save-decision { background: linear-gradient(135deg, #10b981, #06b6d4); color: #000; font-size: 11px; font-weight: 700; padding: 8px 14px; border-radius: 8px; border: none; cursor: pointer; }
-.btn-save-decision:hover { filter: brightness(1.1); }
-.decision-save-toast { font-size: 11px; font-weight: 600; opacity: 1; transition: opacity 0.5s ease; }
 
 /* Authority Grants & Clickable Inspector Cards */
 .agent-authority-list { display: flex; flex-direction: column; gap: 10px; }
@@ -219,7 +175,3 @@ body {
 .m-stat { display: flex; justify-content: space-between; }
 .m-label { color: var(--text-muted); }
 .m-val { font-weight: 600; }
-.modal-section { display: flex; flex-direction: column; gap: 6px; }
-.modal-section h4 { font-size: 12px; font-weight: 600; }
-.tool-tags { font-size: 11px; color: var(--text-main); }
-.tool-tags code { background: rgba(255, 255, 255, 0.08); padding: 2px 6px; border-radius: 4px; color: var(--accent-cyan); }

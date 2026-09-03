@@ -22,13 +22,13 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json_response({
                 "status": "RUNNING",
                 "mode": "BOUNDED_AUTO",
-                "version": "v6.8",
-                "unit_tests_passing": 1532,
+                "version": "v6.11",
+                "unit_tests_passing": 1667,
                 "mission_completion_rate": 0.894,
                 "user_intervention_rate": 0.042,
                 "safety_violations": 0.0,
                 "llm_calls_avoided_rate": 0.421,
-                "active_subsystems": 29
+                "active_subsystems": 32
             })
         elif self.path == '/api/proposals':
             proposals = self._load_real_proposals()
@@ -50,8 +50,12 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json_response(self._get_knowledge_graph_summary())
         elif self.path == '/api/workload/forecast':
             self.send_json_response(self._get_workload_forecast())
-        elif self.path == '/api/workload/scenarios':
-            self.send_json_response(self._get_workload_scenarios())
+        elif self.path == '/api/goals/priorities':
+            self.send_json_response(self._get_goal_priorities())
+        elif self.path == '/api/strategies/optimization':
+            self.send_json_response(self._get_strategy_optimization())
+        elif self.path == '/api/missions/forecast':
+            self.send_json_response(self._get_mission_forecast())
         elif self.path == '/api/agents/inspect':
             self.send_json_response(self._get_agent_inspection_profiles())
         elif self.path == '/api/models':
@@ -131,6 +135,48 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
                 pass
         return {"selected_option": "opt_b"}
 
+    def _get_goal_priorities(self) -> Dict[str, Any]:
+        return {
+            "total_active_goals": 5,
+            "goal_priorities": [
+                {"goal_id": "g_thesis", "name": "🎓 Master Thesis Proposal", "priority_score": 9.4, "trend": "UP", "reason": "Deadline Nov 30 + bottleneck + HIGH risk"},
+                {"goal_id": "g_job", "name": "💼 Job & Application Search", "priority_score": 5.1, "trend": "DOWN", "reason": "No immediate deadline"},
+                {"goal_id": "g_ai_agent", "name": "🤖 Personal AI Agent OS", "priority_score": 4.7, "trend": "STABLE", "reason": "1,667 passing unit tests"},
+                {"goal_id": "g_university", "name": "📚 M.Sc. Mannheim Coursework", "priority_score": 3.8, "trend": "STABLE", "reason": "Assignments on track"},
+                {"goal_id": "g_personal", "name": "🏠 Personal Task Backlog", "priority_score": 2.7, "trend": "DOWN", "reason": "De-prioritized to free focus hours"}
+            ]
+        }
+
+    def _get_strategy_optimization(self) -> Dict[str, Any]:
+        return {
+            "mission_name": "Master Thesis Proposal & Research",
+            "recommended_strategy": {
+                "strategy_id": "strat_thesis_c",
+                "name": "Strategy C — Iterative Critic & Dual Verification",
+                "completion_probability": "91%",
+                "overload_risk": "LOW",
+                "capacity_utilization": "91%",
+                "historical_success": "86%",
+                "is_recommended": True
+            },
+            "strategy_evaluations": [
+                {"strategy_id": "strat_thesis_a", "name": "Strategy A — Direct Draft", "completion_probability": "72%", "overload_risk": "HIGH", "capacity_utilization": "123%"},
+                {"strategy_id": "strat_thesis_b", "name": "Strategy B — Requirements & Calendar", "completion_probability": "86%", "overload_risk": "MEDIUM", "capacity_utilization": "96%"},
+                {"strategy_id": "strat_thesis_c", "name": "Strategy C — Iterative Critic & Verification ⭐", "completion_probability": "91%", "overload_risk": "LOW", "capacity_utilization": "91%"}
+            ]
+        }
+
+    def _get_mission_forecast(self) -> Dict[str, Any]:
+        return {
+            "mission_name": "Master Thesis Proposal & Research",
+            "completion_probability": "91%",
+            "deadline_risk": "LOW",
+            "capacity_utilization": "91%",
+            "current_bottleneck": "Thesis Methodology",
+            "predicted_completion_date": "Nov 24, 2026",
+            "trend": "UP (Improving)"
+        }
+
     def _get_workload_forecast(self) -> Dict[str, Any]:
         return {
             "horizon_days": 14,
@@ -144,36 +190,6 @@ class RESTDashboardHandler(http.server.SimpleHTTPRequestHandler):
             "risk_level": "HIGH",
             "bottleneck": "Thesis Methodology (Literature search overrun)",
             "recommended_intervention": "Reduce secondary workload by 9.0 focus hours."
-        }
-
-    def _get_workload_scenarios(self) -> Dict[str, Any]:
-        return {
-            "scenarios": [
-                {
-                    "scenario_id": "current_plan",
-                    "name": "Scenario A — Current Plan",
-                    "completion_probability": "72%",
-                    "overload_risk": "HIGH",
-                    "utilization": "123%",
-                    "impact": "High risk of missing thesis methodology deadline."
-                },
-                {
-                    "scenario_id": "defer_secondary",
-                    "name": "Scenario B — Defer Secondary Tasks ⭐",
-                    "completion_probability": "84%",
-                    "overload_risk": "LOW",
-                    "utilization": "96%",
-                    "impact": "Frees 9.0 focus hours. Recommended by Decision Engine."
-                },
-                {
-                    "scenario_id": "thesis_focus",
-                    "name": "Scenario C — Thesis Focus Max",
-                    "completion_probability": "91%",
-                    "overload_risk": "LOW",
-                    "utilization": "91%",
-                    "impact": "Requires notifying advisor regarding schedule shift."
-                }
-            ]
         }
 
     def _get_registered_models_3d(self) -> List[Dict[str, Any]]:
@@ -333,7 +349,7 @@ def main():
     print(f"   [AI AGENT OS] OPERATIONAL CONTROL PLANE REST API SERVER")
     print(f"======================================================================")
     print(f"  --> Serving dashboard from: '{DASHBOARD_DIR}'")
-    print(f"  --> Live REST API Endpoints: http://localhost:{PORT}/api/status, /api/workload/forecast, /api/workload/scenarios")
+    print(f"  --> Live REST API Endpoints: http://localhost:{PORT}/api/status, /api/goals/priorities, /api/strategies/optimization")
     print(f"  --> Opening URL: http://localhost:{PORT}")
     print(f"  --> Press Ctrl+C in terminal to stop server.")
     print(f"======================================================================\n")
