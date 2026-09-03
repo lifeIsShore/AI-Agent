@@ -14,6 +14,38 @@ class GoogleTasksTool:
                 print(f"[GoogleTasksTool] Could not initialize live Google Tasks service: {e}")
                 self.service = None
 
+    def list_tasklists(self) -> List[Dict[str, Any]]:
+        if not self.service:
+            return []
+        try:
+            results = self.service.tasklists().list().execute()
+            items = results.get('items', [])
+            return [{"id": item.get('id'), "title": item.get('title')} for item in items]
+        except Exception as e:
+            print(f"[GoogleTasksTool] Error listing tasklists: {e}")
+            return []
+
+    def create_tasklist(self, title: str) -> Dict[str, Any]:
+        if not self.service:
+            return {"error": "Google Tasks service unavailable"}
+        try:
+            created = self.service.tasklists().insert(body={"title": title}).execute()
+            return {"status": "success", "tasklist": {"id": created.get('id'), "title": created.get('title')}}
+        except Exception as e:
+            return {"status": "error", "error": str(e)}
+
+    def get_or_create_ai_agent_tasklist(self, title: str = "AI Agent Tasks") -> str:
+        if not self.service:
+            return "@default"
+        lists = self.list_tasklists()
+        for l in lists:
+            if l.get("title", "").lower() == title.lower():
+                return l.get("id", "@default")
+        res = self.create_tasklist(title)
+        if res.get("status") == "success":
+            return res.get("tasklist", {}).get("id", "@default")
+        return "@default"
+
     def list_tasks(self, tasklist_id: str = "@default", show_completed: bool = False) -> List[Dict[str, Any]]:
         if not self.service:
             return []
@@ -45,19 +77,18 @@ class GoogleTasksTool:
         title: str,
         notes: Optional[str] = None,
         due: Optional[str] = None,
-        tasklist_id: str = "@default"
+        tasklist_id: str = "ai_agent"
     ) -> Dict[str, Any]:
         if not self.service:
             return {"error": "Google Tasks service unavailable"}
+
+        if tasklist_id in ["@default", "ai_agent", "ai_agent_tasks"]:
+            tasklist_id = self.get_or_create_ai_agent_tasklist("AI Agent Tasks")
 
         body = {
             "title": title,
             "notes": notes or ""
         }
-        if due:
-            # Format RFC 3339 timestamp (e.g., 2026-09-01T00:00:00.000Z)
-            body["due"] = due if due.endswith("Z") else f"{due}T00:00:00.000Z"
-
         try:
             created_task = self.service.tasks().insert(tasklist=tasklist_id, body=body).execute()
             return {

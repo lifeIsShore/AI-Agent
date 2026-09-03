@@ -14,6 +14,17 @@ ALL_SCOPES = [
 
 class GoogleAuthManager:
     def __init__(self, credentials_path: str = "credentials.json", token_path: str = "token.json"):
+        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+        if not os.path.isabs(credentials_path) and not os.path.exists(credentials_path):
+            alt_cred = os.path.join(project_root, credentials_path)
+            if os.path.exists(alt_cred):
+                credentials_path = alt_cred
+
+        if not os.path.isabs(token_path) and not os.path.exists(token_path):
+            alt_token = os.path.join(project_root, token_path)
+            if os.path.exists(alt_token):
+                token_path = alt_token
+
         self.credentials_path = credentials_path
         self.token_path = token_path
 

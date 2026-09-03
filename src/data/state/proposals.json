@@ -1,0 +1,608 @@
+{
+  "prop_ff5c59b7": {
+    "proposal_id": "prop_ff5c59b7",
+    "action": "archive_email",
+    "target": "email_m1",
+    "parameters": {
+      "msg_id": "m1"
+    },
+    "reason": "Automated/promotional email (other/automated_alert)",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.archive",
+    "status": "REJECTED",
+    "created_at": "2026-09-03T15:07:05.344998+00:00",
+    "expires_at": "2026-09-03T17:07:05.344998+00:00",
+    "why_proposed": [
+      "Action 'archive_email' recommended for target 'email_m1'.",
+      "Primary reason: Automated/promotional email (other/automated_alert).",
+      "Capability Scope: gmail.archive | Risk Level: MEDIUM."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "419f07fe7c18979d",
+    "audit_metadata": {}
+  },
+  "prop_2fcce72c": {
+    "proposal_id": "prop_2fcce72c",
+    "action": "archive_email",
+    "target": "email_m3",
+    "parameters": {
+      "msg_id": "m3"
+    },
+    "reason": "Automated/promotional email (job_search/automated_alert)",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.archive",
+    "status": "REJECTED",
+    "created_at": "2026-09-03T15:07:05.358797+00:00",
+    "expires_at": "2026-09-03T17:07:05.358797+00:00",
+    "why_proposed": [
+      "Action 'archive_email' recommended for target 'email_m3'.",
+      "Primary reason: Automated/promotional email (job_search/automated_alert).",
+      "Capability Scope: gmail.archive | Risk Level: MEDIUM."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "1e08b99e1de5be4b",
+    "audit_metadata": {}
+  },
+  "prop_e1608e40": {
+    "proposal_id": "prop_e1608e40",
+    "action": "create_calendar_event",
+    "target": "primary_calendar",
+    "parameters": {
+      "summary": "Thesis proposal",
+      "start_time": "09:00",
+      "end_time": "18:00"
+    },
+    "reason": "Allocated into free slot (09:00–18:00)",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "calendar.create",
+    "status": "EXECUTED",
+    "created_at": "2026-09-03T15:07:54.253264+00:00",
+    "expires_at": "2026-09-03T16:07:54.253264+00:00",
+    "why_proposed": [
+      "1. Goal task 'Thesis proposal' was identified as active priority.",
+      "2. Free calendar slot found (09:00 - 18:00).",
+      "3. Allocation honors user afternoon work preference."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "ac84a172fc54a4e0",
+    "audit_metadata": {}
+  },
+  "prop_46cc828a": {
+    "proposal_id": "prop_46cc828a",
+    "action": "create_task",
+    "target": "@default",
+    "parameters": {
+      "title": "Thesis proposal",
+      "notes": "Scheduled block: 09:00 - 18:00"
+    },
+    "reason": "Google Tasks item for 'Thesis proposal'",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "tasks.create",
+    "status": "EXECUTED",
+    "created_at": "2026-09-03T15:07:54.253264+00:00",
+    "expires_at": "2026-09-03T16:07:54.253264+00:00",
+    "why_proposed": [
+      "1. Priority daily planner item.",
+      "2. Synchronize to Google Tasks."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "2ca4803fe85afda4",
+    "audit_metadata": {}
+  },
+  "prop_bcf10200": {
+    "proposal_id": "prop_bcf10200",
+    "action": "apply_label",
+    "target": "email_m1",
+    "parameters": {
+      "msg_id": "m1",
+      "label_name": "Actionable"
+    },
+    "reason": "Inbox triage priority label",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.label",
+    "status": "EXECUTED",
+    "created_at": "2026-09-03T15:07:54.254266+00:00",
+    "expires_at": "2026-09-03T17:07:54.254266+00:00",
+    "why_proposed": [
+      "1. Email marked high importance.",
+      "2. Apply 'Actionable' label."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "4cee3cf507b5a254",
+    "audit_metadata": {}
+  },
+  "prop_a335bc2d": {
+    "proposal_id": "prop_a335bc2d",
+    "action": "apply_label",
+    "target": "email_m2",
+    "parameters": {
+      "msg_id": "m2",
+      "label_name": "Actionable"
+    },
+    "reason": "Inbox triage priority label",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.label",
+    "status": "EXECUTED",
+    "created_at": "2026-09-03T15:07:54.254266+00:00",
+    "expires_at": "2026-09-03T17:07:54.254266+00:00",
+    "why_proposed": [
+      "1. Email marked high importance.",
+      "2. Apply 'Actionable' label."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "fce77cbfdc15f037",
+    "audit_metadata": {}
+  },
+  "prop_831b10fc": {
+    "proposal_id": "prop_831b10fc",
+    "action": "archive_email",
+    "target": "email_m1",
+    "parameters": {
+      "msg_id": "m1"
+    },
+    "reason": "Automated/promotional email (work/automated_alert)",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.archive",
+    "status": "REJECTED",
+    "created_at": "2026-09-03T15:07:54.254266+00:00",
+    "expires_at": "2026-09-03T17:07:54.254266+00:00",
+    "why_proposed": [
+      "1. Sender is an automated notification service.",
+      "2. Message requires no immediate reply or calendar planning.",
+      "3. Similar promotional digests were previously archived."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "419f07fe7c18979d",
+    "audit_metadata": {}
+  },
+  "prop_26ba4435": {
+    "proposal_id": "prop_26ba4435",
+    "action": "archive_email",
+    "target": "email_m2",
+    "parameters": {
+      "msg_id": "m2"
+    },
+    "reason": "Automated/promotional email (service/automated_alert)",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.archive",
+    "status": "REJECTED",
+    "created_at": "2026-09-03T15:07:54.254266+00:00",
+    "expires_at": "2026-09-03T17:07:54.254266+00:00",
+    "why_proposed": [
+      "1. Sender is an automated notification service.",
+      "2. Message requires no immediate reply or calendar planning.",
+      "3. Similar promotional digests were previously archived."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "be205874ddf0bd38",
+    "audit_metadata": {}
+  },
+  "prop_6bc81d61": {
+    "proposal_id": "prop_6bc81d61",
+    "action": "archive_email",
+    "target": "email_m3",
+    "parameters": {
+      "msg_id": "m3"
+    },
+    "reason": "Automated/promotional email (job_search/automated_alert)",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.archive",
+    "status": "REJECTED",
+    "created_at": "2026-09-03T15:07:54.254266+00:00",
+    "expires_at": "2026-09-03T17:07:54.254266+00:00",
+    "why_proposed": [
+      "1. Sender is an automated notification service.",
+      "2. Message requires no immediate reply or calendar planning.",
+      "3. Similar promotional digests were previously archived."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "1e08b99e1de5be4b",
+    "audit_metadata": {}
+  },
+  "prop_2b600f5e": {
+    "proposal_id": "prop_2b600f5e",
+    "action": "archive_email",
+    "target": "email_1a067d6fe81aeb95",
+    "parameters": {
+      "msg_id": "1a067d6fe81aeb95"
+    },
+    "reason": "Automated/promotional email (marketing/marketing)",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.archive",
+    "status": "REJECTED",
+    "created_at": "2026-09-03T15:18:56.718536+00:00",
+    "expires_at": "2026-09-03T17:18:56.718536+00:00",
+    "why_proposed": [
+      "Action 'archive_email' recommended for target 'email_1a067d6fe81aeb95'.",
+      "Primary reason: Automated/promotional email (marketing/marketing).",
+      "Capability Scope: gmail.archive | Risk Level: MEDIUM."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "61cc25cb5075fbca",
+    "audit_metadata": {}
+  },
+  "prop_c6e13c2c": {
+    "proposal_id": "prop_c6e13c2c",
+    "action": "archive_email",
+    "target": "email_1a067c960a4f4697",
+    "parameters": {
+      "msg_id": "1a067c960a4f4697"
+    },
+    "reason": "Automated/promotional email (university/automated_alert)",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.archive",
+    "status": "REJECTED",
+    "created_at": "2026-09-03T15:18:56.737125+00:00",
+    "expires_at": "2026-09-03T17:18:56.737125+00:00",
+    "why_proposed": [
+      "Action 'archive_email' recommended for target 'email_1a067c960a4f4697'.",
+      "Primary reason: Automated/promotional email (university/automated_alert).",
+      "Capability Scope: gmail.archive | Risk Level: MEDIUM."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "952800c86423405f",
+    "audit_metadata": {}
+  },
+  "prop_cc5699dd": {
+    "proposal_id": "prop_cc5699dd",
+    "action": "archive_email",
+    "target": "email_1a0678ad2a3908db",
+    "parameters": {
+      "msg_id": "1a0678ad2a3908db"
+    },
+    "reason": "Automated/promotional email (job_search/automated_alert)",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.archive",
+    "status": "REJECTED",
+    "created_at": "2026-09-03T15:18:56.766367+00:00",
+    "expires_at": "2026-09-03T17:18:56.766367+00:00",
+    "why_proposed": [
+      "Action 'archive_email' recommended for target 'email_1a0678ad2a3908db'.",
+      "Primary reason: Automated/promotional email (job_search/automated_alert).",
+      "Capability Scope: gmail.archive | Risk Level: MEDIUM."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "660085d180503faa",
+    "audit_metadata": {}
+  },
+  "prop_e3f2e99b": {
+    "proposal_id": "prop_e3f2e99b",
+    "action": "archive_email",
+    "target": "email_1a06756932d828ac",
+    "parameters": {
+      "msg_id": "1a06756932d828ac"
+    },
+    "reason": "Automated/promotional email (notification/automated_alert)",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.archive",
+    "status": "REJECTED",
+    "created_at": "2026-09-03T15:18:56.798519+00:00",
+    "expires_at": "2026-09-03T17:18:56.798519+00:00",
+    "why_proposed": [
+      "Action 'archive_email' recommended for target 'email_1a06756932d828ac'.",
+      "Primary reason: Automated/promotional email (notification/automated_alert).",
+      "Capability Scope: gmail.archive | Risk Level: MEDIUM."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "4c29964ef3eccaee",
+    "audit_metadata": {}
+  },
+  "prop_d7348607": {
+    "proposal_id": "prop_d7348607",
+    "action": "archive_email",
+    "target": "email_1a0675690a6f07e8",
+    "parameters": {
+      "msg_id": "1a0675690a6f07e8"
+    },
+    "reason": "Automated/promotional email (notification/automated_alert)",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.archive",
+    "status": "REJECTED",
+    "created_at": "2026-09-03T15:18:56.821205+00:00",
+    "expires_at": "2026-09-03T17:18:56.821205+00:00",
+    "why_proposed": [
+      "Action 'archive_email' recommended for target 'email_1a0675690a6f07e8'.",
+      "Primary reason: Automated/promotional email (notification/automated_alert).",
+      "Capability Scope: gmail.archive | Risk Level: MEDIUM."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "dfd3278eec51c1b0",
+    "audit_metadata": {}
+  },
+  "prop_11f3a03f": {
+    "proposal_id": "prop_11f3a03f",
+    "action": "archive_email",
+    "target": "email_1a06756834d7d7a7",
+    "parameters": {
+      "msg_id": "1a06756834d7d7a7"
+    },
+    "reason": "Automated/promotional email (other/automated_alert)",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.archive",
+    "status": "REJECTED",
+    "created_at": "2026-09-03T15:18:56.854204+00:00",
+    "expires_at": "2026-09-03T17:18:56.854204+00:00",
+    "why_proposed": [
+      "Action 'archive_email' recommended for target 'email_1a06756834d7d7a7'.",
+      "Primary reason: Automated/promotional email (other/automated_alert).",
+      "Capability Scope: gmail.archive | Risk Level: MEDIUM."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "fb0a1282c283f6d7",
+    "audit_metadata": {}
+  },
+  "prop_f3e5ca96": {
+    "proposal_id": "prop_f3e5ca96",
+    "action": "archive_email",
+    "target": "email_1a0675680787abbf",
+    "parameters": {
+      "msg_id": "1a0675680787abbf"
+    },
+    "reason": "Automated/promotional email (service/automated_alert)",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.archive",
+    "status": "REJECTED",
+    "created_at": "2026-09-03T15:18:56.883901+00:00",
+    "expires_at": "2026-09-03T17:18:56.883901+00:00",
+    "why_proposed": [
+      "Action 'archive_email' recommended for target 'email_1a0675680787abbf'.",
+      "Primary reason: Automated/promotional email (service/automated_alert).",
+      "Capability Scope: gmail.archive | Risk Level: MEDIUM."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "4d383019bc10de71",
+    "audit_metadata": {}
+  },
+  "prop_f68e81a1": {
+    "proposal_id": "prop_f68e81a1",
+    "action": "create_calendar_event",
+    "target": "primary_calendar",
+    "parameters": {
+      "summary": "Thesis proposal",
+      "start_time": "10:00",
+      "end_time": "12:00"
+    },
+    "reason": "Allocated into free slot (10:00–12:00)",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "calendar.create",
+    "status": "EXECUTED",
+    "created_at": "2026-09-03T15:20:10.887712+00:00",
+    "expires_at": "2026-09-03T16:20:10.887712+00:00",
+    "why_proposed": [
+      "1. Goal task 'Thesis proposal' was identified as active priority.",
+      "2. Free calendar slot found (10:00 - 12:00).",
+      "3. Allocation honors user afternoon work preference."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "eb933361b0b488ae",
+    "audit_metadata": {}
+  },
+  "prop_77b60264": {
+    "proposal_id": "prop_77b60264",
+    "action": "create_task",
+    "target": "@default",
+    "parameters": {
+      "title": "Thesis proposal",
+      "notes": "Scheduled block: 10:00 - 12:00"
+    },
+    "reason": "Google Tasks item for 'Thesis proposal'",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "tasks.create",
+    "status": "EXECUTED",
+    "created_at": "2026-09-03T15:20:10.887712+00:00",
+    "expires_at": "2026-09-03T16:20:10.887712+00:00",
+    "why_proposed": [
+      "1. Priority daily planner item.",
+      "2. Synchronize to Google Tasks."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "186c4be02f4dfc96",
+    "audit_metadata": {}
+  },
+  "prop_f9fcbdfb": {
+    "proposal_id": "prop_f9fcbdfb",
+    "action": "create_calendar_event",
+    "target": "primary_calendar",
+    "parameters": {
+      "summary": "Reply to university email",
+      "start_time": "14:00",
+      "end_time": "15:00"
+    },
+    "reason": "Allocated into free slot (14:00–15:00)",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "calendar.create",
+    "status": "EXECUTED",
+    "created_at": "2026-09-03T15:20:10.887712+00:00",
+    "expires_at": "2026-09-03T16:20:10.887712+00:00",
+    "why_proposed": [
+      "1. Goal task 'Reply to university email' was identified as active priority.",
+      "2. Free calendar slot found (14:00 - 15:00).",
+      "3. Allocation honors user afternoon work preference."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "3adc52d807948fb9",
+    "audit_metadata": {}
+  },
+  "prop_bacbbcab": {
+    "proposal_id": "prop_bacbbcab",
+    "action": "create_task",
+    "target": "@default",
+    "parameters": {
+      "title": "Reply to university email",
+      "notes": "Scheduled block: 14:00 - 15:00"
+    },
+    "reason": "Google Tasks item for 'Reply to university email'",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "tasks.create",
+    "status": "EXECUTED",
+    "created_at": "2026-09-03T15:20:10.887712+00:00",
+    "expires_at": "2026-09-03T16:20:10.887712+00:00",
+    "why_proposed": [
+      "1. Priority daily planner item.",
+      "2. Synchronize to Google Tasks."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "08c94c8c6e01ac31",
+    "audit_metadata": {}
+  },
+  "prop_0b5473e9": {
+    "proposal_id": "prop_0b5473e9",
+    "action": "create_calendar_event",
+    "target": "primary_calendar",
+    "parameters": {
+      "summary": "Review job alerts",
+      "start_time": "15:00",
+      "end_time": "17:00"
+    },
+    "reason": "Allocated into free slot (15:00–17:00)",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "calendar.create",
+    "status": "EXECUTED",
+    "created_at": "2026-09-03T15:20:10.887712+00:00",
+    "expires_at": "2026-09-03T16:20:10.887712+00:00",
+    "why_proposed": [
+      "1. Goal task 'Review job alerts' was identified as active priority.",
+      "2. Free calendar slot found (15:00 - 17:00).",
+      "3. Allocation honors user afternoon work preference."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "760b076ddbf5df7f",
+    "audit_metadata": {}
+  },
+  "prop_e24d5c55": {
+    "proposal_id": "prop_e24d5c55",
+    "action": "create_task",
+    "target": "@default",
+    "parameters": {
+      "title": "Review job alerts",
+      "notes": "Scheduled block: 15:00 - 17:00"
+    },
+    "reason": "Google Tasks item for 'Review job alerts'",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "tasks.create",
+    "status": "EXECUTED",
+    "created_at": "2026-09-03T15:20:10.887712+00:00",
+    "expires_at": "2026-09-03T16:20:10.887712+00:00",
+    "why_proposed": [
+      "1. Priority daily planner item.",
+      "2. Synchronize to Google Tasks."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "9d9ea843947b79e4",
+    "audit_metadata": {}
+  },
+  "prop_71e6fddf": {
+    "proposal_id": "prop_71e6fddf",
+    "action": "apply_label",
+    "target": "email_1a067d6fe81aeb95",
+    "parameters": {
+      "msg_id": "1a067d6fe81aeb95",
+      "label_name": "Actionable"
+    },
+    "reason": "Inbox triage priority label",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.label",
+    "status": "EXECUTED",
+    "created_at": "2026-09-03T15:20:10.887712+00:00",
+    "expires_at": "2026-09-03T17:20:10.887712+00:00",
+    "why_proposed": [
+      "1. Email marked high importance.",
+      "2. Apply 'Actionable' label."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "6d63adb9ec89ffb4",
+    "audit_metadata": {}
+  },
+  "prop_520a6a5f": {
+    "proposal_id": "prop_520a6a5f",
+    "action": "apply_label",
+    "target": "email_1a067c960a4f4697",
+    "parameters": {
+      "msg_id": "1a067c960a4f4697",
+      "label_name": "Actionable"
+    },
+    "reason": "Inbox triage priority label",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.label",
+    "status": "EXECUTED",
+    "created_at": "2026-09-03T15:20:10.887712+00:00",
+    "expires_at": "2026-09-03T17:20:10.887712+00:00",
+    "why_proposed": [
+      "1. Email marked high importance.",
+      "2. Apply 'Actionable' label."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "d752e9f0d95444bb",
+    "audit_metadata": {}
+  },
+  "prop_3042b09c": {
+    "proposal_id": "prop_3042b09c",
+    "action": "archive_email",
+    "target": "email_1a067d6fe81aeb95",
+    "parameters": {
+      "msg_id": "1a067d6fe81aeb95"
+    },
+    "reason": "Automated/promotional email (marketing/marketing)",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.archive",
+    "status": "REJECTED",
+    "created_at": "2026-09-03T15:20:10.887712+00:00",
+    "expires_at": "2026-09-03T17:20:10.887712+00:00",
+    "why_proposed": [
+      "1. Sender is an automated notification service.",
+      "2. Message requires no immediate reply or calendar planning.",
+      "3. Similar promotional digests were previously archived."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "61cc25cb5075fbca",
+    "audit_metadata": {}
+  },
+  "prop_0b656707": {
+    "proposal_id": "prop_0b656707",
+    "action": "archive_email",
+    "target": "email_1a0678ad2a3908db",
+    "parameters": {
+      "msg_id": "1a0678ad2a3908db"
+    },
+    "reason": "Automated/promotional email (job_search/automated_alert)",
+    "confidence": 1.0,
+    "risk_level": "MEDIUM",
+    "required_permission": "gmail.archive",
+    "status": "REJECTED",
+    "created_at": "2026-09-03T15:20:10.887712+00:00",
+    "expires_at": "2026-09-03T17:20:10.887712+00:00",
+    "why_proposed": [
+      "1. Sender is an automated notification service.",
+      "2. Message requires no immediate reply or calendar planning.",
+      "3. Similar promotional digests were previously archived."
+    ],
+    "target_checksum": null,
+    "parameters_hash": "660085d180503faa",
+    "audit_metadata": {}
+  }
+}
