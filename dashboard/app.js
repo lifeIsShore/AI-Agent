@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     initPowerSwitch();
     initDocumentHub();
+    initMissionConsole();
+    initHITLApprovalCenter();
     initClearConsole();
 });
 
@@ -53,6 +55,77 @@ function updatePowerSwitchUI(isRunning, displayText) {
         statusText.textContent = displayText || 'SYSTEM STOPPED (HALTED)';
         statusPill.className = 'status-pill stopped';
         statusDot.className = 'status-dot red';
+    }
+}
+
+function initMissionConsole() {
+    const planBtn = document.getElementById('btn-plan-mission');
+    const execBtn = document.getElementById('btn-execute-mission');
+    const inputField = document.getElementById('mission-prompt-input');
+
+    if (planBtn) {
+        planBtn.addEventListener('click', () => submitMission('PLAN'));
+    }
+    if (execBtn) {
+        execBtn.addEventListener('click', () => submitMission('EXECUTE'));
+    }
+}
+
+async function submitMission(mode) {
+    const inputField = document.getElementById('mission-prompt-input');
+    const prompt = inputField ? inputField.value.trim() : '';
+    if (!prompt) return;
+
+    try {
+        const resp = await fetch('/api/missions/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt, mode })
+        });
+        const data = await resp.json();
+        logConsoleEvent(`[MissionConsole] Mission Submitted (${mode}): '${prompt}'`, 'highlight');
+        renderMissionTimeline(data.mission);
+    } catch (err) {
+        console.error('Failed to submit mission:', err);
+    }
+}
+
+function renderMissionTimeline(mission) {
+    const container = document.getElementById('mission-timeline-container');
+    if (!container || !mission || !mission.pipeline_steps) return;
+
+    container.innerHTML = mission.pipeline_steps.map(step => `
+        <div class="m-step-item ${step.status.toLowerCase()}">
+            <span class="m-step-icon">${step.status === 'COMPLETED' ? '✓' : step.status === 'APPROVED' ? '🛡️' : '⚙️'}</span>
+            <span class="m-step-title font-cyan">[${step.agent}] ${step.task}</span>
+        </div>
+    `).join('');
+}
+
+function initHITLApprovalCenter() {
+    const approveBtn = document.getElementById('btn-approve-action');
+    const rejectBtn = document.getElementById('btn-reject-action');
+
+    if (approveBtn) {
+        approveBtn.addEventListener('click', () => respondHITL('APPROVE'));
+    }
+    if (rejectBtn) {
+        rejectBtn.addEventListener('click', () => respondHITL('REJECT'));
+    }
+}
+
+async function respondHITL(decision) {
+    try {
+        const resp = await fetch('/api/hitl/respond', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ decision, proposal_id: 'prop_99182a' })
+        });
+        const data = await resp.json();
+        logConsoleEvent(`[HITLApproval] Action ${decision} recorded for proposal ${data.proposal_id}`, decision === 'APPROVE' ? 'success' : 'warning');
+        alert(`HITL Decision '${decision}' recorded successfully.`);
+    } catch (err) {
+        console.error('Failed to respond to HITL:', err);
     }
 }
 
