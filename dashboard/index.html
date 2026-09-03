@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal AI Agent OS — Operational Control Plane (V6.11)</title>
+    <title>Personal AI Agent OS — Operational Control Plane (V6.14 Benchmark)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -16,12 +16,12 @@
             <div class="logo-group">
                 <div class="logo-icon">🤖</div>
                 <div class="logo-text">
-                    <h1>PERSONAL AI AGENT OS — CONTROL PLANE V6.11</h1>
+                    <h1>PERSONAL AI AGENT OS — CONTROL PLANE V6.14</h1>
                     <div class="arch-breadcrumbs">
                         <span class="version-chip font-cyan">Runtime V6.0</span>
-                        <span class="version-chip font-purple">Strategies V6.9</span>
-                        <span class="version-chip font-amber">Optimizer V6.10</span>
-                        <span class="version-chip font-emerald">Goal Priorities V6.11</span>
+                        <span class="version-chip font-purple">Execution Graph V6.12</span>
+                        <span class="version-chip font-amber">Intelligence V6.13</span>
+                        <span class="version-chip font-emerald">Benchmark Suite V6.14</span>
                     </div>
                 </div>
             </div>
@@ -31,13 +31,25 @@
                     <span id="os-status-text">SYSTEM RUNNING (BOUNDED_AUTO)</span>
                 </div>
                 <div class="badge tests-badge">
-                    <span>🧪 1,667 Unit Tests Passing</span>
+                    <span>🧪 1,802 Unit Tests Passing</span>
+                </div>
+                <div class="badge benchmark-badge">
+                    <span>🎯 20/20 Canonical Missions (100% Pass)</span>
                 </div>
             </div>
         </header>
 
-        <!-- Primary Performance Headline Row -->
+        <!-- Primary Performance Headline Row (With Canonical Benchmark Metric Card) -->
         <section class="kpi-row">
+            <div class="kpi-card glass">
+                <div class="kpi-header">
+                    <span class="kpi-title">Canonical Mission Suite</span>
+                    <span class="kpi-icon">🎯</span>
+                </div>
+                <div class="kpi-value text-gradient-emerald">20 / 20</div>
+                <div class="kpi-footer positive">100% Pass | 0 Safety Violations</div>
+            </div>
+
             <div class="kpi-card glass">
                 <div class="kpi-header">
                     <span class="kpi-title">Mission Completion Rate</span>
@@ -45,15 +57,6 @@
                 </div>
                 <div class="kpi-value text-gradient-emerald">89.4%</div>
                 <div class="kpi-footer positive">↑ +3.1% Long-horizon velocity</div>
-            </div>
-
-            <div class="kpi-card glass">
-                <div class="kpi-header">
-                    <span class="kpi-title">User Intervention Rate</span>
-                    <span class="kpi-icon">👤</span>
-                </div>
-                <div class="kpi-value text-gradient-cyan">4.2%</div>
-                <div class="kpi-footer positive">↓ Low interruption cost</div>
             </div>
 
             <div class="kpi-card glass">
@@ -75,7 +78,56 @@
             </div>
         </section>
 
-        <!-- 🎯 Goal Priority & Autonomous Priority Management Panel (V6.11) -->
+        <!-- 💡 End-to-End Mission Situation Intelligence Panel (V6.13) -->
+        <section class="card glass situation-card">
+            <div class="card-header">
+                <h2>💡 End-to-End Situation Intelligence (V6.13)</h2>
+                <span class="pill-badge primary">Autonomous Reasoning Synthesis</span>
+            </div>
+            <div class="card-body font-inter">
+                <div class="sit-box glass-nested">
+                    <div class="sit-row">
+                        <strong class="font-cyan">Current Priority Goal:</strong> 🎓 Master Thesis Proposal & Research (Priority Score: 9.4 ↑)
+                    </div>
+                    <div class="sit-row" style="margin-top: 6px;">
+                        <strong class="font-emerald">Next Recommended Action:</strong> Execute literature contradiction analysis for arXiv Paper 2401.9912 via ResearchSpecialist + Strong Cloud LLM.
+                    </div>
+                    <div class="sit-row font-muted" style="margin-top: 6px;">
+                        <strong>Why This Action:</strong> Thesis priority = 9.4 due to Nov 30 deadline + literature search bottleneck. Strategy C (91% completion prob) requires dual contradiction verification.
+                    </div>
+                    <div class="sit-row font-amber font-mono" style="margin-top: 6px;">
+                        <strong>Consequence If Deferred:</strong> 14-day workload risk remains HIGH (+12.0h overload) with 68% probability of missing methodology deadline.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 🕸️ Unified Mission Execution Graph Panel (V6.12) -->
+        <section class="card glass execution-graph-card">
+            <div class="card-header">
+                <h2>🕸️ Unified Mission Execution Graph (V6.12)</h2>
+                <span class="pill-badge purple">Goal → Mission → Strategy → Task → Agent → Model → Action</span>
+            </div>
+            <div class="card-body">
+                <div class="graph-flow font-mono">
+                    <div class="g-flow-step"><span class="g-badge goal">GOAL</span> Master Thesis Proposal</div>
+                    <div class="g-flow-arrow">►</div>
+                    <div class="g-flow-step"><span class="g-badge mission">MISSION</span> Literature Synthesis</div>
+                    <div class="g-flow-arrow">►</div>
+                    <div class="g-flow-step"><span class="g-badge strategy">STRATEGY</span> Strategy C (Critic)</div>
+                    <div class="g-flow-arrow">►</div>
+                    <div class="g-flow-step"><span class="g-badge task">TASK</span> Verify Contradictions</div>
+                    <div class="g-flow-arrow">►</div>
+                    <div class="g-flow-step"><span class="g-badge agent">AGENT</span> ResearchSpecialist</div>
+                    <div class="g-flow-arrow">►</div>
+                    <div class="g-flow-step"><span class="g-badge model">MODEL</span> Strong Cloud LLM</div>
+                    <div class="g-flow-arrow">►</div>
+                    <div class="g-flow-step"><span class="g-badge action">ACTION</span> web_search</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 🎯 Goal Priority Management Panel (V6.11) -->
         <section class="card glass goal-priority-card">
             <div class="card-header">
                 <h2>🎯 Autonomous Goal & Priority Management (V6.11)</h2>
@@ -113,7 +165,7 @@
                                 <span class="g-trend font-muted">→ STABLE</span>
                             </div>
                         </div>
-                        <div class="g-reason font-muted font-mono">Reason: Continuous development + 1,667 passing unit tests</div>
+                        <div class="g-reason font-muted font-mono">Reason: Continuous development + 1,802 passing unit tests + 20/20 Canonical Missions</div>
                     </div>
                 </div>
             </div>
@@ -122,7 +174,7 @@
         <!-- Main Dashboard Content Grid -->
         <main class="dashboard-grid">
 
-            <!-- Column 1: Predictive Strategy Optimizer (V6.10) -->
+            <!-- Column 1: Predictive Strategy Optimizer -->
             <div class="grid-column">
 
                 <!-- 🧠 Predictive Mission Strategy Optimizer Panel (V6.10) -->
@@ -140,16 +192,6 @@
                                 </div>
                                 <div class="strat-meta font-muted font-mono">
                                     <span>Risk: HIGH | Util: 123% | Success: 61%</span>
-                                </div>
-                            </div>
-
-                            <div class="strategy-card glass-nested">
-                                <div class="strat-top">
-                                    <span class="strat-name">Strategy B — Requirements & Calendar</span>
-                                    <span class="strat-prob font-cyan">86%</span>
-                                </div>
-                                <div class="strat-meta font-muted font-mono">
-                                    <span>Risk: MEDIUM | Util: 96% | Success: 89%</span>
                                 </div>
                             </div>
 
@@ -185,7 +227,6 @@
                                 </div>
                                 <div class="m-item-details font-muted font-mono">
                                     <span>Latency: &lt;10ms | Cost: €0.00</span>
-                                    <span>Task: Idle (42.1% calls avoided)</span>
                                 </div>
                             </div>
 
@@ -199,8 +240,7 @@
                                     </div>
                                 </div>
                                 <div class="m-item-details font-muted font-mono">
-                                    <span>Provider: Ollama (LOCAL) | Context: 32K</span>
-                                    <span>CPU: 68% | Task: Email & Planning Triage</span>
+                                    <span>Provider: Ollama (LOCAL) | CPU: 68%</span>
                                 </div>
                             </div>
                         </div>
@@ -212,11 +252,11 @@
             <!-- Column 2: Personal Knowledge Graph & Forecast -->
             <div class="grid-column">
 
-                <!-- 🔮 Mission Forecast Panel (V6.9) -->
+                <!-- 🔮 Mission Forecast Panel (Explicit V6.10 Labeling) -->
                 <div class="card glass">
                     <div class="card-header">
-                        <h2>🔮 Mission Forecast (V6.9)</h2>
-                        <span class="pill-badge emerald">Completion Date Prediction</span>
+                        <h2>🔮 Mission Forecast</h2>
+                        <span class="pill-badge emerald">Powered by V6.10 Predictive Mission Optimizer</span>
                     </div>
                     <div class="card-body">
                         <div class="forecast-box glass-nested font-inter">
@@ -225,9 +265,6 @@
                                 <span>Completion Prob: <strong class="font-emerald">91%</strong></span> |
                                 <span>Deadline Risk: <strong class="font-emerald">LOW</strong></span> |
                                 <span>Trend: <strong class="font-emerald">↑ Improving</strong></span>
-                            </div>
-                            <div class="f-bottleneck font-amber font-mono" style="margin-top: 6px;">
-                                Bottleneck Resolved via Strategy C: Literature Contradiction Verification.
                             </div>
                         </div>
                     </div>
@@ -249,11 +286,6 @@
                             <div class="kg-node-row">
                                 <span class="kg-node person font-cyan">Ahmet</span>
                                 <span class="kg-arrow">──[WORKS_ON (valid: 2026-04)]──►</span>
-                                <span class="kg-node project font-emerald">Master Thesis</span>
-                            </div>
-                            <div class="kg-node-row">
-                                <span class="kg-node person font-amber">Prof. Davis</span>
-                                <span class="kg-arrow">──[ADVISOR_OF (valid: 2026-04)]──►</span>
                                 <span class="kg-node project font-emerald">Master Thesis</span>
                             </div>
                         </div>
@@ -282,16 +314,6 @@
                                     <span>Capabilities: <code>list_messages</code>, <code>send_email</code>, <code>mark_read</code></span>
                                 </div>
                             </div>
-
-                            <div class="authority-card clickable" data-agent-id="ResearchSpecialist">
-                                <div class="auth-header">
-                                    <span class="agent-name">🔬 ResearchSpecialist</span>
-                                    <span class="auth-badge allowed">AUTHORITY: ALLOWED</span>
-                                </div>
-                                <div class="auth-tools font-muted">
-                                    <span>Capabilities: <code>search_rag</code>, <code>web_search</code>, <code>extract_paper</code></span>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -308,16 +330,15 @@
                     <div class="log-filter-bar font-mono">
                         <button class="filter-btn active" data-filter="all">All</button>
                         <button class="filter-btn" data-filter="GOAL">🎯 Goal</button>
-                        <button class="filter-btn" data-filter="STRATEGY">🧠 Strategy</button>
+                        <button class="filter-btn" data-filter="BENCHMARK">🎯 Benchmark</button>
                         <button class="filter-btn" data-filter="SECURITY">Security</button>
                         <button class="filter-btn" data-filter="LLM">🧠 LLM</button>
                     </div>
                     <div class="card-body">
                         <div class="console-terminal font-mono" id="console-terminal">
-                            <div class="log-line info" data-category="SECURITY">[18:38:00] [AutonomyGovernor] RISK: LOW | Autonomy: BOUNDED_AUTO -> Action 'list_messages' PERMITTED (Provenance: fact_7908912f)</div>
-                            <div class="log-line highlight" data-category="GOAL">[18:37:55] [AutonomousGoalPriorityManager] Evaluated goal priorities -> Master Thesis ranked #1 (Score: 9.4 ↑).</div>
-                            <div class="log-line success" data-category="STRATEGY">[18:37:50] [PredictiveMissionOptimizer] Strategy C recommended for Master Thesis (Completion prob: 91%, LOW risk).</div>
-                            <div class="log-line highlight" data-category="LLM">[18:37:45] [ResearchSpecialist] [MODEL:strong_cloud] [ROUTER:STRONG_CLOUD_LLM] [TOKENS:1,842] [2.4s] Executed literature synthesis.</div>
+                            <div class="log-line info" data-category="SECURITY">[18:43:00] [AutonomyGovernor] RISK: LOW | Autonomy: BOUNDED_AUTO -> Action 'list_messages' PERMITTED (Provenance: fact_7908912f)</div>
+                            <div class="log-line highlight" data-category="BENCHMARK">[18:42:55] [CanonicalMissionBenchmarkSuite] Executed 20 canonical scenarios -> 20/20 PASSED (100% Success, 0 Violations).</div>
+                            <div class="log-line highlight" data-category="GOAL">[18:42:50] [EndToEndMissionIntelligence] Synthesized situation -> Next recommended action: Contradiction analysis via ResearchSpecialist + Strong Cloud LLM.</div>
                         </div>
                     </div>
                 </div>
